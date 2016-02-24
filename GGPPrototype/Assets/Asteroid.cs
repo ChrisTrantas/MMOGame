@@ -57,7 +57,7 @@ public class Asteroid : MonoBehaviour {
             spawnDir.Normalize();
             for (int i = 0; i < 3; i++) //spawn 3 new asteroids
             {
-                GameObject ast = (GameObject)Instantiate(gameObject, transform.position, Quaternion.identity);
+                GameObject ast = (GameObject)Instantiate(gameObject, transform.position, Quaternion.AngleAxis(90, Vector3.left) * Quaternion.identity);
                 ast.transform.localScale = ast.transform.localScale - new Vector3(0.3f, 0.3f, 0.3f); //with a smaller scale
                 ast.transform.position = ast.transform.position + spawnDir * (float)(GetComponent<CircleCollider2D>().radius * (ast.transform.localScale.x / 2.5)); //positioned radially
                 ast.transform.GetComponent<Rigidbody2D>().velocity = spawnDir * (float)(1 + (1.0f - ast.transform.localScale.x) * 2.5); //and set to move out radially
