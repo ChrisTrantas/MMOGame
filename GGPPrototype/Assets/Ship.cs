@@ -5,6 +5,11 @@ public class Ship : MonoBehaviour {
 
     Rigidbody2D myRigidbody;
 
+    [SerializeField]
+    GameObject bullet;
+    [SerializeField]
+    float speed;
+
     void Start()
     {
         myRigidbody = this.GetComponent<Rigidbody2D>();
@@ -27,6 +32,13 @@ public class Ship : MonoBehaviour {
         if (Input.GetKey(KeyCode.S))
         {
             myRigidbody.AddForce(new Vector2(0.0f, -5.0f));
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            GameObject newBullet = (GameObject)Instantiate(bullet, transform.position, Quaternion.identity);
+            Physics2D.IgnoreCollision(newBullet.GetComponent<Collider2D>(), gameObject.GetComponent<Collider2D>());
+            newBullet.GetComponent<Rigidbody2D>().velocity = myRigidbody.velocity.normalized * speed;
         }
 
         if (myRigidbody.velocity.sqrMagnitude > 25.0f)
@@ -54,4 +66,13 @@ public class Ship : MonoBehaviour {
         }
 
 	}
+
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        Debug.Log("dying");
+        if (other.gameObject.tag == "asteroid")
+        {
+            Destroy(gameObject);
+        }
+    }
 }

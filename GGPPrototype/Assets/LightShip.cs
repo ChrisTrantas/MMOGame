@@ -40,4 +40,13 @@ public class LightShip : MonoBehaviour {
         }
 
     }
+
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        Debug.Log("dying");
+        if (other.gameObject.tag == "asteroid")
+        {
+            Destroy(gameObject);
+        }
+    }
 }
