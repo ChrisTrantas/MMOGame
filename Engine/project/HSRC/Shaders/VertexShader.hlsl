@@ -1,0 +1,31 @@
+cbuffer externalData : register(b0)
+{
+	matrix world;
+	matrix view;
+	matrix projection;
+};
+
+struct VertexShaderInput
+{ 
+	float3 position		: POSITION;
+	float3 normal		: NORMAL;
+	float2 uv			: TEXCOORD;
+};
+
+struct VertexToPixel
+{
+	float4 position		: SV_POSITION;
+	float3 normal		: NORMAL;
+};
+
+VertexToPixel main( VertexShaderInput input )
+{
+	VertexToPixel output;
+	
+	matrix worldViewProj = mul(mul(world, view), projection);
+
+	output.position = mul(float4(input.position, 1.0f), worldViewProj);
+	output.normal = mul(input.normal, (float3x3)world);
+
+	return output;
+}

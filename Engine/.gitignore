@@ -1,0 +1,27 @@
+## Custom gitignore for HSRC project
+
+# ignore everything, and un-ignore all directories
+*
+!*/
+
+# don't ignore yourself!
+!.gitignore
+
+# project/HSRC/ directory
+!**/[Dd]ebug/*.dll
+!**/Documentation/**
+!**/[Rr]elease/*.dll
+!*.sln
+
+# project/HSRC/HSRC directory, meat of it all
+!**/[Bb]in/*.dll
+!**/engine/**
+!**/[Ii]nclude/**
+!**/[Ll]ib/*
+!**/[Mm]odels/**
+!**/[Ss]haders/**
+!**/[Tt]extures/**
+!*.vcxproj
+!*.vcxproj.filters
+!**/HSRC/*.cpp
+!**/HSRC/*.h
