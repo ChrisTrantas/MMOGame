@@ -14,8 +14,8 @@ void FPController::awake()
 {
 	ct = gameObject->getComponent<Transform>();
 
-	runSpeed = .1;
-	walkSpeed = .005;
+	runSpeed = 0.1f;
+	walkSpeed = 0.005f;
 
 	Input::bindToControl("forward", 'W');
 	Input::bindToControl("back", 'S');
@@ -27,7 +27,7 @@ void FPController::awake()
 	Input::bindToControl("look", VK_LBUTTON);
 }
 
-void FPController::update()
+void FPController::update(float deltaTime, float totalTime)
 {
 	vec3 offset = (float)(Input::isControlDown("right") - Input::isControlDown("left")) * ct->right() +
 					(float)(Input::isControlDown("up") - Input::isControlDown("down")) * ct->up() +

@@ -81,7 +81,7 @@ int Game::start(void(*buildFunc)())
 
 			// Standard game loop type stuff
 			CalculateFrameStats();
-			update();// (deltaTime, totalTime);
+			update(deltaTime, totalTime);
 			draw();// (deltaTime, totalTime);
 			Input::updateControlStates();
 		}
@@ -294,7 +294,7 @@ void Game::UpdateTimer()
 void Game::CalculateFrameStats()
 {
 	static int frameCount = 0;
-	static float timeElapsed = 0.0f;
+	static float timeElapsed = totalTime;
 
 	frameCount++;
 
@@ -492,10 +492,10 @@ ID3D11Device* Game::getDevice() { return device; }
 ID3D11DeviceContext* Game::getDeviceContext() { return deviceContext; }
 float Game::getAspectRatio() { return aspectRatio; }
 
-void Game::update()
+void Game::update(float deltaTime, float totalTime)
 {
-	earlyUpdateAllGameObjects();
-	updateAllGameObjects();
+	earlyUpdateAllGameObjects(deltaTime, totalTime);
+	updateAllGameObjects(deltaTime, totalTime);
 }
 
 void Game::draw()

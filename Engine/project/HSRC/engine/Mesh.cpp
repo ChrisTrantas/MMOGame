@@ -151,13 +151,12 @@ Mesh::Mesh(string modelPath) : Resource(modelPath, MY_TYPE_INDEX)
 
 	elementArraySize = faceCount;
 	
+	delete[] verts;
 	delete[] faces;
 }
 
 Mesh::~Mesh()
 {
-	delete[] verts;
-
 	ReleaseMacro(vertexBuffer);
 	ReleaseMacro(indexBuffer);
 }
@@ -192,14 +191,4 @@ void Mesh::draw(mat4 &camera, mat4 &perspective, mat4 &model, Material* material
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 	deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	deviceContext->DrawIndexed(elementArraySize, 0, 0);
-}
-
-vec3 Mesh::operator[](const int &i)
-{
-	return vec3(verts[i].position.x, verts[i].position.y, verts[i].position.z);
-}
-
-size_t Mesh::verticeCount()
-{
-	return vertCount;
 }

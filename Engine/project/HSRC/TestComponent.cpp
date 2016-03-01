@@ -16,7 +16,7 @@ void TestComponent::awake()
 	t = gameObject->getComponent<Transform>();
 }
 
-void TestComponent::update()
+void TestComponent::update(float deltaTime, float totalTime)
 {
 	t->rotate(angleAxis(angle, t->up()));
 }

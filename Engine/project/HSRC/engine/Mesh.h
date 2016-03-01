@@ -29,12 +29,8 @@ public:
 	~Mesh();
 	void draw(mat4 &camera, mat4 &perspective, mat4 &model, Material* material);
 	boundingVectors bounds;
-	vec3 operator[](const int &i);
-	size_t verticeCount();
 private:
 	Mesh(string modelPath);
 	ID3D11Buffer *vertexBuffer, *indexBuffer;
 	size_t elementArraySize;
-	vertex* verts;
-	size_t vertCount;
 };

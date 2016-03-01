@@ -83,7 +83,7 @@ bool GameObject::hasTag(string tag)
 	return false;
 }
 
-void GameObject::earlyUpdate()
+void GameObject::earlyUpdate(float deltaTime, float totalTime)
 {
 	auto componentBucket = components.begin();
 	while (componentBucket != components.end())
@@ -91,13 +91,13 @@ void GameObject::earlyUpdate()
 		for (size_t i = 0; i < componentBucket->second.size(); i += 1)
 		{
 			if (componentBucket->second[i]->enabled)
-				componentBucket->second[i]->earlyUpdate();
+				componentBucket->second[i]->earlyUpdate(deltaTime, totalTime);
 		}
 		componentBucket++;
 	}
 }
 
-void GameObject::update()
+void GameObject::update(float deltaTime, float totalTime)
 {
 	auto componentBucket = components.begin();
 	while (componentBucket != components.end())
@@ -105,7 +105,7 @@ void GameObject::update()
 		for (size_t i = 0; i < componentBucket->second.size(); i += 1)
 		{
 			if (componentBucket->second[i]->enabled)
-				componentBucket->second[i]->update();
+				componentBucket->second[i]->update(deltaTime, totalTime);
 		}
 		componentBucket++;
 	}
@@ -207,16 +207,16 @@ vector<GameObject*> findGameObjectsWithTags(size_t numTag, ...)
 	return taggedObjects;
 }
 
-void earlyUpdateAllGameObjects()
+void earlyUpdateAllGameObjects(float deltaTime, float totalTime)
 {
 	for (size_t i = 0; i < objects.size(); i += 1)
-		objects[i]->earlyUpdate();
+		objects[i]->earlyUpdate(deltaTime, totalTime);
 }
 
-void updateAllGameObjects()
+void updateAllGameObjects(float deltaTime, float totalTime)
 {
 	for (size_t i = 0; i < objects.size(); i += 1)
-		objects[i]->update();
+		objects[i]->update(deltaTime, totalTime);
 }
 
 void drawAllGameObjects()

@@ -14,8 +14,8 @@ public:
 	static GameObject* getGameObject(string name);
 	virtual ~GameObject();
 
-	void earlyUpdate();
-	void update();
+	void earlyUpdate(float deltaTime, float totalTime);
+	void update(float deltaTime, float totalTime);
 	void draw();
 
 	template<typename T>
@@ -46,8 +46,8 @@ GameObject* findGameObjectWithTags(size_t numTag, ...);
 vector<GameObject*> findGameObjectsWithTag(string tag);
 vector<GameObject*> findGameObjectsWithTags(size_t numTag, ...);
 
-void earlyUpdateAllGameObjects();
-void updateAllGameObjects();
+void earlyUpdateAllGameObjects(float deltaTime, float totalTime);
+void updateAllGameObjects(float deltaTime, float totalTime);
 void drawAllGameObjects();
 void freeAllGameObjects();
 

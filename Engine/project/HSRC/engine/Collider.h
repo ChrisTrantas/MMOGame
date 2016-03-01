@@ -18,7 +18,7 @@ public:
 	Collider();
 	~Collider();
 	void awake();
-	void earlyUpdate();
+	void earlyUpdate(float deltaTime, float totalTime);
 	vector<Collision> checkForCollisions();
 	vector<Collision> checkForCollisions(bool completeMatch, size_t numTag, ...);
 	Collision checkCollision(Collider* other);

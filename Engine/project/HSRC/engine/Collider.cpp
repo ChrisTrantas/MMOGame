@@ -26,7 +26,7 @@ void Collider::awake()
 	oldScale = t->scale;
 }
 
-void Collider::earlyUpdate()
+void Collider::earlyUpdate(float deltaTime, float totalTime)
 {
 	if (oldPos != t->position || oldRot != t->rotation || oldScale != t->scale)
 		reTree();

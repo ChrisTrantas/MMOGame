@@ -7,7 +7,7 @@ public:
 	FPController();
 	~FPController();
 	void awake();
-	void update();
+	void update(float deltaTime, float totalTime);
 private:
 	Transform* ct;
 	float runSpeed;

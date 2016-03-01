@@ -28,7 +28,7 @@ private:
 	Game(Game const&) = delete;
 	void operator=(Game const&) = delete;
 	void initEngine();
-	void update();
+	void update(float deltaTime, float totalTime);
 	void draw();
 
 	bool InitMainWindow();

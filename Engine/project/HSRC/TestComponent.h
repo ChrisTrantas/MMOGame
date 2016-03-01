@@ -7,7 +7,7 @@ public:
 	TestComponent();
 	~TestComponent();
 	void awake();
-	void update();
+	void update(float deltaTime, float totalTime);
 private:
 	float angle;
 	Transform* t;
