@@ -14,10 +14,14 @@ void FPController::awake()
 {
 	ct = gameObject->getComponent<Transform>();
 
+	runSpeed = .1;
+	walkSpeed = .005;
+
 	Input::bindToControl("forward", 'W');
 	Input::bindToControl("back", 'S');
 	Input::bindToControl("left", 'A');
 	Input::bindToControl("right", 'D');
+	Input::bindToControl("run", VK_SHIFT);
 	Input::bindToControl("up", VK_SPACE);
 	Input::bindToControl("down", VK_CONTROL);
 	Input::bindToControl("look", VK_LBUTTON);
@@ -28,9 +32,18 @@ void FPController::update()
 	vec3 offset = (float)(Input::isControlDown("right") - Input::isControlDown("left")) * ct->right() +
 					(float)(Input::isControlDown("up") - Input::isControlDown("down")) * ct->up() +
 					(float)(Input::isControlDown("forward") - Input::isControlDown("back")) * ct->forward();
+
 	if (length(offset) != 0)
 		offset = normalize(offset);
-	ct->translate(offset * 0.005f);
+
+	float speed = walkSpeed;
+
+	if (Input::isControlDown("run"))
+	{
+		speed = runSpeed;
+	}
+
+	ct->translate(offset * speed);
 
 	if (Input::isControlDown("look"))
 	{

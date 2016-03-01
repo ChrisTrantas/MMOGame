@@ -10,5 +10,7 @@ public:
 	void update();
 private:
 	Transform* ct;
+	float runSpeed;
+	float walkSpeed;
 };
 
