@@ -2,6 +2,7 @@
 
 #include "ResourceManager.h"
 #include "SimpleShader.h"
+#include "Texture.h"
 
 #define DEFAULT_MATERIAL Material::getMaterial("DEFAULT")
 
@@ -12,6 +13,8 @@ public:
 	~Material();
 	SimpleVertexShader* getVertexShader();
 	SimplePixelShader* getPixelShader();
+	Texture* diffuse;
+	Texture* normalMap;
 private:
 	Material(string name);
 	SimpleVertexShader* vertexShader;

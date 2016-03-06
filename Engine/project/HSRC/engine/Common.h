@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dxerr.h"
+#include <locale>
 
 #define ReleaseMacro(x) { if(x){ x->Release(); x = 0; } }
 
@@ -21,3 +22,7 @@
 #define HR(x) (x) // Do nothing special!
 #endif
 #endif
+
+extern std::wstring_convert< std::codecvt<wchar_t, char, std::mbstate_t> > conv;
+
+#define STR_TO_WCHART(str) conv.from_bytes(str)

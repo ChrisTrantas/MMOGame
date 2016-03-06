@@ -11,6 +11,9 @@
 #include <crtdbg.h>
 #endif
 
+#define DEVICE Game::game->getDevice()
+#define DEVICE_CONTEXT Game::game->getDeviceContext()
+
 class Game
 {
 public:

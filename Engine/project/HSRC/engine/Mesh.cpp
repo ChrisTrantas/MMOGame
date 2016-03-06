@@ -57,7 +57,8 @@ Mesh::Mesh(string modelPath) : Resource(modelPath, MY_TYPE_INDEX)
 		{
 			vertex vert = { DirectX::XMFLOAT3(mesh->mVertices[i].v),
 							DirectX::XMFLOAT3(mesh->mNormals[i].v),
-							DirectX::XMFLOAT2(mesh->mTextureCoords[0][i].v) };
+							DirectX::XMFLOAT3(mesh->mTangents[i].v),
+							DirectX::XMFLOAT2(mesh->mTextureCoords[0][i].x, 1 - mesh->mTextureCoords[0][i].y) };
 			verts[vertOffset + i] = vert;
 
 			if (i != 0)
@@ -132,9 +133,7 @@ Mesh::Mesh(string modelPath) : Resource(modelPath, MY_TYPE_INDEX)
 	D3D11_SUBRESOURCE_DATA initialVertexData;
 	initialVertexData.pSysMem = verts;
 
-	ID3D11Device* device = Game::game->getDevice();
-
-	HR(device->CreateBuffer(&vbd, &initialVertexData, &vertexBuffer));
+	HR(DEVICE->CreateBuffer(&vbd, &initialVertexData, &vertexBuffer));
 
 	D3D11_BUFFER_DESC ibd;
 	ibd.Usage = D3D11_USAGE_IMMUTABLE;
@@ -147,7 +146,7 @@ Mesh::Mesh(string modelPath) : Resource(modelPath, MY_TYPE_INDEX)
 	D3D11_SUBRESOURCE_DATA initialIndexData;
 	initialIndexData.pSysMem = faces;
 
-	HR(device->CreateBuffer(&ibd, &initialIndexData, &indexBuffer));
+	HR(DEVICE->CreateBuffer(&ibd, &initialIndexData, &indexBuffer));
 
 	elementArraySize = faceCount;
 	
@@ -171,24 +170,29 @@ void Mesh::draw(mat4 &camera, mat4 &perspective, mat4 &model, Material* material
 	explodeMat4(transpose(camera), explodedCamera);
 	explodeMat4(transpose(perspective), explodedPerspective);
 
-	material->getVertexShader()->SetMatrix4x4("world", explodedModel);
-	material->getVertexShader()->SetMatrix4x4("view", explodedCamera);
-	material->getVertexShader()->SetMatrix4x4("projection", explodedPerspective);
+	SimpleVertexShader* vs = material->getVertexShader();
+	SimplePixelShader* ps = material->getPixelShader();
+
+	vs->SetMatrix4x4("world", explodedModel);
+	vs->SetMatrix4x4("view", explodedCamera);
+	vs->SetMatrix4x4("projection", explodedPerspective);
 
 	DirectionalLight light = DEFAULT_LIGHT->getDirectionalLight();
-	material->getPixelShader()->SetData("light1", &light, sizeof(DirectionalLight));
+	ps->SetData("light1", &light, sizeof(DirectionalLight));
 	light = Light::getLight("light2")->getDirectionalLight();
-	material->getPixelShader()->SetData("light2", &light, sizeof(DirectionalLight));
+	ps->SetData("light2", &light, sizeof(DirectionalLight));
 
-	material->getVertexShader()->SetShader(true);
-	material->getPixelShader()->SetShader(true);
+	ps->SetShaderResourceView("diffuse", material->diffuse->getSRV());
+	ps->SetShaderResourceView("normalMap", material->normalMap->getSRV());
+	ps->SetSamplerState("trilinear", material->diffuse->getSamplerState());
+
+	vs->SetShader(true);
+	ps->SetShader(true);
 
 	UINT stride = sizeof(vertex);
 	UINT offset = 0;
 
-	ID3D11DeviceContext* deviceContext = Game::game->getDeviceContext();
-
-	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-	deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	deviceContext->DrawIndexed(elementArraySize, 0, 0);
+	DEVICE_CONTEXT->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	DEVICE_CONTEXT->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	DEVICE_CONTEXT->DrawIndexed(elementArraySize, 0, 0);
 }

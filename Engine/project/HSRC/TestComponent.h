@@ -4,12 +4,12 @@
 class TestComponent : public IComponent
 {
 public:
-	TestComponent();
+	TestComponent(float speed);
 	~TestComponent();
 	void awake();
 	void update(float deltaTime, float totalTime);
 private:
-	float angle;
+	float angle, speed;
 	Transform* t;
 };
 

@@ -2,6 +2,8 @@
 #include "ResourceManager.h"
 
 Game* Game::game = nullptr;
+// define the common.h extern for wchart conversion
+std::wstring_convert< std::codecvt<wchar_t, char, std::mbstate_t> > conv;
 
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -484,8 +486,6 @@ void Game::initEngine()
 {
 	Input::bindToControl("quit", VK_ESCAPE);
 	ResourceManager::init();
-	DEFAULT_MATERIAL->getVertexShader()->LoadShaderFile(L"Shaders/VertexShader.cso");
-	DEFAULT_MATERIAL->getPixelShader()->LoadShaderFile(L"Shaders/PixelShader.cso");
 }
 
 ID3D11Device* Game::getDevice() { return device; }

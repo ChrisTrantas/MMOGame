@@ -1,8 +1,8 @@
 #include "TestComponent.h"
 
-TestComponent::TestComponent()
+TestComponent::TestComponent(float speed)
 {
-	
+	this->speed = speed;
 }
 
 TestComponent::~TestComponent()
@@ -18,5 +18,5 @@ void TestComponent::awake()
 
 void TestComponent::update(float deltaTime, float totalTime)
 {
-	t->rotate(angleAxis(angle, t->up()));
+	t->rotate(angleAxis(angle * speed, t->up()));
 }

@@ -1,4 +1,36 @@
 #include "Texture.h"
+#include "Common.h"
+#include "Game.h"
+
+Sampler* Sampler::getSampler(string samplerName)
+{
+	Sampler* sampler = (Sampler*)ResourceManager::manager->getResource(samplerName);
+	if (!sampler)
+		sampler = new Sampler(samplerName);
+	return sampler;
+}
+
+Sampler::Sampler(string samplerName) : Resource(samplerName, MY_TYPE_INDEX)
+{
+	D3D11_SAMPLER_DESC samplerDesc;
+	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	DEVICE->CreateSamplerState(&samplerDesc, &samplerState);
+}
+
+Sampler::~Sampler()
+{
+	ReleaseMacro(samplerState);
+}
+
+ID3D11SamplerState* Sampler::getSamplerState()
+{
+	return samplerState;
+}
 
 Texture* Texture::getTexture(string texturePath)
 {
@@ -10,27 +42,22 @@ Texture* Texture::getTexture(string texturePath)
 
 Texture::Texture(string texturePath) : Resource(texturePath, MY_TYPE_INDEX)
 {
-	FIBITMAP* bitmap = FreeImage_Load(FreeImage_GetFileType(texturePath.c_str(), 0), texturePath.c_str()); // raw texture data
-	FIBITMAP* theImage = FreeImage_ConvertTo32Bits(bitmap); // texture ready data
-	int imageWidth = FreeImage_GetWidth(theImage);
-	int imageHeight = FreeImage_GetHeight(theImage);
-
-	//glGenTextures(1, &texID);
-	//glBindTexture(GL_TEXTURE_2D, texID);
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8_ALPHA8, imageWidth, imageHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(theImage)); // load data into texture
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	FreeImage_Unload(bitmap); // free memory
-	FreeImage_Unload(theImage);
+	std::wstring wstr = STR_TO_WCHART(texturePath);
+	DirectX::CreateWICTextureFromFile(DEVICE, DEVICE_CONTEXT, wstr.c_str(), 0, &srv);
+	sampler = DEFAULT_SAMPLER;
 }
 
 Texture::~Texture()
 {
-	//glDeleteTextures(1, &texID);
+	ReleaseMacro(srv);
 }
 
-//GLuint Texture::id()
-//{
-//	return texID;
-//}
+ID3D11SamplerState* Texture::getSamplerState()
+{
+	return sampler->getSamplerState();
+}
+
+ID3D11ShaderResourceView* Texture::getSRV()
+{
+	return srv;
+}
