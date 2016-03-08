@@ -11,6 +11,7 @@
 !**/[Dd]ebug/*.dll
 !**/Documentation/**
 !**/[Rr]elease/*.dll
+!*.txt
 !*.sln
 
 # project/HSRC/HSRC directory, meat of it all
