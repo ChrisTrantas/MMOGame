@@ -2,7 +2,7 @@
 
 inline void alignInit(float* data, int numObjects)
 {
-	(float*)_aligned_malloc(sizeof(float) * numObjects, 32);
+	data = (float*)_aligned_malloc(sizeof(float) * numObjects, 32);
 	memset(data, 0, sizeof(float) * numObjects);
 }
 
