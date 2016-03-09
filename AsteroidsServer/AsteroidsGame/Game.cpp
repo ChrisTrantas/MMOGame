@@ -1,34 +1,36 @@
 #include "Game.h"
 
-inline void alignInit(float* data, int numObjects)
+inline float* alignInit(float* data, int numObjects)
 {
 	data = (float*)_aligned_malloc(sizeof(float) * numObjects, 32);
 	memset(data, 0, sizeof(float) * numObjects);
+	return data;
 }
 
 Game::Game()
 {
 	// Create everything and initialize it all to zero
-	alignInit(asteroidPositionsX, MAX_ASTEROIDS);
-	alignInit(asteroidPositionsY, MAX_ASTEROIDS);
-	alignInit(asteroidVelocitiesX, MAX_ASTEROIDS);
-	alignInit(asteroidVelocitiesY, MAX_ASTEROIDS);
-	alignInit(asteroidRadius, MAX_ASTEROIDS);
+	asteroidPositionsX = alignInit(asteroidPositionsX, MAX_ASTEROIDS);
+	asteroidPositionsY = alignInit(asteroidPositionsY, MAX_ASTEROIDS);
+	asteroidVelocitiesX = alignInit(asteroidVelocitiesX, MAX_ASTEROIDS);
+	asteroidVelocitiesY = alignInit(asteroidVelocitiesY, MAX_ASTEROIDS);
+	asteroidRadius = alignInit(asteroidRadius, MAX_ASTEROIDS);
 
-	alignInit(shipPositionsX, MAX_SHIPS);
-	alignInit(shipPositionsY, MAX_SHIPS);
-	alignInit(shipVelocitiesX, MAX_SHIPS);
-	alignInit(shipVelocitiesY, MAX_SHIPS);
-	alignInit(shipAccelerationsX, MAX_SHIPS);
-	alignInit(shipAccelerationsY, MAX_SHIPS);
-	alignInit(shipCollisions, MAX_SHIPS);
+	shipPositionsX = alignInit(shipPositionsX, MAX_SHIPS);
+	shipPositionsY = alignInit(shipPositionsY, MAX_SHIPS);
+	shipVelocitiesX = alignInit(shipVelocitiesX, MAX_SHIPS);
+	shipVelocitiesY = alignInit(shipVelocitiesY, MAX_SHIPS);
+	shipAccelerationsX = alignInit(shipAccelerationsX, MAX_SHIPS);
+	shipAccelerationsY = alignInit(shipAccelerationsY, MAX_SHIPS);
+	shipCollisions = alignInit(shipCollisions, MAX_SHIPS);
 
-	alignInit(lightPositionsX, MAX_LIGHTS);
-	alignInit(lightPositionsY, MAX_LIGHTS);
-	alignInit(lightVelocitiesX, MAX_LIGHTS);
-	alignInit(lightVelocitiesY, MAX_LIGHTS);
-	alignInit(lightAccelerationsX, MAX_LIGHTS);
-	alignInit(lightAccelerationsY, MAX_LIGHTS);
+	lightPositionsX = alignInit(lightPositionsX, MAX_LIGHTS);
+	lightPositionsY = alignInit(lightPositionsY, MAX_LIGHTS);
+	lightVelocitiesX = alignInit(lightVelocitiesX, MAX_LIGHTS);
+	lightVelocitiesY = alignInit(lightVelocitiesY, MAX_LIGHTS);
+	lightAccelerationsX = alignInit(lightAccelerationsX, MAX_LIGHTS);
+	lightAccelerationsY = alignInit(lightAccelerationsY, MAX_LIGHTS);
+
 
 	for (int i = 0; i < MAX_SHIPS; i+=4){
 		shipsAlive[i] = false;
