@@ -1,6 +1,7 @@
 #pragma once
 #include <intrin.h>
 #include <string>
+#include <mutex>
 
 // Please make multiples of 4.
 // The formula is 4 * numberofthings/4
@@ -43,6 +44,16 @@ private:
 public:
 	Game();
 	~Game();
+
+	std::mutex bufferMutex;
+	// If true, updates acceleration data.
+	bool dirtyBuffers;
+
+	float shipAccelerationXBuffer[MAX_SHIPS];
+	float shipAccelerationYBuffer[MAX_SHIPS];
+
+	float lightAccelerationXBuffer[MAX_LIGHTS];
+	float lightAccelerationYBuffer[MAX_LIGHTS];
 
 	/// <summary>
 	/// Updates all of the game physics.

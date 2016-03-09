@@ -36,6 +36,8 @@ Game::Game()
 		shipsAlive[i + 2] = false;
 		shipsAlive[i + 3] = false;
 	}
+
+	dirtyBuffers = false;
 }
 
 Game::~Game()
@@ -64,6 +66,17 @@ Game::~Game()
 }
 
 void Game::Update(float deltaTime){
+
+	// Update the buffer if necessary.
+	if (dirtyBuffers){
+		bufferMutex.lock();
+		memcpy(shipAccelerationsX, shipAccelerationXBuffer, sizeof(float) * MAX_SHIPS);
+		memcpy(shipAccelerationsY, shipAccelerationYBuffer, sizeof(float) * MAX_SHIPS);
+		memcpy(lightAccelerationsX, lightAccelerationXBuffer, sizeof(float) * MAX_LIGHTS);
+		memcpy(lightAccelerationsY, lightAccelerationYBuffer, sizeof(float) * MAX_LIGHTS);
+		bufferMutex.unlock();
+		dirtyBuffers = false;
+	}
 
 	__m128 dt = _mm_set1_ps(deltaTime);
 
