@@ -11,6 +11,7 @@
 !**/[Dd]ebug/*.dll
 !**/Documentation/**
 !**/[Rr]elease/*.dll
+!**/DirectXTK/**
 !*.txt
 !*.sln
 
