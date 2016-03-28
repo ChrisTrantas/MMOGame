@@ -70,7 +70,7 @@ Mesh::Mesh(string modelPath) : Resource(modelPath, MY_TYPE_INDEX)
 				upper.y = std::max(upper.y, mesh->mVertices[i].y);
 				upper.z = std::max(upper.z, mesh->mVertices[i].z);
 			}
-			else
+			else if (m == 0)
 			{
 				upper = vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 				lower = upper;
