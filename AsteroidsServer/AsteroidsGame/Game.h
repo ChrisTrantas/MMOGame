@@ -21,22 +21,22 @@ class Game
 {
 private:
 	// Arrays storing all of the game's data.
-	Vec2 asteroidPositions;
-	Vec2 asteroidVelocities;
-	Vec1 asteroidRadius;
+	Vec2* asteroidPositions;
+	Vec2* asteroidVelocities;
+	Vec1* asteroidRadius;
 
-	Vec2 shipPositions;
-	Vec2 shipVelocities;
-	Vec2 shipAccelerations;
-	Vec1 shipCollisions;
+	Vec2* shipPositions;
+	Vec2* shipVelocities;
+	Vec2* shipAccelerations;
+	Vec1* shipCollisions;
 	
-	Vec2 lightPositions;
-	Vec2 lightVelocities;
-	Vec2 lightAccelerations;
+	Vec2* lightPositions;
+	Vec2* lightVelocities;
+	Vec2* lightAccelerations;
 
-	Vec2 bulletPositions;
-	Vec2 bulletPrevPositions;
-	Vec2 bulletVelocities;
+	Vec2* bulletPositions;
+	Vec2* bulletPrevPositions;
+	Vec2* bulletVelocities;
 
 	bool shipsAlive[MAX_SHIPS];
 	bool bulletsActive[MAX_BULLETS];

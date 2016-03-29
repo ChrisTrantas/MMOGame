@@ -17,11 +17,6 @@ struct Vec1{
 
 	int size;
 
-	Vec1(){
-		size = -1;
-		value = nullptr;
-	}
-
 	Vec1(int length){
 		size = length;
 		value = (float*)_aligned_malloc(sizeof(float) * length, 32);
@@ -34,10 +29,6 @@ struct Vec1{
 		}
 	}
 
-	float* operator+(int i){
-		return value + i;
-	}
-
 };
 
 /// <summary>
@@ -48,12 +39,6 @@ struct Vec2{
 	float* y;
 
 	int size;
-
-	Vec2(){
-		size = -1;
-		x = nullptr;
-		y = nullptr;
-	}
 
 	Vec2(int length){
 		size = length;
