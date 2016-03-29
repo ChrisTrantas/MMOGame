@@ -84,16 +84,21 @@ void Game::Update(float deltaTime){
 
 	// Update positions for all the asteroids
 	for (int i = 0; i < MAX_ASTEROIDS; i += 4){
+		// Load necessary Memory
 		__m128 velocitiesX = _mm_load_ps(asteroidVelocitiesX + i);
 		__m128 positionsX = _mm_load_ps(asteroidPositionsX + i);
 		__m128 velocitiesY = _mm_load_ps(asteroidVelocitiesY + i);
 		__m128 positionsY = _mm_load_ps(asteroidPositionsY + i);
 
+
+		// Perform necessary physics for moving ship
 		velocitiesX = _mm_mul_ps(dt, velocitiesX);
 		velocitiesY = _mm_mul_ps(dt, velocitiesY);
 
 		positionsX = _mm_add_ps(velocitiesX, positionsX);
 		positionsY = _mm_add_ps(velocitiesY, positionsY);
+
+		// Store information
 		_mm_store_ps(asteroidPositionsX + i, positionsX);
 		_mm_store_ps(asteroidPositionsY + i, positionsY);
 	}
@@ -102,7 +107,10 @@ void Game::Update(float deltaTime){
 	// Also detect ship collisions against asteroids.
 	memset(shipCollisions, 0, sizeof(float) * MAX_SHIPS);
 
+	__m128 maxVel = _mm_set1_ps(MAX_SHIP_SPEED);
+
 	for (int i = 0; i < MAX_SHIPS; i += 4){
+		// Load all of the necessary memory
 		__m128 accelerationsX = _mm_load_ps(shipAccelerationsX + i);
 		__m128 velocitiesX = _mm_load_ps(shipVelocitiesX + i);
 		__m128 positionsX = _mm_load_ps(shipPositionsX + i);
@@ -110,11 +118,16 @@ void Game::Update(float deltaTime){
 		__m128 velocitiesY = _mm_load_ps(shipVelocitiesY + i);
 		__m128 positionsY = _mm_load_ps(shipPositionsY + i);
 
+		// Do acceleration, clamp velocity, and add to position.
 		accelerationsX = _mm_mul_ps(dt, accelerationsX);
 		accelerationsY = _mm_mul_ps(dt, accelerationsY);
 
 		velocitiesX = _mm_add_ps(accelerationsX, velocitiesX);
+		velocitiesX = _mm_min_ps(velocitiesX, maxVel);
+
 		velocitiesY = _mm_add_ps(accelerationsY, velocitiesY);
+		velocitiesY = _mm_min_ps(velocitiesY, maxVel);
+
 		_mm_store_ps(shipVelocitiesX + i, velocitiesX);
 		_mm_store_ps(shipVelocitiesY + i, velocitiesY);
 
@@ -151,6 +164,7 @@ void Game::Update(float deltaTime){
 
 	// Update velocities and positions for all of the lights
 	for (int i = 0; i < MAX_LIGHTS; i += 4){
+		// Load all necessary memory.
 		__m128 accelerationsX = _mm_load_ps(lightAccelerationsX + i);
 		__m128 velocitiesX = _mm_load_ps(lightVelocitiesX + i);
 		__m128 positionsX = _mm_load_ps(lightPositionsX + i);
@@ -158,11 +172,17 @@ void Game::Update(float deltaTime){
 		__m128 velocitiesY = _mm_load_ps(lightVelocitiesY + i);
 		__m128 positionsY = _mm_load_ps(lightPositionsY + i);
 
+		// Do acceleration, clamp velocity, and add to position.
+
 		accelerationsX = _mm_mul_ps(dt, accelerationsX);
 		accelerationsY = _mm_mul_ps(dt, accelerationsY);
 
 		velocitiesX = _mm_add_ps(accelerationsX, velocitiesX);
+		velocitiesX = _mm_min_ps(velocitiesX, maxVel);
+
 		velocitiesY = _mm_add_ps(accelerationsY, velocitiesY);
+		velocitiesY = _mm_min_ps(velocitiesY, maxVel);
+
 		_mm_store_ps(lightVelocitiesX + i, velocitiesX);
 		_mm_store_ps(lightVelocitiesY + i, velocitiesY);
 

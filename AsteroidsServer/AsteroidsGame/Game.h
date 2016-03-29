@@ -10,6 +10,7 @@
 #define MAX_LIGHTS 4 * (8/4)
 
 #define SHIP_RADIUS 1.0f
+#define MAX_SHIP_SPEED 8.0f
 
 /// <summary>
 /// A single instance of the game, capable of storing all of its own data.
