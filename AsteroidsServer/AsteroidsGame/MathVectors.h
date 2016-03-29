@@ -2,13 +2,6 @@
 
 #include <string>
 
-inline float* alignInit(float* data, int numObjects)
-{
-	data = (float*)_aligned_malloc(sizeof(float) * numObjects, 32);
-	memset(data, 0, sizeof(float) * numObjects);
-	return data;
-}
-
 /// <summary>
 /// Stores a singularvia an array for SIMD operations
 /// </summary>

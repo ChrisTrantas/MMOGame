@@ -67,7 +67,9 @@ void Game::Update(float deltaTime){
 		dirtyBuffers = false;
 	}
 
+	// A few physics constants
 	__m128 dt = _mm_set1_ps(deltaTime);
+	
 
 	//
 	// Asteroid Physics
@@ -88,6 +90,24 @@ void Game::Update(float deltaTime){
 
 		positionsX = _mm_add_ps(velocitiesX, positionsX);
 		positionsY = _mm_add_ps(velocitiesY, positionsY);
+
+		// Shift things if they have gone beyond the bounds.
+		__m128 mask;
+		mask = _mm_cmplt_ps(positionsX, c_LEFT);
+		mask = _mm_mul_ps(mask, c_WIDTH_SHIFT);
+		positionsX = _mm_add_ps(positionsX, mask);
+
+		mask = _mm_cmpgt_ps(positionsX, c_RIGHT);
+		mask = _mm_mul_ps(mask, c_WIDTH_SHIFT);
+		positionsX = _mm_add_ps(positionsX, mask);
+
+		mask = _mm_cmplt_ps(positionsY, c_UP);
+		mask = _mm_mul_ps(mask, c_HEIGHT_SHIFT);
+		positionsY = _mm_add_ps(positionsY, mask);
+
+		mask = _mm_cmpgt_ps(positionsY, c_DOWN);
+		mask = _mm_mul_ps(mask, c_HEIGHT_SHIFT);
+		positionsY = _mm_add_ps(positionsY, mask);
 
 		// Store information
 		_mm_store_ps(asteroidPositions->x + i, positionsX);
@@ -117,6 +137,8 @@ void Game::Update(float deltaTime){
 		positionsX = _mm_add_ps(velocitiesX, positionsX);
 		positionsY = _mm_add_ps(velocitiesY, positionsY);
 
+		//Bounds happens later since handling wrapping now would lead to issues with the continuous collision detection.
+
 		// Store information
 		_mm_store_ps(bulletPositions->x + i, positionsX);
 		_mm_store_ps(bulletPositions->y + i, positionsY);
@@ -131,6 +153,11 @@ void Game::Update(float deltaTime){
 	for (int i = 0; i < MAX_BULLETS; ++i){
 		if (bulletsActive[i]){
 
+			//  Continuous because I'm assuming the bullet is a point, and the asteroids are all circles.
+			//  As a result I just need to check if the line is ever within the circle.
+			//  The below formula finds the shortest length of distance from a point to a line.
+			//  Comparing that to the radius squared (the whole formula is squared) should tell me if the line is ever in the circle.
+			
 			//if asteroidRad^2 > ((dy*AstX - dx*AstY + x2*y1 - y2*x1 )^2) / (y2-y1)^2 + (x2-x1)^2
 			__m128 dy = _mm_set1_ps(bulletPositions->y[i] - bulletPrevPositions->y[i]);
 			__m128 dx = _mm_set1_ps(bulletPositions->x[i] - bulletPrevPositions->x[i]);
@@ -146,14 +173,15 @@ void Game::Update(float deltaTime){
 				__m128 astX = _mm_load_ps(asteroidPositions->x + j);
 				__m128 astY = _mm_load_ps(asteroidPositions->y + j);
 
-				astX = _mm_mul_ps(dy, astX);
-				astY = _mm_mul_ps(dx, astY);
+				astX = _mm_mul_ps(dy, astX);//dy*Astx
+				astY = _mm_mul_ps(dx, astY);//dx*Asty
 
-				__m128 result = _mm_sub_ps(astX, astY);
-				result = _mm_add_ps(result, dif);
-				result = _mm_mul_ps(result, result);
-				result = _mm_div_ps(result, div);
+				__m128 result = _mm_sub_ps(astX, astY);// dy*AstX - dx*AstY
+				result = _mm_add_ps(result, dif);// dy*AstX - dx*AstY + x2*y1 - y2*x1 
+				result = _mm_mul_ps(result, result);//^2
+				result = _mm_div_ps(result, div);//Division against the length of the line
 
+				// Now compare it to the radius squared
 				__m128 radius = _mm_load_ps(asteroidRadius->value + j);
 				radius = _mm_mul_ps(radius, radius);
 
@@ -191,6 +219,36 @@ void Game::Update(float deltaTime){
 	}
 	delete[] results;
 
+	// Need to do the bullet boundary movement after the collision check since otherwise that bullet moves really far really fast.
+	for (int i = 0; i < MAX_BULLETS; i += 4){
+		// Load bullet memory
+		__m128 positionsX = _mm_load_ps(bulletPositions->x + i);
+		__m128 positionsY = _mm_load_ps(bulletPositions->y + i);
+
+		// Shift things if they have gone beyond the bounds.
+		__m128 mask;
+		mask = _mm_cmplt_ps(positionsX, c_LEFT);
+		mask = _mm_mul_ps(mask, c_WIDTH_SHIFT);
+		positionsX = _mm_add_ps(positionsX, mask);
+
+		mask = _mm_cmpgt_ps(positionsX, c_RIGHT);
+		mask = _mm_mul_ps(mask, c_WIDTH_SHIFT);
+		positionsX = _mm_add_ps(positionsX, mask);
+
+		mask = _mm_cmplt_ps(positionsY, c_UP);
+		mask = _mm_mul_ps(mask, c_HEIGHT_SHIFT);
+		positionsY = _mm_add_ps(positionsY, mask);
+
+		mask = _mm_cmpgt_ps(positionsY, c_DOWN);
+		mask = _mm_mul_ps(mask, c_HEIGHT_SHIFT);
+		positionsY = _mm_add_ps(positionsY, mask);
+
+		// Store information
+		_mm_store_ps(bulletPositions->x + i, positionsX);
+		_mm_store_ps(bulletPositions->y + i, positionsY);
+
+	}
+
 	//
 	// Ship Physics
 	//
@@ -200,6 +258,7 @@ void Game::Update(float deltaTime){
 	memset(shipCollisions->value, 0, sizeof(float) * MAX_SHIPS);
 
 	__m128 maxVel = _mm_set1_ps(MAX_SHIP_SPEED);
+	__m128 shipR = _mm_set1_ps(SHIP_RADIUS);
 
 	for (int i = 0; i < MAX_SHIPS; i += 4){
 		// Load all of the necessary memory
@@ -220,6 +279,7 @@ void Game::Update(float deltaTime){
 		velocitiesY = _mm_add_ps(accelerationsY, velocitiesY);
 		velocitiesY = _mm_min_ps(velocitiesY, maxVel);
 
+		// Store the velocity ahead so we can multiply it by dt instead of making another variable for that.
 		_mm_store_ps(shipVelocities->x + i, velocitiesX);
 		_mm_store_ps(shipVelocities->x + i, velocitiesY);
 
@@ -228,13 +288,31 @@ void Game::Update(float deltaTime){
 
 		positionsX = _mm_add_ps(velocitiesX, positionsX);
 		positionsY = _mm_add_ps(velocitiesY, positionsY);
+
+
+		// Shift things if they have gone beyond the bounds.
+		__m128 mask;
+		mask = _mm_cmplt_ps(positionsX, c_LEFT);
+		mask = _mm_mul_ps(mask, c_WIDTH_SHIFT);
+		positionsX = _mm_add_ps(positionsX, mask);
+
+		mask = _mm_cmpgt_ps(positionsX, c_RIGHT);
+		mask = _mm_mul_ps(mask, c_WIDTH_SHIFT);
+		positionsX = _mm_add_ps(positionsX, mask);
+
+		mask = _mm_cmplt_ps(positionsY, c_UP);
+		mask = _mm_mul_ps(mask, c_HEIGHT_SHIFT);
+		positionsY = _mm_add_ps(positionsY, mask);
+
+		mask = _mm_cmpgt_ps(positionsY, c_DOWN);
+		mask = _mm_mul_ps(mask, c_HEIGHT_SHIFT);
+		positionsY = _mm_add_ps(positionsY, mask);
+
 		_mm_store_ps(shipPositions->x + i, positionsX);
 		_mm_store_ps(shipPositions->y + i, positionsY);
 
 		// Do collisions detection
 		// (x1 - x2)^2 + (y1-y2)^2 < (radius + shipRadius)^2
-
-		__m128 shipR = _mm_set1_ps(SHIP_RADIUS);
 
 		for (int j = 0; j < MAX_ASTEROIDS; j++){
 			__m128 asteroidR = _mm_load1_ps(asteroidRadius->value + j);
@@ -242,10 +320,11 @@ void Game::Update(float deltaTime){
 			asteroidR = _mm_add_ps(asteroidR, shipR);
 			asteroidR = _mm_mul_ps(asteroidR, asteroidR);
 			
-			__m128 dx = _mm_sub_ps(positionsX, _mm_load1_ps(asteroidPositions->x + j));
-			__m128 dy = _mm_sub_ps(positionsY, _mm_load1_ps(asteroidPositions->y + j));
-			dx = _mm_mul_ps(dx, dx);
-			dy = _mm_mul_ps(dy, dy);
+			
+			__m128 dx = _mm_sub_ps(positionsX, _mm_load1_ps(asteroidPositions->x + j));// x1-x2
+			__m128 dy = _mm_sub_ps(positionsY, _mm_load1_ps(asteroidPositions->y + j));// y1-y2
+			dx = _mm_mul_ps(dx, dx);//^2
+			dy = _mm_mul_ps(dy, dy);//^2
 
 			__m128 result = _mm_add_ps(dx, dy);
 			result = _mm_cmplt_ps(result, asteroidR);
@@ -279,6 +358,7 @@ void Game::Update(float deltaTime){
 		velocitiesY = _mm_add_ps(accelerationsY, velocitiesY);
 		velocitiesY = _mm_min_ps(velocitiesY, maxVel);
 
+		// Store the velocity ahead so we can multiply it by dt instead of making another variable for that.
 		_mm_store_ps(lightVelocities->x + i, velocitiesX);
 		_mm_store_ps(lightVelocities->y + i, velocitiesY);
 
@@ -287,6 +367,25 @@ void Game::Update(float deltaTime){
 
 		positionsX = _mm_add_ps(velocitiesX, positionsX);
 		positionsY = _mm_add_ps(velocitiesY, positionsY);
+
+		// Shift things if they have gone beyond the bounds.
+		__m128 mask;
+		mask = _mm_cmplt_ps(positionsX, c_LEFT);
+		mask = _mm_mul_ps(mask, c_WIDTH_SHIFT);
+		positionsX = _mm_add_ps(positionsX, mask);
+
+		mask = _mm_cmpgt_ps(positionsX, c_RIGHT);
+		mask = _mm_mul_ps(mask, c_WIDTH_SHIFT);
+		positionsX = _mm_add_ps(positionsX, mask);
+
+		mask = _mm_cmplt_ps(positionsY, c_UP);
+		mask = _mm_mul_ps(mask, c_HEIGHT_SHIFT);
+		positionsY = _mm_add_ps(positionsY, mask);
+
+		mask = _mm_cmpgt_ps(positionsY, c_DOWN);
+		mask = _mm_mul_ps(mask, c_HEIGHT_SHIFT);
+		positionsY = _mm_add_ps(positionsY, mask);
+
 		_mm_store_ps(lightPositions->x + i, positionsX);
 		_mm_store_ps(lightPositions->y + i, positionsY);
 	}
