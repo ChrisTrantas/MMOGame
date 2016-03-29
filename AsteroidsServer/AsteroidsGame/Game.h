@@ -2,6 +2,7 @@
 #include <intrin.h>
 #include <string>
 #include <mutex>
+#include "MathVectors.h"
 
 // Please make multiples of 4.
 // The formula is 4 * numberofthings/4
@@ -18,26 +19,19 @@
 class Game
 {
 private:
-	float* asteroidPositionsX;
-	float* asteroidPositionsY;
-	float* asteroidVelocitiesX;
-	float* asteroidVelocitiesY;
-	float* asteroidRadius;
+	// Arrays storing all of the game's data.
+	Vec2 asteroidPositions;
+	Vec2 asteroidVelocities;
+	Vec1 asteroidRadius;
 
-	float* shipPositionsX;
-	float* shipPositionsY;
-	float* shipVelocitiesX;
-	float* shipVelocitiesY;
-	float* shipAccelerationsX;
-	float* shipAccelerationsY;
-	float* shipCollisions;
+	Vec2 shipPositions;
+	Vec2 shipVelocities;
+	Vec2 shipAccelerations;
+	Vec1 shipCollisions;
 	
-	float* lightPositionsX;
-	float* lightPositionsY;
-	float* lightVelocitiesX;
-	float* lightVelocitiesY;
-	float* lightAccelerationsX;
-	float* lightAccelerationsY;
+	Vec2 lightPositions;
+	Vec2 lightVelocities;
+	Vec2 lightAccelerations;
 
 	bool shipsAlive[MAX_SHIPS];
 	bool activeShips[MAX_SHIPS];
@@ -50,6 +44,7 @@ public:
 	// If true, updates acceleration data.
 	bool dirtyBuffers;
 
+	// When the server gets new inputs, update them here.
 	float shipAccelerationXBuffer[MAX_SHIPS];
 	float shipAccelerationYBuffer[MAX_SHIPS];
 
