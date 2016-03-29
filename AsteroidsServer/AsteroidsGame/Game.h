@@ -9,6 +9,7 @@
 #define MAX_ASTEROIDS 4 * (64/4)
 #define MAX_SHIPS 4 * (8/4)
 #define MAX_LIGHTS 4 * (8/4)
+#define MAX_BULLETS 4 * (128/4)
 
 #define SHIP_RADIUS 1.0f
 #define MAX_SHIP_SPEED 8.0f
@@ -33,8 +34,13 @@ private:
 	Vec2 lightVelocities;
 	Vec2 lightAccelerations;
 
+	Vec2 bulletPositions;
+	Vec2 bulletPrevPositions;
+	Vec2 bulletVelocities;
+
 	bool shipsAlive[MAX_SHIPS];
-	bool activeShips[MAX_SHIPS];
+	bool bulletsActive[MAX_BULLETS];
+	bool splitAsteroids[MAX_ASTEROIDS];
 
 public:
 	Game();

@@ -34,6 +34,10 @@ struct Vec1{
 		}
 	}
 
+	float* operator+(int i){
+		return value + i;
+	}
+
 };
 
 /// <summary>
