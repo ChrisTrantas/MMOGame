@@ -58,6 +58,9 @@ private:
 	bool bulletsActive[MAX_BULLETS];
 	bool splitAsteroids[MAX_ASTEROIDS];
 
+	// Temporary buffer for math
+	float* results;
+
 
 public:
 	Game();

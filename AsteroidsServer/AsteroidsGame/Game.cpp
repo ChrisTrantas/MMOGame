@@ -20,6 +20,9 @@ Game::Game()
 	bulletPrevPositions = new Vec2(MAX_BULLETS);
 	bulletVelocities = new Vec2(MAX_BULLETS);
 
+	results = (float*)_aligned_malloc(sizeof(float) * 4, 32);
+	memset(results, 0, sizeof(float) * 4);
+
 	for (int i = 0; i < MAX_SHIPS; i+=4){
 		shipsAlive[i] = false;
 		shipsAlive[i + 1] = false;
@@ -36,6 +39,7 @@ Game::Game()
 
 Game::~Game()
 {
+
 	delete asteroidPositions;
 	delete asteroidVelocities;
 	delete asteroidRadius;
@@ -52,6 +56,8 @@ Game::~Game()
 	delete bulletPositions;
 	delete bulletPrevPositions;
 	delete bulletVelocities;
+
+	_aligned_free(results);
 }
 
 void Game::Update(float deltaTime){
@@ -147,8 +153,7 @@ void Game::Update(float deltaTime){
 
 	memset(splitAsteroids, 0, sizeof(bool) * MAX_ASTEROIDS);
 
-	float* results = new float[4];
-	memset(results, 0, sizeof(float) * 4);
+	
 	// Bullet vs asteroid collision detection
 	for (int i = 0; i < MAX_BULLETS; ++i){
 		if (bulletsActive[i]){
@@ -215,7 +220,6 @@ void Game::Update(float deltaTime){
 			}
 		}
 	}
-	delete[] results;
 
 	// Need to do the bullet boundary movement after the collision check since otherwise that bullet moves really far really fast.
 	for (int i = 0; i < MAX_BULLETS; i += 4){
