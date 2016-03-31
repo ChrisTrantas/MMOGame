@@ -94,19 +94,19 @@ void Game::Update(float deltaTime){
 		// Shift things if they have gone beyond the bounds.
 		__m128 mask;
 		mask = _mm_cmplt_ps(positionsX, c_LEFT);
-		mask = _mm_mul_ps(mask, c_WIDTH_SHIFT);
+		mask = _mm_and_ps(mask, c_WIDTH_SHIFT);
 		positionsX = _mm_add_ps(positionsX, mask);
 
 		mask = _mm_cmpgt_ps(positionsX, c_RIGHT);
-		mask = _mm_mul_ps(mask, c_WIDTH_SHIFT);
+		mask = _mm_and_ps(mask, c_WIDTH_SHIFT);
 		positionsX = _mm_add_ps(positionsX, mask);
 
 		mask = _mm_cmplt_ps(positionsY, c_UP);
-		mask = _mm_mul_ps(mask, c_HEIGHT_SHIFT);
+		mask = _mm_and_ps(mask, c_HEIGHT_SHIFT);
 		positionsY = _mm_add_ps(positionsY, mask);
 
 		mask = _mm_cmpgt_ps(positionsY, c_DOWN);
-		mask = _mm_mul_ps(mask, c_HEIGHT_SHIFT);
+		mask = _mm_and_ps(mask, c_HEIGHT_SHIFT);
 		positionsY = _mm_add_ps(positionsY, mask);
 
 		// Store information
@@ -165,8 +165,6 @@ void Game::Update(float deltaTime){
 			__m128 div = _mm_set1_ps((bulletPositions->y[i] - bulletPrevPositions->y[i]) * (bulletPositions->y[i] - bulletPrevPositions->y[i]) +
 				(bulletPositions->x[i] - bulletPrevPositions->x[i]) * (bulletPositions->x[i] - bulletPrevPositions->x[i]));
 
-			
-
 			// We can handle four asteroids at a time
 			for (int j = 0; j < MAX_ASTEROIDS; j += 4){
 
@@ -197,18 +195,18 @@ void Game::Update(float deltaTime){
 					bulletsActive[i] = false;
 					break;
 				}
-				else if (results[1])
+				if (results[1])
 				{
 					splitAsteroids[j + 1] = splitAsteroids[j + 1] || results[1];
 					bulletsActive[i] = false;
 					break;
 				}
-				else if (results[2]){
+				if (results[2]){
 					splitAsteroids[j + 2] = splitAsteroids[j + 2] || results[2];
 					bulletsActive[i] = false;
 					break;
 				}
-				else if (results[3]){
+				if (results[3]){
 					splitAsteroids[j + 3] = splitAsteroids[j + 3] || results[3];
 					bulletsActive[i] = false;
 					break;
@@ -228,19 +226,19 @@ void Game::Update(float deltaTime){
 		// Shift things if they have gone beyond the bounds.
 		__m128 mask;
 		mask = _mm_cmplt_ps(positionsX, c_LEFT);
-		mask = _mm_mul_ps(mask, c_WIDTH_SHIFT);
+		mask = _mm_and_ps(mask, c_WIDTH_SHIFT);
 		positionsX = _mm_add_ps(positionsX, mask);
 
 		mask = _mm_cmpgt_ps(positionsX, c_RIGHT);
-		mask = _mm_mul_ps(mask, c_WIDTH_SHIFT);
+		mask = _mm_and_ps(mask, c_WIDTH_SHIFT);
 		positionsX = _mm_add_ps(positionsX, mask);
 
 		mask = _mm_cmplt_ps(positionsY, c_UP);
-		mask = _mm_mul_ps(mask, c_HEIGHT_SHIFT);
+		mask = _mm_and_ps(mask, c_HEIGHT_SHIFT);
 		positionsY = _mm_add_ps(positionsY, mask);
 
 		mask = _mm_cmpgt_ps(positionsY, c_DOWN);
-		mask = _mm_mul_ps(mask, c_HEIGHT_SHIFT);
+		mask = _mm_and_ps(mask, c_HEIGHT_SHIFT);
 		positionsY = _mm_add_ps(positionsY, mask);
 
 		// Store information
@@ -293,19 +291,19 @@ void Game::Update(float deltaTime){
 		// Shift things if they have gone beyond the bounds.
 		__m128 mask;
 		mask = _mm_cmplt_ps(positionsX, c_LEFT);
-		mask = _mm_mul_ps(mask, c_WIDTH_SHIFT);
+		mask = _mm_and_ps(mask, c_WIDTH_SHIFT);
 		positionsX = _mm_add_ps(positionsX, mask);
 
 		mask = _mm_cmpgt_ps(positionsX, c_RIGHT);
-		mask = _mm_mul_ps(mask, c_WIDTH_SHIFT);
+		mask = _mm_and_ps(mask, c_WIDTH_SHIFT);
 		positionsX = _mm_add_ps(positionsX, mask);
 
 		mask = _mm_cmplt_ps(positionsY, c_UP);
-		mask = _mm_mul_ps(mask, c_HEIGHT_SHIFT);
+		mask = _mm_and_ps(mask, c_HEIGHT_SHIFT);
 		positionsY = _mm_add_ps(positionsY, mask);
 
 		mask = _mm_cmpgt_ps(positionsY, c_DOWN);
-		mask = _mm_mul_ps(mask, c_HEIGHT_SHIFT);
+		mask = _mm_and_ps(mask, c_HEIGHT_SHIFT);
 		positionsY = _mm_add_ps(positionsY, mask);
 
 		_mm_store_ps(shipPositions->x + i, positionsX);
