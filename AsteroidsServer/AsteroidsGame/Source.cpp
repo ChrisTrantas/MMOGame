@@ -1,9 +1,11 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 #include "Game.h"
-#include <iostream>
 
+#include <ctime>
+#include <iostream>
 #include <winsock2.h>
+
 #pragma comment(lib,"ws2_32.lib")
 
 int main()
@@ -31,15 +33,31 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-	for (int i = 0; phe->h_addr_list[i] != 0; ++i) {
+	for (int i = 0; phe->h_addr_list[i] != 0; ++i) 
+	{
 		struct in_addr addr;
 		memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
 		std::cout << "Address " << i << ": " << inet_ntoa(addr) << std::endl;
 	}
 
 	Game myGame = Game();
-	for (int i = 0; i < 1000; ++i){
-		myGame.Update(1.0f);
+
+	clock_t myClock;
+	myClock = clock();
+
+	for (int i = 0; i < 20000; ++i)
+	{
+		myGame.Update(0.1f);
 	}
+
+	clock_t second;
+	second = clock();
+	float dtA = second - myClock;
+
+	std::cout << "Average Update Time: " << (((float)dtA) / CLOCKS_PER_SEC) * 1000 / 20000.0f << "ms" << std::endl;
+
+	int b = 0;
+	std::cin >> b;
+
 	return 0;
 }
