@@ -185,7 +185,7 @@ void Game::Update(float deltaTime){
 
 				result = _mm_cmpgt_ps(radius, result);
 
-				_mm_store_ps(results, result);
+				_mm_store_ps(results, result); //There is a ghost bug somewhere about this line
 
 				//  if we detect even a single collision we can actually break from the loop, since the chance of two
 				//  asteroids completely overlapping when a bullet hits it is so slim that we shouldn't need to account
