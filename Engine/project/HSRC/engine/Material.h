@@ -11,12 +11,9 @@ class Material : Resource
 public:
 	static Material* getMaterial(string name);
 	~Material();
-	SimpleVertexShader* getVertexShader();
-	SimplePixelShader* getPixelShader();
-	Texture* diffuse;
-	Texture* normalMap;
-private:
-	Material(string name);
+	map<string, Texture*> textures;
 	SimpleVertexShader* vertexShader;
 	SimplePixelShader* pixelShader;
+private:
+	Material(string name);
 };

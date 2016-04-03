@@ -49,6 +49,13 @@ Mesh::Mesh(string modelPath) : Resource(modelPath, MY_TYPE_INDEX)
 	vertex* verts = new vertex[vertCount];
 	unsigned int* faces = new unsigned int[faceCount];
 
+	lower.x = std::min(lower.x, scene->mMeshes[0]->mVertices[0].x);
+	lower.y = std::min(lower.y, scene->mMeshes[0]->mVertices[0].y);
+	lower.z = std::min(lower.z, scene->mMeshes[0]->mVertices[0].z);
+	upper.x = std::max(upper.x, scene->mMeshes[0]->mVertices[0].x);
+	upper.y = std::max(upper.y, scene->mMeshes[0]->mVertices[0].y);
+	upper.z = std::max(upper.z, scene->mMeshes[0]->mVertices[0].z);
+
 	for (size_t m = 0; m < scene->mNumMeshes; ++m)
 	{
 		aiMesh* mesh = scene->mMeshes[m];
@@ -61,20 +68,8 @@ Mesh::Mesh(string modelPath) : Resource(modelPath, MY_TYPE_INDEX)
 							DirectX::XMFLOAT2(mesh->mTextureCoords[0][i].x, 1 - mesh->mTextureCoords[0][i].y) };
 			verts[vertOffset + i] = vert;
 
-			if (i != 0)
-			{
-				lower.x = std::min(lower.x, mesh->mVertices[i].x);
-				lower.y = std::min(lower.y, mesh->mVertices[i].y);
-				lower.z = std::min(lower.z, mesh->mVertices[i].z);
-				upper.x = std::max(upper.x, mesh->mVertices[i].x);
-				upper.y = std::max(upper.y, mesh->mVertices[i].y);
-				upper.z = std::max(upper.z, mesh->mVertices[i].z);
-			}
-			else if (m == 0)
-			{
-				upper = vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-				lower = upper;
-			}
+			upper = vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+			lower = upper;
 		}
 
 		for (size_t i = 0; i < mesh->mNumFaces; ++i)
@@ -170,8 +165,8 @@ void Mesh::draw(mat4 &camera, mat4 &perspective, mat4 &model, Material* material
 	explodeMat4(transpose(camera), explodedCamera);
 	explodeMat4(transpose(perspective), explodedPerspective);
 
-	SimpleVertexShader* vs = material->getVertexShader();
-	SimplePixelShader* ps = material->getPixelShader();
+	SimpleVertexShader* vs = material->vertexShader;
+	SimplePixelShader* ps = material->pixelShader;
 
 	vs->SetMatrix4x4("world", explodedModel);
 	vs->SetMatrix4x4("view", explodedCamera);
@@ -182,9 +177,19 @@ void Mesh::draw(mat4 &camera, mat4 &perspective, mat4 &model, Material* material
 	light = Light::getLight("light2")->getDirectionalLight();
 	ps->SetData("light2", &light, sizeof(DirectionalLight));
 
-	ps->SetShaderResourceView("diffuse", material->diffuse->getSRV());
-	ps->SetShaderResourceView("normalMap", material->normalMap->getSRV());
-	ps->SetSamplerState("trilinear", material->diffuse->getSamplerState());
+	auto texture = material->textures.begin();
+
+	if (texture != material->textures.end())
+		ps->SetSamplerState("trilinear", material->textures[texture->first]->getSamplerState());
+
+	while (texture != material->textures.end())
+	{
+		ps->SetShaderResourceView(texture->first.c_str(), texture->second->getSRV());
+		++texture;
+	}
+
+	// iterate over attributes of material
+		// apply SetData to the designated shader, send in array of bytes
 
 	vs->SetShader(true);
 	ps->SetShader(true);

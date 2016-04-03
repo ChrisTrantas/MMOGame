@@ -45,7 +45,7 @@ Game::~Game()
 	ReleaseMacro(device);
 }
 
-int Game::start(void(*buildFunc)())
+int Game::start(void(*buildFunc)(), void(*destructFunc)())
 {
 	if (game == nullptr)
 		return false;
@@ -88,6 +88,8 @@ int Game::start(void(*buildFunc)())
 			Input::updateControlStates();
 		}
 	}
+
+	destructFunc();
 
 	delete game;
 
