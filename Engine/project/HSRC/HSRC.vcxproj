@@ -95,6 +95,7 @@
     <ClCompile Include="engine\Material.cpp" />
     <ClCompile Include="engine\Mesh.cpp" />
     <ClCompile Include="engine\MeshRenderer.cpp" />
+    <ClCompile Include="engine\NetworkManager.cpp" />
     <ClCompile Include="engine\Octree.cpp" />
     <ClCompile Include="engine\Resource.cpp" />
     <ClCompile Include="engine\ResourceManager.cpp" />
@@ -118,6 +119,7 @@
     <ClInclude Include="engine\Material.h" />
     <ClInclude Include="engine\Mesh.h" />
     <ClInclude Include="engine\MeshRenderer.h" />
+    <ClInclude Include="engine\NetworkManager.h" />
     <ClInclude Include="engine\Octree.h" />
     <ClInclude Include="engine\Resource.h" />
     <ClInclude Include="engine\ResourceManager.h" />
