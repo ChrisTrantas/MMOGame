@@ -19,6 +19,13 @@ void Asteroid::awake()
 	t = gameObject->getComponent<Transform>();
 	mr = gameObject->getComponent<MeshRenderer>();
 	Input::bindToControl("swapShaders", 'V');
+	perlinSeed.x = (float)rand();
+	perlinSeed.y = (float)rand();
+	perlinSeed.z = (float)rand();
+	float deformity = 3.12f;
+	float magnitude = 0.3f;
+	mr->material->setAttribute(VERTEX_BIT, "deformity", &deformity, sizeof(float), true);
+	mr->material->setAttribute(VERTEX_BIT, "magnitude", &magnitude, sizeof(float), true);
 }
 
 void Asteroid::earlyUpdate(float deltaTime, float totalTime)
@@ -38,4 +45,9 @@ void Asteroid::update(float deltaTime, float totalTime)
 		else
 			mr->material->vertexShader = vs;
 	}
+}
+
+void Asteroid::draw()
+{
+	mr->material->setAttribute(VERTEX_BIT, "seed", &perlinSeed, sizeof(vec3), false);
 }

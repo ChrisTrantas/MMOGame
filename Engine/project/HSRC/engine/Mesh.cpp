@@ -22,6 +22,8 @@ Mesh* Mesh::getMesh(string modelPath)
 	return mesh;
 }
 
+// TODO: email sean assimp, spc1802@rit.edu
+
 Mesh::Mesh(string modelPath) : Resource(modelPath, MY_TYPE_INDEX)
 {
 	Assimp::Importer importer;
@@ -155,45 +157,8 @@ Mesh::~Mesh()
 	ReleaseMacro(indexBuffer);
 }
 
-void Mesh::draw(mat4 &camera, mat4 &perspective, mat4 &model, Material* material)
+void Mesh::draw()
 {
-	float explodedModel[16];
-	float explodedCamera[16];
-	float explodedPerspective[16];
-
-	explodeMat4(transpose(model), explodedModel);
-	explodeMat4(transpose(camera), explodedCamera);
-	explodeMat4(transpose(perspective), explodedPerspective);
-
-	SimpleVertexShader* vs = material->vertexShader;
-	SimplePixelShader* ps = material->pixelShader;
-
-	vs->SetMatrix4x4("world", explodedModel);
-	vs->SetMatrix4x4("view", explodedCamera);
-	vs->SetMatrix4x4("projection", explodedPerspective);
-
-	DirectionalLight light = DEFAULT_LIGHT->getDirectionalLight();
-	ps->SetData("light1", &light, sizeof(DirectionalLight));
-	light = Light::getLight("light2")->getDirectionalLight();
-	ps->SetData("light2", &light, sizeof(DirectionalLight));
-
-	auto texture = material->textures.begin();
-
-	if (texture != material->textures.end())
-		ps->SetSamplerState("trilinear", material->textures[texture->first]->getSamplerState());
-
-	while (texture != material->textures.end())
-	{
-		ps->SetShaderResourceView(texture->first.c_str(), texture->second->getSRV());
-		++texture;
-	}
-
-	// iterate over attributes of material
-		// apply SetData to the designated shader, send in array of bytes
-
-	vs->SetShader(true);
-	ps->SetShader(true);
-
 	UINT stride = sizeof(vertex);
 	UINT offset = 0;
 

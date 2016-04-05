@@ -1,5 +1,4 @@
 #include "engine\Game.h"
-#include "TestComponent.h"
 #include "FPController.h"
 #include "Asteroid.h"
 
@@ -19,26 +18,18 @@ void buildGame()
 	DEFAULT_MATERIAL->vertexShader = vs;
 	DEFAULT_MATERIAL->pixelShader = ps;
 
-	GameObject* test = GameObject::getGameObject();
-	MeshRenderer* mr = test->getComponent<MeshRenderer>();
-	mr->mesh = Mesh::getMesh("Models/wilhelm4baked.fbx");
-	mr->material = Material::getMaterial("wilhelm");
-	mr->material->vertexShader = vs;
-	mr->material->pixelShader = ps;
-	mr->material->textures["diffuse"] = Texture::getTexture("Textures/wilhelm_color.png");
-	mr->material->textures["normalMap"] = Texture::getTexture("Textures/wilhelm_normal.png");
-	test->addComponent<TestComponent>(new TestComponent(1));
-
 	Mesh* sphere = Mesh::getMesh("Models/geodesicTriSphere20.fbx");
-	mr = DEFAULT_LIGHT->getComponent<MeshRenderer>();
+	//Mesh* sphere = Mesh::getMesh("Models/Sphere-v64-h64.obj");
+	MeshRenderer* mr = DEFAULT_LIGHT->getComponent<MeshRenderer>();
 	mr->mesh = sphere;
 	mr->material = Material::getMaterial("rocky");
 	mr->material->vertexShader = avs;
 	mr->material->pixelShader = ps;
-	mr->material->textures["diffuse"] = Texture::getTexture("Textures/rock.jpg");
+	//mr->material->textures["diffuse"] = Texture::getTexture("Textures/rock.jpg");
+	mr->material->textures["diffuse"] = Texture::getTexture("Textures/default.png");
 	mr->material->textures["normalMap"] = Texture::getTexture("Textures/rockNormals.jpg");
 	Transform* lightT = DEFAULT_LIGHT->getComponent<Transform>();
-	lightT->translate(lightT->forward() * -15.0f);
+	lightT->translate(lightT->forward() * -1.75f);
 	DEFAULT_LIGHT->addComponent<Asteroid>(new Asteroid(1.25f, vs, avs));
 
 	Light* secondLight = Light::getLight("light2");
@@ -47,14 +38,14 @@ void buildGame()
 	mr->material = Material::getMaterial("rocky");
 	lightT = secondLight->getComponent<Transform>();
 	lightT->rotate(angleAxis((float)M_PI_2, lightT->right()));
-	lightT->translate(lightT->forward() * -15.0f);
+	lightT->translate(lightT->forward() * -1.75f);
 	secondLight->ambientColor = vec4(0, 0.5f, 1, 1);
 	secondLight->diffuseColor = vec4(1, 0.5f, 0, 1);
 	secondLight->addComponent<Asteroid>(new Asteroid(1.6f, vs, avs));
 
 	Transform* camT = DEFAULT_CAMERA->getComponent<Transform>();
 	camT->rotate(angleAxis((float)M_PI_2, camT->up()));
-	camT->translate(camT->forward() * -220.0f);
+	camT->translate(camT->forward() * -15.0f);
 	DEFAULT_CAMERA->addComponent<FPController>(new FPController());
 }
 

@@ -486,6 +486,7 @@ LRESULT Game::ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 void Game::initEngine()
 {
+	srand((unsigned int)time(NULL));
 	Input::bindToControl("quit", VK_ESCAPE);
 	ResourceManager::init();
 }

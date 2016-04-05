@@ -103,7 +103,6 @@
     <ClCompile Include="engine\Transform.cpp" />
     <ClCompile Include="FPController.cpp" />
     <ClCompile Include="Source.cpp" />
-    <ClCompile Include="TestComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Asteroid.h" />
@@ -126,7 +125,6 @@
     <ClInclude Include="engine\Texture.h" />
     <ClInclude Include="engine\Transform.h" />
     <ClInclude Include="FPController.h" />
-    <ClInclude Include="TestComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\AsteroidVertexShader.hlsl">

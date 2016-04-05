@@ -3,6 +3,9 @@ cbuffer externalData : register(b0)
 	matrix world;
 	matrix view;
 	matrix projection;
+	float3 seed;
+	float deformity;
+	float magnitude;
 };
 
 struct VertexShaderInput
@@ -62,16 +65,17 @@ VertexToPixel main( VertexShaderInput input )
 	
 	matrix worldViewProj = mul(mul(world, view), projection);
 
-	float n = noise(input.normal * 2.0f);
-	output.position = float4(input.position * 0.5f + input.normal * n, 1);
+	float3 perlinSample = seed + input.normal;
+	float n = noise(perlinSample * deformity) * magnitude;
+	output.position = float4(input.position + input.normal * n, 1);
 
 	output.position = mul(output.position, worldViewProj);
 
 	// http://math.stackexchange.com/questions/1071662/surface-normal-to-point-on-displaced-sphere
 	float3 gradient = float3(
-		(noise((input.normal + float3(0.0001f, 0, 0)) * 2.0f) - n) / 0.0001f,
-		(noise((input.normal + float3(0, 0.0001f, 0)) * 2.0f) - n) / 0.0001f,
-		(noise((input.normal + float3(0, 0, 0.0001f)) * 2.0f) - n) / 0.0001f
+		(noise((perlinSample + float3(0.0001f, 0, 0)) * deformity) * magnitude - n) / 0.0001f,
+		(noise((perlinSample + float3(0, 0.0001f, 0)) * deformity) * magnitude - n) / 0.0001f,
+		(noise((perlinSample + float3(0, 0, 0.0001f)) * deformity) * magnitude - n) / 0.0001f
 		);
 	float3 tangentSpaceNormal = gradient - dot(gradient, input.position) * input.position;
 	output.normal = input.position - n * tangentSpaceNormal;

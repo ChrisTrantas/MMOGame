@@ -28,7 +28,7 @@ class Mesh : Resource
 public:
 	static Mesh* getMesh(string modelPath);
 	~Mesh();
-	void draw(mat4 &camera, mat4 &perspective, mat4 &model, Material* material);
+	void draw();
 	boundingVectors bounds;
 private:
 	Mesh(string modelPath);

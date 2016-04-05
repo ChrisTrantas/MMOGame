@@ -51,9 +51,6 @@
     <ClCompile Include="engine\SimpleShader.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TestComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FPController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -112,9 +109,6 @@
     </ClInclude>
     <ClInclude Include="engine\SimpleShader.h">
       <Filter>Engine\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TestComponent.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="engine\IComponent.h">
       <Filter>Engine\Header Files</Filter>
