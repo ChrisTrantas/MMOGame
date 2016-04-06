@@ -74,9 +74,9 @@
     </ClCompile>
     <ClCompile Include="Rotate.cpp">
       <Filter>Source Files</Filter>
-	</ClCompile>
-    <ClCompile Include="engine\NetworkManager.cpp">
-      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="networking\NetworkManager.cpp">
+      <Filter>Networking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -142,9 +142,9 @@
     </ClInclude>
     <ClInclude Include="Rotate.h">
       <Filter>Header Files</Filter>
-	</ClCompile>
-    <ClInclude Include="engine\NetworkManager.h">
-      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="networking\NetworkManager.h">
+      <Filter>Networking</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -171,6 +171,9 @@
     </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{497bb4a9-bd73-4ff1-b927-638473cb48bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Networking">
+      <UniqueIdentifier>{1a259d86-510a-4bc0-85f8-76b37881a2e5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
