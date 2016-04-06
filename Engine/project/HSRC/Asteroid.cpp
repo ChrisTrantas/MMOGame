@@ -1,12 +1,9 @@
 #include "Asteroid.h"
+#include "Rotate.h"
 
-static bool shaderPass = false;
-
-Asteroid::Asteroid(float speed, SimpleVertexShader* vs, SimpleVertexShader* avs)
+Asteroid::Asteroid()
 {
-	this->speed = speed;
-	this->vs = vs;
-	this->avs = avs;
+	
 }
 
 Asteroid::~Asteroid()
@@ -18,33 +15,34 @@ void Asteroid::awake()
 {
 	t = gameObject->getComponent<Transform>();
 	mr = gameObject->getComponent<MeshRenderer>();
-	Input::bindToControl("swapShaders", 'V');
-	perlinSeed.x = (float)rand();
-	perlinSeed.y = (float)rand();
-	perlinSeed.z = (float)rand();
+
+	mr->mesh = Mesh::getMesh("Models/geodesicTriSphere20.fbx");
+	mr->material = Material::getMaterial("asteroid");
+	mr->material->textures["diffuse"] = Texture::getTexture("Textures/rock.jpg");
+	mr->material->textures["normalMap"] = Texture::getTexture("Textures/rockNormals.jpg");
+
+	perlinSeed = RAND_VEC3;
 	float deformity = 3.12f;
 	float magnitude = 0.3f;
 	mr->material->setAttribute(VERTEX_BIT, "deformity", &deformity, sizeof(float), true);
 	mr->material->setAttribute(VERTEX_BIT, "magnitude", &magnitude, sizeof(float), true);
-}
 
-void Asteroid::earlyUpdate(float deltaTime, float totalTime)
-{
-	shaderPass = false;
+	Rotate* r = gameObject->getComponent<Rotate>();
+	if (!r)
+	{
+		r = new Rotate(0.5f + RAND_FLOAT, RAND_VEC3);
+		gameObject->addComponent<Rotate>(r);
+	}
+	else
+	{
+		r->setSpeed(0.5f + RAND_FLOAT);
+		r->setAxis(RAND_VEC3);
+	}
 }
 
 void Asteroid::update(float deltaTime, float totalTime)
 {
-	t->rotate(angleAxis(0.0001f * speed, t->up()));
-
-	if (Input::wasControlPressed("swapShaders") && !shaderPass)
-	{
-		shaderPass = true;
-		if (mr->material->vertexShader == vs)
-			mr->material->vertexShader = avs;
-		else
-			mr->material->vertexShader = vs;
-	}
+	// move the asteroid here
 }
 
 void Asteroid::draw()

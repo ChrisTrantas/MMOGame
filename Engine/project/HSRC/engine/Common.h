@@ -26,3 +26,7 @@
 extern std::wstring_convert< std::codecvt<wchar_t, char, std::mbstate_t> > conv;
 
 #define STR_TO_WCHART(str) conv.from_bytes(str)
+
+#define RAND_DOUBLE ((double)rand() / RAND_MAX)
+#define RAND_FLOAT (float)RAND_DOUBLE
+#define RAND_VEC3 vec3(RAND_FLOAT * 2 - 1, RAND_FLOAT * 2 - 1, RAND_FLOAT * 2 - 1)

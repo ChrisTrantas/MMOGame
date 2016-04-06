@@ -14,8 +14,8 @@ void FPController::awake()
 {
 	ct = gameObject->getComponent<Transform>();
 
-	runSpeed = 0.1f;
-	walkSpeed = 0.005f;
+	runSpeed = 50;
+	walkSpeed = 15;
 
 	Input::bindToControl("forward", 'W');
 	Input::bindToControl("back", 'S');
@@ -43,7 +43,7 @@ void FPController::update(float deltaTime, float totalTime)
 		speed = runSpeed;
 	}
 
-	ct->translate(offset * speed);
+	ct->translate(offset * speed * deltaTime);
 
 	if (Input::isControlDown("look"))
 	{
