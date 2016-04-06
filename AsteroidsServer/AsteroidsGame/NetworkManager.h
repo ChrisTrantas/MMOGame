@@ -5,6 +5,7 @@
 #include<stdio.h>
 #include <iostream>
 #include<winsock2.h>
+//#include <sys/time.h>
 
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 
@@ -19,6 +20,7 @@ class NetworkManager
 		~NetworkManager();
 		int displayIP();
 		int startServer();
+		void shutDownServer();
 
 		static NetworkManager* networkManager;
 
@@ -28,5 +30,6 @@ class NetworkManager
 		int slen, recv_len;
 		char buf[BUFLEN];
 		WSADATA wsa;
+		bool runServer;
 };
 

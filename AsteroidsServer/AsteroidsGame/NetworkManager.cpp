@@ -87,8 +87,11 @@ int NetworkManager::startServer()
 	}
 	puts("Bind done");
 
+	timeval tv;
+	fd_set fds;
+
 	//keep listening for data
-	while (1)
+	while (runServer)
 	{
 		printf("Waiting for data...\n");
 		fflush(stdout);
@@ -98,24 +101,51 @@ int NetworkManager::startServer()
 
 		std::cout << "attempting to receive data" << std::endl;
 
-		//try to receive some data, this is a blocking call
-		if ((recv_len = recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen)) == SOCKET_ERROR)
+		tv.tv_sec = 5;
+		tv.tv_usec = 0;
+
+		FD_ZERO(&fds);
+		FD_SET(s, &fds);
+
+		/*if (setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0)
 		{
-			printf("recvfrom() failed with error code : %d", WSAGetLastError());
-			return EXIT_FAILURE;
+			perror("Error");
+		}*/
+		int timeoutError = select(s + 1, &fds, NULL, NULL, &tv);
+		if (timeoutError == -1)
+		{
+			printf("Error trying to timeout\n");
 		}
-
-		//print details of the client/peer and the data received
-		printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
-		printf("Data: %s\n", buf);
-
-		//now reply the client with the same data
-		if (sendto(s, buf, recv_len, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
+		else if (timeoutError == 0)
 		{
-			printf("sendto() failed with error code : %d", WSAGetLastError());
-			return EXIT_FAILURE;
+			printf("Client timed out\n");
+		}
+		else
+		{
+			//try to receive some data, this is a blocking call
+			if ((recv_len = recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen)) == SOCKET_ERROR)
+			{
+				printf("recvfrom() failed with error code : %d", WSAGetLastError());
+				return EXIT_FAILURE;
+			}
+
+			//print details of the client/peer and the data received
+			printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
+			printf("Data: %s\n", buf);
+
+			//now reply the client with the same data
+			if (sendto(s, buf, recv_len, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
+			{
+				printf("sendto() failed with error code : %d", WSAGetLastError());
+				return EXIT_FAILURE;
+			}
 		}
 	}
 
 	return 0;
+}
+
+void NetworkManager::shutDownServer()
+{
+	runServer = false;
 }

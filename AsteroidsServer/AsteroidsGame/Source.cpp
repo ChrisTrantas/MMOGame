@@ -14,8 +14,6 @@ int main()
 	NetworkManager::init();
 	NetworkManager::networkManager->displayIP();
 
-	HANDLE networkHandle = 0;
-	int networkData = 1;
 	std::thread network([](){ NetworkManager::networkManager->startServer(); });
 
 	Game myGame = Game();
@@ -37,5 +35,8 @@ int main()
 	int b = 0;
 	std::cin >> b;
 
+	NetworkManager::networkManager->shutDownServer();
+	network.join();
+	//network.~thread();// std::terminate();
 	return 0;
 }
