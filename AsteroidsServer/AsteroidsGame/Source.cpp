@@ -5,6 +5,7 @@
 
 #include <ctime>
 #include <winsock2.h>
+#include <thread>
 
 #pragma comment(lib,"ws2_32.lib")
 
@@ -12,7 +13,10 @@ int main()
 {
 	NetworkManager::init();
 	NetworkManager::networkManager->displayIP();
-	
+
+	HANDLE networkHandle = 0;
+	int networkData = 1;
+	std::thread network([](){ NetworkManager::networkManager->startServer(); });
 
 	Game myGame = Game();
 

@@ -78,6 +78,7 @@ int NetworkManager::displayIP()
 
 int NetworkManager::startServer()
 {
+	std::cout << "The thread started running successfully" << std::endl;
 	//Bind
 	if (bind(s, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR)
 	{
@@ -89,11 +90,13 @@ int NetworkManager::startServer()
 	//keep listening for data
 	while (1)
 	{
-		printf("Waiting for data...");
+		printf("Waiting for data...\n");
 		fflush(stdout);
 
 		//clear the buffer by filling null, it might have previously received data
 		memset(buf, '\0', BUFLEN);
+
+		std::cout << "attempting to receive data" << std::endl;
 
 		//try to receive some data, this is a blocking call
 		if ((recv_len = recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen)) == SOCKET_ERROR)
