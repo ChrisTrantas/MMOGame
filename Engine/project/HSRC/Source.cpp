@@ -1,4 +1,5 @@
 #include "engine\Game.h"
+#include "engine\NetworkManager.h"
 #include "FPController.h"
 #include "Asteroid.h"
 #include "Rotate.h"
@@ -61,5 +62,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 #endif
 	
 	Game::init(hInstance);
+	NetworkManager::init();
+	NetworkManager::networkManager->startClient();
 	return Game::game->start(buildGame, destructGame);
 }
