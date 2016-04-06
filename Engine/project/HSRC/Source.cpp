@@ -1,8 +1,8 @@
 #include "engine\Game.h"
-#include "networking\NetworkManager.h"
 #include "FPController.h"
 #include "Asteroid.h"
 #include "Rotate.h"
+#include "networking\NetworkManager.h"
 
 namespace
 {
@@ -63,6 +63,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 	
 	Game::init(hInstance);
 	NetworkManager::init();
-	NetworkManager::networkManager->startClient();
+	//NetworkManager::networkManager->startClient();
 	return Game::game->start(buildGame, destructGame);
 }

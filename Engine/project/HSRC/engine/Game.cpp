@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "ResourceManager.h"
+#include "..\networking\NetworkManager.h"
 
 Game* Game::game = nullptr;
 // define the common.h extern for wchart conversion
@@ -84,6 +85,7 @@ int Game::start(void(*buildFunc)(), void(*destructFunc)())
 			// Standard game loop type stuff
 			CalculateFrameStats();
 			update(deltaTime, totalTime);
+			//NetworkManager::networkManager->startClient();
 			draw();// (deltaTime, totalTime);
 			Input::updateControlStates();
 		}

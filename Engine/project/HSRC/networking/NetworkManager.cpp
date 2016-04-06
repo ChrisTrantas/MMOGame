@@ -20,7 +20,7 @@ NetworkManager::NetworkManager()
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 	{
 		printf("Failed. Error Code : %d", WSAGetLastError());
-		exit(EXIT_FAILURE);
+		//exit(EXIT_FAILURE);
 	}
 	printf("Initialised.\n");
 
@@ -28,7 +28,7 @@ NetworkManager::NetworkManager()
 	if ((s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == SOCKET_ERROR)
 	{
 		printf("socket() failed with error code : %d", WSAGetLastError());
-		exit(EXIT_FAILURE);
+		//exit(EXIT_FAILURE);
 	}
 
 	//setup address structure
@@ -41,8 +41,6 @@ NetworkManager::NetworkManager()
 int NetworkManager::startClient()
 {
 	//start communication
-	while (1)
-	{
 		printf("Enter message : ");
 		gets_s(message);
 
@@ -50,7 +48,7 @@ int NetworkManager::startClient()
 		if (sendto(s, message, strlen(message), 0, (struct sockaddr *) &si_other, slen) == SOCKET_ERROR)
 		{
 			printf("sendto() failed with error code : %d", WSAGetLastError());
-			exit(EXIT_FAILURE);
+			//exit(EXIT_FAILURE);
 		}
 
 		//receive a reply and print it
@@ -60,7 +58,7 @@ int NetworkManager::startClient()
 		if (recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen) == SOCKET_ERROR)
 		{
 			printf("recvfrom() failed with error code : %d", WSAGetLastError());
-			exit(EXIT_FAILURE);
+			//exit(EXIT_FAILURE);
 		}
 
 		int* xData = (int*)&buf[0];
@@ -70,7 +68,6 @@ int NetworkManager::startClient()
 		yPos = *yData;
 		printf("xPos: %d\n", xPos);
 		printf("yPos: %d\n", yPos);
-	}
 	return 0;
 }
 
