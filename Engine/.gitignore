@@ -18,6 +18,7 @@
 # project/HSRC/HSRC directory, meat of it all
 !**/[Bb]in/*.dll
 !**/engine/**
+!**/networking/**
 !**/[Ii]nclude/**
 !**/[Ll]ib/*
 !**/[Mm]odels/**

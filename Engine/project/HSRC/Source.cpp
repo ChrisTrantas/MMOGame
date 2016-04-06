@@ -1,5 +1,5 @@
 #include "engine\Game.h"
-#include "engine\NetworkManager.h"
+#include "networking\NetworkManager.h"
 #include "FPController.h"
 #include "Asteroid.h"
 #include "Rotate.h"
