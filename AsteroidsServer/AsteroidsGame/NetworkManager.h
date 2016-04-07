@@ -33,5 +33,6 @@ class NetworkManager
 		char buf[BUFLEN];
 		WSADATA wsa;
 		bool runServer;
+		int timeoutTime;
 };
 

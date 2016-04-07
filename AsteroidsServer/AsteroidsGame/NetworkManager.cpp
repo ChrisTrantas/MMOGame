@@ -35,6 +35,7 @@ NetworkManager::NetworkManager()
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = INADDR_ANY;
 	server.sin_port = htons(PORT);
+	timeoutTime = 5;
 }
 
 
@@ -101,7 +102,7 @@ int NetworkManager::startServer()
 
 		std::cout << "attempting to receive data" << std::endl;
 
-		tv.tv_sec = 5;
+		tv.tv_sec = timeoutTime;
 		tv.tv_usec = 0;
 
 		FD_ZERO(&fds);
