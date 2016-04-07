@@ -30,7 +30,13 @@ void buildGame()
 	Material::getMaterial("asteroid")->pixelShader = aps;
 #pragma endregion The shader setup and material binding phase
 
-	GameObject::getGameObject()->addComponent<Asteroid>(new Asteroid());
+	for (size_t i = 0; i < 8; ++i)
+	{
+		GameObject* go = GameObject::getGameObject();
+		float ang = M_PI * 2 * (i / 8.0f);
+		go->getComponent<Transform>()->translate(vec3(cosf(ang) * 4, sinf(ang) * 4, 0));
+		go->addComponent<Asteroid>(new Asteroid());
+	}
 
 #pragma region LightSetup
 	DEFAULT_LIGHT->addComponent<Rotate>(new Rotate(1.18f, vec3(1, 0, 0)));
@@ -62,7 +68,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 #endif
 	
 	Game::init(hInstance);
-	NetworkManager::init();
+	//NetworkManager::init();
 	//NetworkManager::networkManager->startClient();
 	return Game::game->start(buildGame, destructGame);
 }
