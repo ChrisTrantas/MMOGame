@@ -40,6 +40,11 @@ NetworkManager::NetworkManager()
 
 int NetworkManager::startClient()
 {
+	if (networkManager == nullptr)
+	{
+		return EXIT_FAILURE;
+	}
+
 	//start communication
 		printf("Enter message : ");
 		gets_s(message);

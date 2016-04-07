@@ -51,6 +51,8 @@ void buildGame()
 	camT->translate(camT->forward() * -15.0f);
 	DEFAULT_CAMERA->addComponent<FPController>(new FPController());
 #pragma endregion The camera setup and binding phase
+
+	NetworkManager::init();
 }
 
 void destructGame()
@@ -59,6 +61,8 @@ void destructGame()
 	delete ps;
 	delete avs;
 	delete aps;
+
+	delete NetworkManager::networkManager;
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
@@ -68,7 +72,5 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 #endif
 	
 	Game::init(hInstance);
-	//NetworkManager::init();
-	//NetworkManager::networkManager->startClient();
 	return Game::game->start(buildGame, destructGame);
 }

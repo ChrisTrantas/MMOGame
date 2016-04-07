@@ -85,7 +85,7 @@ int Game::start(void(*buildFunc)(), void(*destructFunc)())
 			// Standard game loop type stuff
 			CalculateFrameStats();
 			update(deltaTime, totalTime);
-			//NetworkManager::networkManager->startClient();
+			NetworkManager::networkManager->startClient();
 			draw();// (deltaTime, totalTime);
 			Input::updateControlStates();
 		}

@@ -79,6 +79,11 @@ int NetworkManager::displayIP()
 
 int NetworkManager::startServer()
 {
+	if (networkManager == nullptr)
+	{
+		return EXIT_FAILURE;
+	}
+
 	std::cout << "The thread started running successfully" << std::endl;
 	//Bind
 	if (bind(s, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR)
@@ -128,6 +133,8 @@ int NetworkManager::startServer()
 			NetworkManager::networkManager->sendData();
 		}
 	}
+
+	delete networkManager;
 
 	return 0;
 }

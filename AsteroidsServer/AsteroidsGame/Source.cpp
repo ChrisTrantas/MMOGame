@@ -37,6 +37,6 @@ int main()
 
 	NetworkManager::networkManager->shutDownServer();
 	network.join();
-	//network.~thread();// std::terminate();
+
 	return 0;
 }
