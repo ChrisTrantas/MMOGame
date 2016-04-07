@@ -20,6 +20,8 @@ class NetworkManager
 		~NetworkManager();
 		int displayIP();
 		int startServer();
+		int sendData();
+		int receiveData();
 		void shutDownServer();
 
 		static NetworkManager* networkManager;

@@ -122,27 +122,37 @@ int NetworkManager::startServer()
 		}
 		else
 		{
-			//try to receive some data, this is a blocking call
-			if ((recv_len = recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen)) == SOCKET_ERROR)
-			{
-				printf("recvfrom() failed with error code : %d", WSAGetLastError());
-				return EXIT_FAILURE;
-			}
+			NetworkManager::networkManager->receiveData();
 
-			//print details of the client/peer and the data received
-			printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
-			printf("Data: %s\n", buf);
-
-			//now reply the client with the same data
-			if (sendto(s, buf, recv_len, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
-			{
-				printf("sendto() failed with error code : %d", WSAGetLastError());
-				return EXIT_FAILURE;
-			}
+			NetworkManager::networkManager->sendData();
 		}
 	}
 
 	return 0;
+}
+
+int NetworkManager::sendData()
+{
+	//now reply the client with the same data
+	if (sendto(s, buf, recv_len, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
+	{
+		printf("sendto() failed with error code : %d", WSAGetLastError());
+		return EXIT_FAILURE;
+	}
+}
+
+int NetworkManager::receiveData()
+{
+	//try to receive some data, this is a blocking call
+	if ((recv_len = recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen)) == SOCKET_ERROR)
+	{
+		printf("recvfrom() failed with error code : %d", WSAGetLastError());
+		return EXIT_FAILURE;
+	}
+
+	//print details of the client/peer and the data received
+	printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
+	printf("Data: %s\n", buf);
 }
 
 void NetworkManager::shutDownServer()
