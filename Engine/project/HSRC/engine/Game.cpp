@@ -1,6 +1,9 @@
 #include "Game.h"
 #include "ResourceManager.h"
 #include "..\networking\NetworkManager.h"
+// console headers
+#include <io.h>
+#include <Fcntl.h>
 
 Game* Game::game = nullptr;
 // define the common.h extern for wchart conversion
@@ -12,10 +15,65 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return Game::game->ProcessMessage(hwnd, msg, wParam, lParam);
 }
 
+void CreateConsoleWindow(int numLines, int numColumns, int windowLines, int windowColumns)
+{
+	// Some info
+	int hConHandle;
+	long lStdHandle;
+	CONSOLE_SCREEN_BUFFER_INFO coninfo;
+	FILE *fp;
+
+	// Get the console and set the number of lines
+	AllocConsole();
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &coninfo);
+	coninfo.dwSize.Y = numLines;
+	coninfo.dwSize.X = numColumns;
+	SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coninfo.dwSize);
+
+	SMALL_RECT rect;
+	rect.Left = 0;
+	rect.Top = 0;
+	rect.Right = windowColumns;
+	rect.Bottom = windowLines;
+	SetConsoleWindowInfo(GetStdHandle(STD_OUTPUT_HANDLE), TRUE, &rect);
+
+	// Send stdout to the console
+	lStdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
+	hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
+	fp = _fdopen(hConHandle, "w");
+	*stdout = *fp;
+	setvbuf(stdout, NULL, _IONBF, 0);
+
+	// Send stdin to the console
+	lStdHandle = (long)GetStdHandle(STD_INPUT_HANDLE);
+	hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
+	fp = _fdopen(hConHandle, "r");
+	*stdin = *fp;
+	setvbuf(stdin, NULL, _IONBF, 0);
+
+	// Send stderr to the console
+	lStdHandle = (long)GetStdHandle(STD_ERROR_HANDLE);
+	hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
+	fp = _fdopen(hConHandle, "w");
+	*stderr = *fp;
+	setvbuf(stderr, NULL, _IONBF, 0);
+
+	// Sync everything else
+	std::ios::sync_with_stdio();
+
+	// Prevent accidental console window close
+	HWND hwnd = GetConsoleWindow();
+	HMENU hmenu = GetSystemMenu(hwnd, FALSE);
+	EnableMenuItem(hmenu, SC_CLOSE, MF_GRAYED);
+}
+
 void Game::init(HINSTANCE hInstance)
 {
 	if (game == nullptr)
+	{
 		game = new Game(hInstance);
+		CreateConsoleWindow(32, 120, 300, 120);
+	}
 }
 
 Game::Game(HINSTANCE hAppInst)
@@ -31,6 +89,8 @@ Game::Game(HINSTANCE hAppInst)
 
 Game::~Game()
 {
+	destructFunc();
+
 	ResourceManager::manager->shutdown();
 	freeAllGameObjects();
 
@@ -44,21 +104,31 @@ Game::~Game()
 
 	ReleaseMacro(deviceContext);
 	ReleaseMacro(device);
+
+	game = nullptr;
 }
 
 int Game::start(void(*buildFunc)(), void(*destructFunc)())
 {
 	if (game == nullptr)
-		return false;
+		return EXIT_FAILURE;
+
+	this->destructFunc = destructFunc;
 
 	if (!InitMainWindow())
-		return false;
+	{
+		delete game;
+		return EXIT_FAILURE;
+	}
 
 	if (!InitDirect3D())
-		return false;
+	{
+		delete game;
+		return EXIT_FAILURE;
+	}
 
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
+	printf("Initialising the engine...\n");
 	initEngine();
 
 	buildFunc();
@@ -85,13 +155,11 @@ int Game::start(void(*buildFunc)(), void(*destructFunc)())
 			// Standard game loop type stuff
 			CalculateFrameStats();
 			update(deltaTime, totalTime);
-			NetworkManager::networkManager->startClient();
+			//NetworkManager::networkManager->startClient();
 			draw();// (deltaTime, totalTime);
 			Input::updateControlStates();
 		}
 	}
-
-	destructFunc();
 
 	delete game;
 

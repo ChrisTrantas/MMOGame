@@ -30,6 +30,9 @@ public:
 private:
 	Game(HINSTANCE hInstance);
 	~Game();
+
+	void(*destructFunc)();
+
 	Game(Game const&) = delete;
 	void operator=(Game const&) = delete;
 	void initEngine();
