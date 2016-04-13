@@ -10,6 +10,26 @@ void NetworkManager::init()
 	}
 }
 
+void NetworkManager::Initialize(int nThread)
+{
+	SYSTEM_INFO sysinfo;
+	GetSystemInfo(&sysinfo);
+
+	if (nThread > sysinfo.dwNumberOfProcessors)
+	{
+		nThread = sysinfo.dwNumberOfProcessors;
+		std::cout << "That is too many threads, the system can't handle it. Reducing to " << nThread << " threads instead." << std::endl;
+	}
+
+	m_nThreadCount = nThread;
+
+	for (int i = 0; i < nThread; i++)
+	{
+		m_ptrThread[i] = new Thread();
+		m_ptrThread[i]->CreateWorkerThread();
+		m_hThreadPool[i] = m_ptrThread[i]->GetThreadHandle();
+	}
+}
 
 NetworkManager::NetworkManager()
 {
@@ -166,4 +186,62 @@ int NetworkManager::receiveData()
 void NetworkManager::shutDownServer()
 {
 	runServer = false;
+}
+
+void NetworkManager::ShutDownAllThreads()
+{
+	for (int i = 0; i < m_nThreadCount; i++)
+	{
+		m_ptrThread[i]->SignalShutDownEvent();
+	}
+
+	DWORD dwWaitResult = WaitForMultipleObjects(GetThreadCount(), m_hThreadPool, TRUE, INFINITE);
+
+	switch (dwWaitResult)
+	{
+		case WAIT_OBJECT_0:
+			for (int i = 0; i < m_nThreadCount;i++)
+			{
+				m_ptrThread[i]->ReleaseHandles();
+				delete m_ptrThread[i];
+			}
+
+			break;
+		default:
+			std::cout << "Unable to close threads " << GetLastError() << std::endl;
+	}
+}
+
+int NetworkManager::GetFreeThread()
+{
+	for (int i = 0; i < m_nThreadCount;i++)
+	{
+		if (m_ptrThread[i]->IsFree())
+		{
+			return i;
+		}
+		else
+		{
+			std::cout << "Thread " << i << ": " << m_ptrThread[i]->GetThreadID() << " is busy." << std::endl;
+		}
+	}
+
+	std::cout << "All threads are busy. Try again later." << std::endl;
+	return -1;
+}
+
+void NetworkManager::AssignTask(void (*callback)())
+{
+	int count = GetFreeThread();
+	if (count != -1)
+	{
+		m_ptrThread[count]->SetThreadBusy();
+		m_ptrThread[count]->SetFunction(callback);
+		m_ptrThread[count]->SignalWorkEvent();
+	}
+}
+
+int NetworkManager::GetThreadCount()
+{
+	return m_nThreadCount;
 }

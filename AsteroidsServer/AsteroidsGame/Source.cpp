@@ -12,9 +12,11 @@
 int main()
 {
 	NetworkManager::init();
+	NetworkManager::networkManager->Initialize(4);
 	NetworkManager::networkManager->displayIP();
 
-	std::thread network([](){ NetworkManager::networkManager->startServer(); });
+	//std::thread network([](){ NetworkManager::networkManager->startServer(); });
+	NetworkManager::networkManager->AssignTask([](){ NetworkManager::networkManager->startServer(); });
 
 	Game myGame = Game();
 
@@ -36,7 +38,8 @@ int main()
 	std::cin >> b;
 
 	NetworkManager::networkManager->shutDownServer();
-	network.join();
+	NetworkManager::networkManager->ShutDownAllThreads();
+	//network.join();
 
 	return 0;
 }
