@@ -1,9 +1,6 @@
 #include "Game.h"
 #include "ResourceManager.h"
 #include "..\networking\NetworkManager.h"
-// console headers
-#include <io.h>
-#include <Fcntl.h>
 
 Game* Game::game = nullptr;
 // define the common.h extern for wchart conversion
@@ -17,11 +14,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 void CreateConsoleWindow(int numLines, int numColumns, int windowLines, int windowColumns)
 {
-	// Some info
-	int hConHandle;
-	long lStdHandle;
 	CONSOLE_SCREEN_BUFFER_INFO coninfo;
-	FILE *fp;
 
 	// Get the console and set the number of lines
 	AllocConsole();
@@ -37,29 +30,10 @@ void CreateConsoleWindow(int numLines, int numColumns, int windowLines, int wind
 	rect.Bottom = windowLines;
 	SetConsoleWindowInfo(GetStdHandle(STD_OUTPUT_HANDLE), TRUE, &rect);
 
-	// Send stdout to the console
-	lStdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
-	hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
-	fp = _fdopen(hConHandle, "w");
-	*stdout = *fp;
-	setvbuf(stdout, NULL, _IONBF, 0);
-
-	// Send stdin to the console
-	lStdHandle = (long)GetStdHandle(STD_INPUT_HANDLE);
-	hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
-	fp = _fdopen(hConHandle, "r");
-	*stdin = *fp;
-	setvbuf(stdin, NULL, _IONBF, 0);
-
-	// Send stderr to the console
-	lStdHandle = (long)GetStdHandle(STD_ERROR_HANDLE);
-	hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
-	fp = _fdopen(hConHandle, "w");
-	*stderr = *fp;
-	setvbuf(stderr, NULL, _IONBF, 0);
-
-	// Sync everything else
-	std::ios::sync_with_stdio();
+	FILE *stream;
+	freopen_s(&stream, "CONIN$", "r", stdin);
+	freopen_s(&stream, "CONOUT$", "w", stdout);
+	freopen_s(&stream, "CONOUT$", "w", stderr);
 
 	// Prevent accidental console window close
 	HWND hwnd = GetConsoleWindow();
