@@ -105,6 +105,7 @@
     <ClCompile Include="networking\NetworkManager.cpp" />
     <ClCompile Include="Rotate.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="threading\Thread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Asteroid.h" />
@@ -129,6 +130,7 @@
     <ClInclude Include="FPController.h" />
     <ClInclude Include="networking\NetworkManager.h" />
     <ClInclude Include="Rotate.h" />
+    <ClInclude Include="threading\Thread.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\AsteroidVertexShader.hlsl">
