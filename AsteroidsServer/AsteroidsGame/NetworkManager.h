@@ -6,6 +6,7 @@
 #include <iostream>
 #include <winsock2.h>
 #include <string.h>
+#include <stdint.h>
 //#include <sys/time.h>
 
 #include "Thread.h"
@@ -18,6 +19,7 @@
 
 #define BUFLEN 512  //Max length of buffer
 #define PORT 8888   //The port on which to listen for incoming data
+#define MAX_CLIENTS 100 //max number of clients we can have attached
 
 class NetworkManager
 {
@@ -36,6 +38,7 @@ class NetworkManager
 		void AssignTask(void (*calback)());
 		void ShutDownAllThreads();
 		void ShutDownThread(DWORD dwThreadID);
+		int GenerateID();
 		int GetFreeThread();
 		std::string GetTaskMessage();
 		int GetThreadCount();
@@ -56,5 +59,6 @@ class NetworkManager
 		Thread* m_ptrThread[5];
 		HANDLE m_hThreadPool[5];
 		int m_nThreadCount;
+		uint64_t ids;
 };
 

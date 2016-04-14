@@ -104,6 +104,8 @@ int NetworkManager::startServer()
 		return EXIT_FAILURE;
 	}
 
+	ids = 0;
+
 	std::cout << "The thread started running successfully" << std::endl;
 	//Bind
 	if (bind(s, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR)
@@ -181,6 +183,16 @@ int NetworkManager::receiveData()
 	//print details of the client/peer and the data received
 	printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
 	printf("Data: %s\n", buf);
+
+	int* id = (int*)&buf[0];
+	if (*id == 0)
+	{
+		std::cout << "ID: " << GenerateID() << std::endl;
+	}
+	else
+	{
+		std::cout << "There is an ID: " << *id << std::endl;
+	}
 }
 
 void NetworkManager::shutDownServer()
@@ -210,6 +222,22 @@ void NetworkManager::ShutDownAllThreads()
 		default:
 			std::cout << "Unable to close threads " << GetLastError() << std::endl;
 	}
+}
+
+int NetworkManager::GenerateID()
+{
+	printf("ids %d", ids);
+	for (int i = 0; i < 64; i++)
+	{
+		
+		if (!(ids & ((uint64_t)1 << i)))
+		{
+			ids |= (1 << i);
+			return i;
+		}
+	}
+
+	return -1;
 }
 
 int NetworkManager::GetFreeThread()
