@@ -3,6 +3,7 @@
 #include "Asteroid.h"
 #include "Rotate.h"
 #include "networking\NetworkManager.h"
+#include "threading\Thread.h"
 
 namespace
 {
