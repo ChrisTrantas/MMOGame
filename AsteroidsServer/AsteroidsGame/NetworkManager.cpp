@@ -137,7 +137,7 @@ int NetworkManager::startServer()
 
 		/*if (setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0)
 		{
-			perror("Error");
+		perror("Error");
 		}*/
 		int timeoutError = select(s + 1, &fds, NULL, NULL, &tv);
 		if (timeoutError == -1)
@@ -163,12 +163,17 @@ int NetworkManager::startServer()
 
 int NetworkManager::sendData()
 {
+	int* id = (int*)&buf[0];
+	std::cout << "Sending ID " << *id << std::endl;
 	//now reply the client with the same data
-	if (sendto(s, buf, recv_len, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
+	if (sendto(s, buf, sizeof(int*), 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
 	{
 		printf("sendto() failed with error code : %d", WSAGetLastError());
 		return EXIT_FAILURE;
 	}
+	printf("Data sent to client \n");
+	printf("Id sent to client: %d\n" + ids);
+
 }
 
 int NetworkManager::receiveData()
@@ -187,12 +192,18 @@ int NetworkManager::receiveData()
 	int* id = (int*)&buf[0];
 	if (*id == 0)
 	{
-		std::cout << "ID: " << GenerateID() << std::endl;
+		*id = GenerateID();
+		std::cout << "ID: " << *id << "\n" << std::endl;
 	}
 	else
 	{
-		std::cout << "There is an ID: " << *id << std::endl;
+		std::cout << "There is an ID: " << *id << "\n" << std::endl;
 	}
+}
+
+void NetworkManager::updateData()
+{
+
 }
 
 void NetworkManager::shutDownServer()
@@ -211,16 +222,16 @@ void NetworkManager::ShutDownAllThreads()
 
 	switch (dwWaitResult)
 	{
-		case WAIT_OBJECT_0:
-			for (int i = 0; i < m_nThreadCount;i++)
-			{
-				m_ptrThread[i]->ReleaseHandles();
-				delete m_ptrThread[i];
-			}
+	case WAIT_OBJECT_0:
+		for (int i = 0; i < m_nThreadCount; i++)
+		{
+			m_ptrThread[i]->ReleaseHandles();
+			delete m_ptrThread[i];
+		}
 
-			break;
-		default:
-			std::cout << "Unable to close threads " << GetLastError() << std::endl;
+		break;
+	default:
+		std::cout << "Unable to close threads " << GetLastError() << std::endl;
 	}
 }
 
@@ -229,7 +240,7 @@ int NetworkManager::GenerateID()
 	printf("ids %d", ids);
 	for (int i = 0; i < 64; i++)
 	{
-		
+
 		if (!(ids & ((uint64_t)1 << i)))
 		{
 			ids |= (1 << i);
@@ -242,7 +253,7 @@ int NetworkManager::GenerateID()
 
 int NetworkManager::GetFreeThread()
 {
-	for (int i = 0; i < m_nThreadCount;i++)
+	for (int i = 0; i < m_nThreadCount; i++)
 	{
 		if (m_ptrThread[i]->IsFree())
 		{
@@ -258,7 +269,7 @@ int NetworkManager::GetFreeThread()
 	return -1;
 }
 
-void NetworkManager::AssignTask(void (*callback)())
+void NetworkManager::AssignTask(void(*callback)())
 {
 	int count = GetFreeThread();
 	if (count != -1)

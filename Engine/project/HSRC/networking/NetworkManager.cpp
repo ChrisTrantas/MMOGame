@@ -67,44 +67,50 @@ int NetworkManager::startClient()
 	}
 
 	//start communication
-		printf("Enter message : ");
-		gets_s(message);
+	printf("start client : ");
+	gets_s(message);
 
-		//send the message
-		if (sendto(s, message, strlen(message), 0, (struct sockaddr *) &si_other, slen) == SOCKET_ERROR)
-		{
-			printf("sendto() failed with error code : %d", WSAGetLastError());
-			//exit(EXIT_FAILURE);
-		}
+	//send the message
+	if (sendto(s, message, strlen(message), 0, (struct sockaddr *) &si_other, slen) == SOCKET_ERROR)
+	{
+		printf("sendto() failed with error code : %d", WSAGetLastError());
+		//exit(EXIT_FAILURE);
+	}
 
-		//receive a reply and print it
-		//clear the buffer by filling null, it might have previously received data
-		memset(buf, '\0', BUFLEN);
-		//try to receive some data, this is a blocking call
-		if (recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen) == SOCKET_ERROR)
-		{
-			printf("recvfrom() failed with error code : %d", WSAGetLastError());
-			//exit(EXIT_FAILURE);
-		}
-
-		int* xData = (int*)&buf[0];
-		int* yData = (int*)&buf[8];
-		printf("size of int* %d\n", sizeof(int*));
-		xPos = *xData;
-		yPos = *yData;
-		printf("xPos: %d\n", xPos);
-		printf("yPos: %d\n", yPos);
+	//receive a reply and print it
+	//clear the buffer by filling null, it might have previously received data
+	memset(buf, '\0', BUFLEN);
+	//try to receive some data, this is a blocking call
+	if (recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen) == SOCKET_ERROR)
+	{
+		printf("recvfrom() failed with error code : %d", WSAGetLastError());
+		//exit(EXIT_FAILURE);
+	}
+	id = (int*)&buf[0];
+	printf("Id of Client: %d\n", id);
+	int* xData = (int*)&buf[8];
+	int* yData = (int*)&buf[16];
+	printf("size of int* %d\n", sizeof(int*));
+	xPos = *xData;
+	yPos = *yData;
+	printf("xPos: %d\n", xPos);
+	printf("yPos: %d\n", yPos);
 	return 0;
 }
 
 int NetworkManager::sendData()
 {
+	int* bufPoint = (int*)&buf[0];
+	bufPoint = id;
+
 	//now reply the client with the same data
 	if (sendto(s, buf, recv_len, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
 	{
 		printf("sendto() failed with error code : %d", WSAGetLastError());
+		printf("Shit broken yo");
 		return EXIT_FAILURE;
 	}
+	printf("Sending Data to Server \n");
 }
 
 int NetworkManager::receiveData()
@@ -115,10 +121,20 @@ int NetworkManager::receiveData()
 		printf("recvfrom() failed with error code : %d", WSAGetLastError());
 		return EXIT_FAILURE;
 	}
-
+	id = (int*)&buf[0];
 	//print details of the client/peer and the data received
+	std::cout << "ID: " << *id << std::endl;
 	printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
 	printf("Data: %s\n", buf);
+	updateData();
+}
+
+void NetworkManager::updateData()
+{
+	//threadManager->CreateWorkerThread();
+
+	xPos = *(int*)&buf[8];
+	yPos = *(int*)&buf[16];
 }
 
 void NetworkManager::ShutDownAllThreads()

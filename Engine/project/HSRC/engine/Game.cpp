@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "ResourceManager.h"
 #include "..\networking\NetworkManager.h"
+#include "..\threading\Thread.h"
 
 Game* Game::game = nullptr;
 // define the common.h extern for wchart conversion
@@ -84,6 +85,7 @@ Game::~Game()
 
 int Game::start(void(*buildFunc)(), void(*destructFunc)())
 {
+	bool test = false;
 	if (game == nullptr)
 		return EXIT_FAILURE;
 
@@ -129,7 +131,21 @@ int Game::start(void(*buildFunc)(), void(*destructFunc)())
 			// Standard game loop type stuff
 			CalculateFrameStats();
 			update(deltaTime, totalTime);
-			//NetworkManager::networkManager->startClient();
+
+			if (test == false)
+			{
+
+				NetworkManager::networkManager->Initialize(2);
+				NetworkManager::networkManager->startClient();
+				test = true;
+			}
+
+			NetworkManager::networkManager->sendData();
+			NetworkManager::networkManager->receiveData();
+
+			//NetworkManager::networkManager->receiveData();
+
+
 			draw();// (deltaTime, totalTime);
 			Input::updateControlStates();
 		}
@@ -352,7 +368,7 @@ void Game::CalculateFrameStats()
 		float fps = (float)frameCount; // Count over one second
 		float mspf = 1000.0f / fps;    // Milliseconds per frame
 
-		// Quick and dirty string manipulation for title bar text
+									   // Quick and dirty string manipulation for title bar text
 		wostringstream outs;
 		outs.precision(6);
 		outs << windowCaption << L"    "
@@ -549,8 +565,8 @@ void Game::draw()
 {
 	deviceContext->ClearRenderTargetView(renderTargetView, color);
 	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	
+
 	drawAllGameObjects();
-	
+
 	HR(swapChain->Present(0, 0));
 }
