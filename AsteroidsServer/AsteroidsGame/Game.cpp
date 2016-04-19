@@ -69,6 +69,8 @@ void Game::Update(float deltaTime){
 		memcpy(shipAccelerations->y, shipAccelerationYBuffer, sizeof(float) * MAX_SHIPS);
 		memcpy(lightAccelerations->x, lightAccelerationXBuffer, sizeof(float) * MAX_LIGHTS);
 		memcpy(lightAccelerations->y, lightAccelerationYBuffer, sizeof(float) * MAX_LIGHTS);
+		memcpy(asteroidVelocities->x, asteroidVelocitiesXBuffer, sizeof(float) * MAX_ASTEROIDS);
+		memcpy(asteroidVelocities->y, asteroidVelocitiesYBuffer, sizeof(float) * MAX_ASTEROIDS);
 		bufferMutex.unlock();
 		dirtyBuffers = false;
 	}

@@ -151,7 +151,7 @@ int NetworkManager::startServer()
 		else
 		{
 			NetworkManager::networkManager->receiveData();
-
+			NetworkManager::networkManager->updateData();
 			NetworkManager::networkManager->sendData();
 		}
 	}
@@ -203,6 +203,14 @@ int NetworkManager::receiveData()
 
 void NetworkManager::updateData()
 {
+	//change locations in buf once client is work on client is
+	//finished and it is sending the proper data to server
+	//game->shipAccelerationXBuffer[0] = (float)buf[];
+	//game->shipAccelerationYBuffer[0] = (float)buf[];
+	//game->lightAccelerationXBuffer[0] = (float)buf[];
+	//game->lightAccelerationYBuffer[0] = (float)buf[];
+	//game->asteroidVelocitiesXBuffer[0] = (float)buf[];
+	//game->asteroidVelocitiesYBuffer[0] = (float)buf[];
 
 }
 

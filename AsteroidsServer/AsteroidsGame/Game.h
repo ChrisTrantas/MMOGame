@@ -77,6 +77,9 @@ public:
 	float lightAccelerationXBuffer[MAX_LIGHTS];
 	float lightAccelerationYBuffer[MAX_LIGHTS];
 
+	float asteroidVelocitiesXBuffer[MAX_ASTEROIDS];
+	float asteroidVelocitiesYBuffer[MAX_ASTEROIDS];
+
 	/// <summary>
 	/// Updates all of the game physics.
 	/// </summary>

@@ -10,6 +10,7 @@
 //#include <sys/time.h>
 
 #include "Thread.h"
+#include "Game.h"
 
 //give this to Egert when I get stuck
 //This is the link to my thread manager example
@@ -45,6 +46,7 @@ public:
 	int GetThreadCount();
 	HANDLE GetMutex();
 
+	static Game* game;
 	static NetworkManager* networkManager;
 
 private:
