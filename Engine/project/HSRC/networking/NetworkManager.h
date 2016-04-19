@@ -5,10 +5,11 @@
 #include<stdio.h>
 #include <iostream>
 #include "..\threading\Thread.h"
+#include "..\engine\Game.h"
 
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 
-#define SERVER "129.21.28.104"  //ip address of udp server
+#define SERVER "129.21.141.83"  //ip address of udp server
 #define BUFLEN 512  //Max length of buffer
 #define PORT 8888   //The port on which to listen for incoming data
 
@@ -16,6 +17,9 @@ class NetworkManager
 {
 public:
 	static void init();
+	static Game* game;
+	
+
 	NetworkManager();
 	~NetworkManager();
 
@@ -23,7 +27,7 @@ public:
 	int startServer();
 	int sendData();
 	int receiveData();
-	void updateData();
+	void updateData(WPARAM);
 	void shutDownServer();
 
 

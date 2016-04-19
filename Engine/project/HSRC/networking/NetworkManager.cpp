@@ -2,6 +2,7 @@
 
 NetworkManager* NetworkManager::networkManager = nullptr;
 
+
 void NetworkManager::init()
 {
 	if (networkManager == nullptr)
@@ -107,7 +108,6 @@ int NetworkManager::sendData()
 	if (sendto(s, buf, recv_len, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
 	{
 		printf("sendto() failed with error code : %d", WSAGetLastError());
-		printf("Shit broken yo");
 		return EXIT_FAILURE;
 	}
 	printf("Sending Data to Server \n");
@@ -124,17 +124,48 @@ int NetworkManager::receiveData()
 	id = (int*)&buf[0];
 	//print details of the client/peer and the data received
 	std::cout << "ID: " << *id << std::endl;
+	
 	printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
 	printf("Data: %s\n", buf);
-	updateData();
+	
 }
 
-void NetworkManager::updateData()
+void NetworkManager::updateData(WPARAM btn)
 {
 	//threadManager->CreateWorkerThread();
-
-	xPos = *(int*)&buf[8];
-	yPos = *(int*)&buf[16];
+	int* bufPoint = (int*)&buf[0];
+	bufPoint = id;
+	
+	if (btn = 'i')
+	{
+		xPos = *(int*)&buf[8];
+		yPos = *(int*)&buf[16];
+		printf("i pressed");
+	}
+	if (btn = 'j')
+	{
+		xPos = *(int*)&buf[8];
+		yPos = *(int*)&buf[16];
+		printf("j pressed");
+	}
+	if (btn = 'k')
+	{
+		xPos = *(int*)&buf[8];
+		yPos = *(int*)&buf[16];
+		printf("k pressed");
+	}
+	if (btn = 'l')
+	{
+		xPos = *(int*)&buf[8];
+		yPos = *(int*)&buf[16];
+		printf("l pressed");
+	}
+	if (sendto(s, buf, recv_len, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
+	{
+		printf("sendto() failed with error code : %d", WSAGetLastError());
+		//return EXIT_FAILURE;
+	}
+	printf("updating Data");
 }
 
 void NetworkManager::ShutDownAllThreads()

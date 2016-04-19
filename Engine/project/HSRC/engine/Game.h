@@ -21,6 +21,7 @@ class Game
 public:
 	static void init(HINSTANCE hInstance);
 	static Game* game;
+	//static NetworkManager* networkManager;
 	int start(void(*buildFunc)(), void(*destructFunc)());
 	ID3D11Device* getDevice();
 	ID3D11DeviceContext* getDeviceContext();
