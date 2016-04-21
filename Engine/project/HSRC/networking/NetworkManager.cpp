@@ -136,35 +136,32 @@ void NetworkManager::updateData(WPARAM btn)
 	int* bufPoint = (int*)&buf[0];
 	bufPoint = id;
 	
-	if (btn = 'i')
+	if (btn == 'i')
 	{
 		xPos = *(int*)&buf[8];
 		yPos = *(int*)&buf[16];
 		printf("i pressed");
 	}
-	if (btn = 'j')
+	if (btn == 'j')
 	{
 		xPos = *(int*)&buf[8];
 		yPos = *(int*)&buf[16];
 		printf("j pressed");
 	}
-	if (btn = 'k')
+	if (btn == 'k')
 	{
 		xPos = *(int*)&buf[8];
 		yPos = *(int*)&buf[16];
 		printf("k pressed");
 	}
-	if (btn = 'l')
+	if (btn == 'l')
 	{
 		xPos = *(int*)&buf[8];
 		yPos = *(int*)&buf[16];
 		printf("l pressed");
 	}
-	if (sendto(s, buf, recv_len, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
-	{
-		printf("sendto() failed with error code : %d", WSAGetLastError());
-		//return EXIT_FAILURE;
-	}
+	sendData();
+	receiveData();
 	printf("updating Data");
 }
 
@@ -185,6 +182,7 @@ void NetworkManager::ShutDownAllThreads()
 			m_ptrThread[i]->ReleaseHandles();
 			delete m_ptrThread[i];
 		}
+
 
 		break;
 	default:

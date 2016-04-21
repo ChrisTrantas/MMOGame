@@ -9,7 +9,7 @@
 
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 
-#define SERVER "129.21.141.83"  //ip address of udp server
+#define SERVER "129.21.23.47"  //ip address of udp server
 #define BUFLEN 512  //Max length of buffer
 #define PORT 8888   //The port on which to listen for incoming data
 

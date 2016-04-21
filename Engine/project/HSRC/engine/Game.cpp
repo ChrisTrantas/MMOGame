@@ -140,12 +140,6 @@ int Game::start(void(*buildFunc)(), void(*destructFunc)())
 				test = true;
 			}
 
-			NetworkManager::networkManager->sendData();
-			NetworkManager::networkManager->receiveData();
-
-			//NetworkManager::networkManager->receiveData();
-
-
 			draw();// (deltaTime, totalTime);
 			Input::updateControlStates();
 		}
