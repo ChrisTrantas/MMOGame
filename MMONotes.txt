@@ -1,0 +1,8 @@
+In threading:
+Create a buffer that the network manager writes to and everything else reads to
+The network manager shouldn't time out
+
+Create a struct that has all of the elements in the buffer so that we don't have to create the weird buf movement. 
+We instead cast the buf into a struct and set its memory to the struct. ex. struct* jim = {int, int, string}; jim = (struct jim*)buf;
+
+Create a broadcast protocal instead of a threaded model. Go back to a single thread for a while
