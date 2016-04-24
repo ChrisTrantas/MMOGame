@@ -19,6 +19,7 @@
 !**/[Bb]in/*.dll
 !**/engine/**
 !**/networking/**
+!**/threading/**
 !**/[Ii]nclude/**
 !**/[Ll]ib/*
 !**/[Mm]odels/**
