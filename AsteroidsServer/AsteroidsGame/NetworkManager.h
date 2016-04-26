@@ -7,6 +7,7 @@
 #include <winsock2.h>
 #include <string.h>
 #include <stdint.h>
+#include <vector>
 //#include <sys/time.h>
 
 #include "Thread.h"
@@ -18,7 +19,7 @@
 
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 
-#define BUFLEN 2048  //Max length of buffer
+#define BUFLEN 512  //Max length of buffer
 #define PORT 8888   //The port on which to listen for incoming data
 #define MAX_CLIENTS 100 //max number of clients we can have attached
 
@@ -37,6 +38,7 @@ public:
 	int displayIP();
 	int startServer();
 	int sendData();
+	int sendToAllClients();
 	int receiveData();
 	void updateData();
 	void shutDownServer();
@@ -63,6 +65,7 @@ private:
 	WSADATA wsa;
 	bool runServer;
 	int timeoutTime;
+	std::vector<sockaddr_in> clients;
 
 	//Thread Management
 	Thread* m_ptrThread[5];

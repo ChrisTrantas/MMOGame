@@ -56,6 +56,7 @@ NetworkManager::NetworkManager()
 	server.sin_addr.s_addr = INADDR_ANY;
 	server.sin_port = htons(PORT);
 	timeoutTime = 5;
+	runServer = true;
 }
 
 
@@ -154,6 +155,8 @@ int NetworkManager::startServer()
 			NetworkManager::networkManager->updateData();
 			NetworkManager::networkManager->sendData();
 		}
+
+		NetworkManager::networkManager->sendToAllClients();
 	}
 
 	delete networkManager;
@@ -172,9 +175,25 @@ int NetworkManager::sendData()
 		printf("sendto() failed with error code : %d", WSAGetLastError());
 		return EXIT_FAILURE;
 	}
-	printf("Data sent to client \n");
-	printf("Id sent to client: %d\n" + ids);
 
+	printf("Data sent to client \n");
+	printf("Id sent to client: %d\n This is incorrect for some reason\n" + ids);
+	//std::cout << "si_other " << si_other << std::endl;
+}
+
+int NetworkManager::sendToAllClients()
+{
+	std::cout << "Pushing to all clients" << std::endl;
+	for (int i = 0; i < clients.size(); i++)
+	{
+		if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &clients[i], slen) == SOCKET_ERROR)
+		{
+			printf("sendto() failed with error code : %d", WSAGetLastError());
+			return EXIT_FAILURE;
+		}
+	}
+
+	std::cout << "Finished sending to all clients" << std::endl;
 }
 
 int NetworkManager::receiveData()
@@ -249,6 +268,8 @@ void NetworkManager::ShutDownAllThreads()
 int NetworkManager::GenerateID()
 {
 	printf("ids %d", ids);
+	clients.push_back(si_other);
+
 	for (int i = 0; i < 64; i++)
 	{
 
