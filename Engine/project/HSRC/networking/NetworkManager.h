@@ -9,9 +9,17 @@
 
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 
-#define SERVER "129.21.23.47"  //ip address of udp server
+#define SERVER "127.0.0.1"  //ip address of udp server
 #define BUFLEN 512  //Max length of buffer
 #define PORT 8888   //The port on which to listen for incoming data
+
+struct bufferData
+{
+	int id = 0;
+	int xPos = 0;
+	int yPos = 0;
+	char* data[];
+};
 
 class NetworkManager
 {
@@ -53,7 +61,7 @@ private:
 	WSADATA wsa;
 	int xPos;
 	int yPos;
-	int* id;
+	int id = 0;
 
 	bool runServer;
 	int timeoutTime;

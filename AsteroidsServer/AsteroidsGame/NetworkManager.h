@@ -22,6 +22,12 @@
 #define PORT 8888   //The port on which to listen for incoming data
 #define MAX_CLIENTS 100 //max number of clients we can have attached
 
+struct bufferData
+{
+	int id = 0;
+	char* data[];
+};
+
 class NetworkManager
 {
 public:

@@ -70,9 +70,14 @@ int NetworkManager::startClient()
 	//start communication
 	printf("start client : ");
 	gets_s(message);
+	recv_len = sizeof(bufferData);
+
+	memset(buf, '\0', BUFLEN);
+	bufferData* data = (bufferData*)buf;
+	data->id = 0;
 
 	//send the message
-	if (sendto(s, message, strlen(message), 0, (struct sockaddr *) &si_other, slen) == SOCKET_ERROR)
+	if (sendto(s, buf, recv_len, 0, (struct sockaddr *) &si_other, slen) == SOCKET_ERROR)
 	{
 		printf("sendto() failed with error code : %d", WSAGetLastError());
 		//exit(EXIT_FAILURE);
@@ -87,22 +92,25 @@ int NetworkManager::startClient()
 		printf("recvfrom() failed with error code : %d", WSAGetLastError());
 		//exit(EXIT_FAILURE);
 	}
-	id = (int*)&buf[0];
-	printf("Id of Client: %d\n", id);
-	int* xData = (int*)&buf[8];
-	int* yData = (int*)&buf[16];
+
+	data = (bufferData*)buf;
+	id = data->id;
+	//id = (int*)&buf[0];
+	printf("Id of Client: %d\n", data->id);
+	//int* xData = (int*)&buf[8];
+	//int* yData = (int*)&buf[16];
 	printf("size of int* %d\n", sizeof(int*));
-	xPos = *xData;
-	yPos = *yData;
-	printf("xPos: %d\n", xPos);
-	printf("yPos: %d\n", yPos);
+	//xPos = *xData;
+	//yPos = *yData;
+	printf("xPos: %d\n", data->xPos);
+	printf("yPos: %d\n", data->yPos);
 	return 0;
 }
 
 int NetworkManager::sendData()
 {
-	int* bufPoint = (int*)&buf[0];
-	bufPoint = id;
+	//int* bufPoint = (int*)&buf[0];
+	//bufPoint = id;
 
 	//now reply the client with the same data
 	if (sendto(s, buf, recv_len, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
@@ -121,9 +129,11 @@ int NetworkManager::receiveData()
 		printf("recvfrom() failed with error code : %d", WSAGetLastError());
 		return EXIT_FAILURE;
 	}
-	id = (int*)&buf[0];
+
+	bufferData* data = (bufferData*)buf;
+	//id = (int*)&buf[0];
 	//print details of the client/peer and the data received
-	std::cout << "ID: " << *id << std::endl;
+	std::cout << "ID: " << data->id << std::endl;
 	
 	printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
 	printf("Data: %s\n", buf);
@@ -133,8 +143,9 @@ int NetworkManager::receiveData()
 void NetworkManager::updateData(WPARAM btn)
 {
 	//threadManager->CreateWorkerThread();
-	int* bufPoint = (int*)&buf[0];
-	bufPoint = id;
+	//int* bufPoint = (int*)&buf[0];
+	//bufPoint = id;
+	bufferData* data = (bufferData*)buf;
 	
 	if (btn == 'i')
 	{

@@ -1,1 +1,26 @@
-﻿  AsteroidsGame.vcxproj -> D:\Users\cmt4536\Milestone2\MMOGame\AsteroidsServer\Debug\AsteroidsGame.exe
+﻿Build started 4/25/2016 8:20:16 PM.
+     1>Project "Z:\IGMProfile\College\MMO\MMOGame\AsteroidsServer\AsteroidsGame\AsteroidsGame.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt NetworkManager.cpp
+         NetworkManager.cpp
+     1>z:\igmprofile\college\mmo\mmogame\asteroidsserver\asteroidsgame\networkmanager.h(28): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>z:\igmprofile\college\mmo\mmogame\asteroidsserver\asteroidsgame\networkmanager.cpp(18): warning C4018: '>' : signed/unsigned mismatch
+     1>z:\igmprofile\college\mmo\mmogame\asteroidsserver\asteroidsgame\networkmanager.cpp(258): warning C4334: '<<' : result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+     1>z:\igmprofile\college\mmo\mmogame\asteroidsserver\asteroidsgame\networkmanager.cpp(178): warning C4715: 'NetworkManager::sendData' : not all control paths return a value
+     1>z:\igmprofile\college\mmo\mmogame\asteroidsserver\asteroidsgame\networkmanager.cpp(98): warning C4715: 'NetworkManager::displayIP' : not all control paths return a value
+     1>z:\igmprofile\college\mmo\mmogame\asteroidsserver\asteroidsgame\networkmanager.cpp(206): warning C4715: 'NetworkManager::receiveData' : not all control paths return a value
+     1>cl : Command line warning D9028: minimal rebuild failure, reverting to normal build
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"Z:\IGMProfile\College\MMO\MMOGame\AsteroidsServer\Debug\AsteroidsGame.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"Z:\IGMProfile\College\MMO\MMOGame\AsteroidsServer\Debug\AsteroidsGame.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"Z:\IGMProfile\College\MMO\MMOGame\AsteroidsServer\Debug\AsteroidsGame.lib" /MACHINE:X86 /PROFILE Debug\Game.obj
+         Debug\NetworkManager.obj
+         Debug\Source.obj
+         Debug\Thread.obj
+     1>LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/PROFILE' specification
+     1>Game.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:LBR' specification
+         AsteroidsGame.vcxproj -> Z:\IGMProfile\College\MMO\MMOGame\AsteroidsServer\Debug\AsteroidsGame.exe
+     1>Done Building Project "Z:\IGMProfile\College\MMO\MMOGame\AsteroidsServer\AsteroidsGame\AsteroidsGame.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:03.90

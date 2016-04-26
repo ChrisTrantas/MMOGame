@@ -163,10 +163,11 @@ int NetworkManager::startServer()
 
 int NetworkManager::sendData()
 {
-	int* id = (int*)&buf[0];
-	std::cout << "Sending ID " << *id << std::endl;
+	bufferData* data = (bufferData*)buf;
+	std::cout << "Sending ID " << data->id << std::endl;
+
 	//now reply the client with the same data
-	if (sendto(s, buf, sizeof(int*), 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
+	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
 	{
 		printf("sendto() failed with error code : %d", WSAGetLastError());
 		return EXIT_FAILURE;
@@ -189,15 +190,17 @@ int NetworkManager::receiveData()
 	printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
 	printf("Data: %s\n", buf);
 
-	int* id = (int*)&buf[0];
-	if (*id == 0)
+	bufferData* data = (bufferData*)buf;
+	std::cout << "ID on receive: " << data->id << std::endl;
+
+	if (data->id == 0)
 	{
-		*id = GenerateID();
-		std::cout << "ID: " << *id << "\n" << std::endl;
+		data->id = GenerateID();
+		std::cout << "ID: " << (int)buf[0] << "\n" << std::endl;
 	}
 	else
 	{
-		std::cout << "There is an ID: " << *id << "\n" << std::endl;
+		std::cout << "There is an ID: " << data->id << "\n" << std::endl;
 	}
 }
 
