@@ -53,11 +53,25 @@ NetworkManager::NetworkManager()
 		//exit(EXIT_FAILURE);
 	}
 
+	printf("Enter the server IP:\n");
+	gets_s(message);
+
 	//setup address structure
 	memset((char *)&si_other, 0, sizeof(si_other));
 	si_other.sin_family = AF_INET;
 	si_other.sin_port = htons(PORT);
-	si_other.sin_addr.S_un.S_addr = inet_addr(SERVER);
+
+	long ip = inet_addr(message);
+
+	if (ip == INADDR_NONE)
+	{
+		printf("That is not a correct IP. Connecting to 127.0.0.1\n");
+		si_other.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+	}
+	else
+	{
+		si_other.sin_addr.S_un.S_addr = ip;
+	}
 }
 
 int NetworkManager::startClient()
@@ -68,8 +82,8 @@ int NetworkManager::startClient()
 	}
 
 	//start communication
-	printf("start client : ");
-	gets_s(message);
+	//printf("start client : ");
+	//gets_s(message);
 	recv_len = sizeof(bufferData);
 
 	memset(buf, '\0', BUFLEN);
@@ -233,6 +247,11 @@ void NetworkManager::AssignTask(void(*callback)())
 int NetworkManager::GetThreadCount()
 {
 	return m_nThreadCount;
+}
+
+char* const NetworkManager::GetServer()
+{
+	return server;
 }
 
 NetworkManager::~NetworkManager()

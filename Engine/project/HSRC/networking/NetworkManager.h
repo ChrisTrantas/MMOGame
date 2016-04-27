@@ -9,7 +9,7 @@
 
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 
-#define SERVER "127.0.0.1"  //ip address of udp server
+//#define SERVER "127.0.0.1"  //ip address of udp server
 #define BUFLEN 512  //Max length of buffer
 #define PORT 8888   //The port on which to listen for incoming data
 
@@ -18,7 +18,7 @@ struct bufferData
 	int id = 0;
 	int xPos = 0;
 	int yPos = 0;
-	char* data[];
+	//char* data[];
 };
 
 class NetworkManager
@@ -48,6 +48,7 @@ public:
 	std::string GetTaskMessage();
 	int GetThreadCount();
 	HANDLE GetMutex();
+	char* const GetServer();
 
 	static NetworkManager* networkManager;
 	static Thread* threadManager;
@@ -65,6 +66,7 @@ private:
 
 	bool runServer;
 	int timeoutTime;
+	char* server;
 
 	//Thread Management
 	Thread* m_ptrThread[5];

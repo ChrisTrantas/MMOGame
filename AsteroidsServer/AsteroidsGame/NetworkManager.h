@@ -26,7 +26,7 @@
 struct bufferData
 {
 	int id = 0;
-	char* data[];
+	//char* data[];
 };
 
 class NetworkManager
