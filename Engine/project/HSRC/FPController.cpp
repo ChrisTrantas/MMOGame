@@ -54,21 +54,21 @@ void FPController::update(float deltaTime, float totalTime)
 		ct->rotate(angleAxis(Input::mouseOffset().x * -0.001f, ct->up()));
 		ct->rotate(angleAxis(Input::mouseOffset().y * -0.001f, ct->right()));
 	}
-
-	//if (Input::isControlDown("moveRight"))
-	//{
-	//	NetworkManager::networkManager->updateData('l');
-	//}
-	//if (Input::isControlDown("moveLeft"))
-	//{
-	//	NetworkManager::networkManager->updateData('j');
-	//}
-	//if (Input::isControlDown("moveUp"))
-	//{
-	//	NetworkManager::networkManager->updateData('i');
-	//}
-	//if (Input::isControlDown("moveDown"))
-	//{
-	//	NetworkManager::networkManager->updateData('k');
-	//}
+	
+	if (Input::isControlDown("moveRight"))
+	{
+		NetworkManager::networkManager->updateData('l');
+	}
+	if (Input::isControlDown("moveLeft"))
+	{
+		NetworkManager::networkManager->updateData('j');
+	}
+	if (Input::isControlDown("moveUp"))
+	{
+		NetworkManager::networkManager->updateData('i');
+	}
+	if (Input::isControlDown("moveDown"))
+	{
+		NetworkManager::networkManager->updateData('k');
+	}
 }

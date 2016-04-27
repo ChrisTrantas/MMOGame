@@ -1,6 +1,7 @@
 #pragma once
+#include "networking\NetworkManager.h"
 #include "engine/GameObject.h"
-//#include "networking\NetworkManager.h"
+
 
 class FPController : public IComponent
 {
