@@ -136,7 +136,7 @@ int Game::start(void(*buildFunc)(), void(*destructFunc)())
 			{
 
 				NetworkManager::networkManager->Initialize(2);
-				NetworkManager::networkManager->startClient();
+				NetworkManager::networkManager->AssignTask([]() { NetworkManager::networkManager->startClient(); });
 				test = true;
 			}
 

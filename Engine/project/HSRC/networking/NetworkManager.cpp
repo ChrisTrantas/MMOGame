@@ -116,8 +116,44 @@ int NetworkManager::startClient()
 	printf("size of int* %d\n", sizeof(int*));
 	//xPos = *xData;
 	//yPos = *yData;
-	printf("xPos: %d\n", data->xPos);
-	printf("yPos: %d\n", data->yPos);
+	//printf("xPos: %d\n", data->xPos);
+	//printf("yPos: %d\n", data->yPos);
+	timeval tv;
+	fd_set fds;
+	while (runServer)
+	{
+		printf("Waiting for data...\n");
+		fflush(stdout);
+
+		//clear the buffer by filling null, it might have previously received data
+		memset(buf, '\0', BUFLEN);
+
+		std::cout << "attempting to receive data" << std::endl;
+
+		tv.tv_sec = timeoutTime;
+		tv.tv_usec = 0;
+
+		FD_ZERO(&fds);
+		FD_SET(s, &fds);
+
+		/*if (setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0)
+		{
+		perror("Error");
+		}*/
+		int timeoutError = select(s + 1, &fds, NULL, NULL, &tv);
+		if (timeoutError == -1)
+		{
+			printf("Error trying to timeout\n");
+		}
+		else if (timeoutError == 0)
+		{
+			printf("Server timed out\n");
+		}
+		else
+		{
+			NetworkManager::networkManager->receiveData();
+		}
+	}
 	return 0;
 }
 
