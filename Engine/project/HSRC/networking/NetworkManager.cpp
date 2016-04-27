@@ -72,6 +72,7 @@ NetworkManager::NetworkManager()
 	{
 		si_other.sin_addr.S_un.S_addr = ip;
 	}
+	runClient = true;
 }
 
 int NetworkManager::startClient()
@@ -120,7 +121,7 @@ int NetworkManager::startClient()
 	//printf("yPos: %d\n", data->yPos);
 	timeval tv;
 	fd_set fds;
-	while (runServer)
+	while (runClient)
 	{
 		printf("Waiting for data...\n");
 		fflush(stdout);
@@ -136,10 +137,6 @@ int NetworkManager::startClient()
 		FD_ZERO(&fds);
 		FD_SET(s, &fds);
 
-		/*if (setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0)
-		{
-		perror("Error");
-		}*/
 		int timeoutError = select(s + 1, &fds, NULL, NULL, &tv);
 		if (timeoutError == -1)
 		{
@@ -224,6 +221,11 @@ void NetworkManager::updateData(char btn)
 	sendData();
 	receiveData();
 	printf("updating Data");
+}
+
+void NetworkManager::shutDownClient()
+{
+	runClient = false;
 }
 
 void NetworkManager::ShutDownAllThreads()

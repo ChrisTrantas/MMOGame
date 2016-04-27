@@ -36,7 +36,7 @@ public:
 	int sendData();
 	int receiveData();
 	void updateData(char);
-	void shutDownServer();
+	void shutDownClient();
 
 
 	//Thread Management
@@ -64,7 +64,7 @@ private:
 	int yPos;
 	int id = 0;
 
-	bool runServer;
+	bool runClient;
 	int timeoutTime;
 	char* server;
 
