@@ -527,7 +527,6 @@ LRESULT Game::ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_KEYDOWN:
 		Input::OnKeyDown(wParam);
-		NetworkManager::networkManager->updateData(wParam);
 		return 0;
 
 	case WM_KEYUP:

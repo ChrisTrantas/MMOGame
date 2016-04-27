@@ -35,7 +35,7 @@ public:
 	int startServer();
 	int sendData();
 	int receiveData();
-	void updateData(WPARAM);
+	void updateData(char);
 	void shutDownServer();
 
 

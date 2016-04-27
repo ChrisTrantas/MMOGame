@@ -154,7 +154,7 @@ int NetworkManager::receiveData()
 	
 }
 
-void NetworkManager::updateData(WPARAM btn)
+void NetworkManager::updateData(char btn)
 {
 	//threadManager->CreateWorkerThread();
 	//int* bufPoint = (int*)&buf[0];

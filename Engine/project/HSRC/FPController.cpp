@@ -25,10 +25,10 @@ void FPController::awake()
 	Input::bindToControl("up", VK_SPACE);
 	Input::bindToControl("down", VK_CONTROL);
 	Input::bindToControl("look", VK_LBUTTON);
-	Input::bindToControl("moveRight", 'l');
-	Input::bindToControl("moveUp", 'i');
-	Input::bindToControl("moveLeft", 'j');
-	Input::bindToControl("moveDown", 'k');
+	Input::bindToControl("moveRight", 'L');
+	Input::bindToControl("moveUp", 'I');
+	Input::bindToControl("moveLeft", 'J');
+	Input::bindToControl("moveDown", 'K');
 }
 
 void FPController::update(float deltaTime, float totalTime)
