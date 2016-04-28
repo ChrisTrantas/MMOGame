@@ -66,6 +66,8 @@ Game::~Game()
 {
 	destructFunc();
 
+	delete shadowVS;
+
 	ResourceManager::manager->shutdown();
 	freeAllGameObjects();
 
@@ -73,6 +75,11 @@ Game::~Game()
 	ReleaseMacro(depthStencilView);
 	ReleaseMacro(swapChain);
 	ReleaseMacro(depthStencilBuffer);
+
+	ReleaseMacro(shadowSampler);
+	ReleaseMacro(shadowMapDSV);
+	ReleaseMacro(shadowMapSRV);
+	ReleaseMacro(shadowRS);
 
 	if (deviceContext)
 		deviceContext->ClearState();
@@ -104,7 +111,6 @@ int Game::start(void(*buildFunc)(), void(*destructFunc)())
 	}
 
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	printf("Initialising the engine...\n");
 	initEngine();
 
 	buildFunc();
@@ -135,8 +141,8 @@ int Game::start(void(*buildFunc)(), void(*destructFunc)())
 			if (test == false)
 			{
 
-				NetworkManager::networkManager->Initialize(2);
-				NetworkManager::networkManager->AssignTask([]() { NetworkManager::networkManager->startClient(); });
+				//NetworkManager::networkManager->Initialize(2);
+				//NetworkManager::networkManager->AssignTask([]() { NetworkManager::networkManager->startClient(); });
 				test = true;
 			}
 
@@ -543,11 +549,79 @@ void Game::initEngine()
 	srand((unsigned int)time(NULL));
 	Input::bindToControl("quit", VK_ESCAPE);
 	ResourceManager::init();
+
+	// Create texture for shadow map
+	D3D11_TEXTURE2D_DESC shadowDesc;
+	shadowDesc.Width = shadowMapSize;
+	shadowDesc.Height = shadowMapSize;
+	shadowDesc.ArraySize = 1;
+	shadowDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+	shadowDesc.CPUAccessFlags = 0;
+	shadowDesc.Format = DXGI_FORMAT_R32_TYPELESS; // 32 bits in red channel, not tied to a specific type
+	shadowDesc.MipLevels = 1;
+	shadowDesc.MiscFlags = 0;
+	shadowDesc.SampleDesc.Count = 1;
+	shadowDesc.SampleDesc.Quality = 0;
+	shadowDesc.Usage = D3D11_USAGE_DEFAULT;
+	ID3D11Texture2D* shadowTexture;
+	device->CreateTexture2D(&shadowDesc, 0, &shadowTexture);
+
+	// Create depth/stencil for shadow map
+	D3D11_DEPTH_STENCIL_VIEW_DESC dDesc;
+	ZeroMemory(&dDesc, sizeof(dDesc));
+	dDesc.Flags = 0;
+	dDesc.Format = DXGI_FORMAT_D32_FLOAT; // Gotta give it the D
+	dDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	dDesc.Texture2D.MipSlice = 0;
+	device->CreateDepthStencilView(shadowTexture, &dDesc, &shadowMapDSV);
+
+	// Create the SRV for the shadow map
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(srvDesc));
+	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	device->CreateShaderResourceView(shadowTexture, &srvDesc, &shadowMapSRV);
+
+	// All done with this texture reference
+	shadowTexture->Release();
+
+	// Create a sampler state for the shadow map
+	D3D11_SAMPLER_DESC sampDesc;
+	ZeroMemory(&sampDesc, sizeof(sampDesc));
+	sampDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	sampDesc.BorderColor[0] = 1.0f;
+	sampDesc.BorderColor[1] = 1.0f;
+	sampDesc.BorderColor[2] = 1.0f;
+	sampDesc.BorderColor[3] = 1.0f;
+	device->CreateSamplerState(&sampDesc, &shadowSampler);
+
+	// Create a rasterizer state for rendering the shadow map
+	D3D11_RASTERIZER_DESC rsDesc;
+	ZeroMemory(&rsDesc, sizeof(rsDesc));
+	rsDesc.FillMode = D3D11_FILL_SOLID;
+	rsDesc.CullMode = D3D11_CULL_BACK;//D3D11_CULL_FRONT;
+	rsDesc.FrontCounterClockwise = false;
+	rsDesc.DepthClipEnable = true;
+	rsDesc.DepthBias = 1000; // this is multiplied by (smallest possible value > 0 in depth buffer)
+	rsDesc.DepthBiasClamp = 0.0f;
+	rsDesc.SlopeScaledDepthBias = 1.0f;
+	device->CreateRasterizerState(&rsDesc, &shadowRS);
+
+	shadowVS = new SimpleVertexShader(device, deviceContext);
+	shadowVS->LoadShaderFile(L"Shaders/ShadowMap.cso");
 }
 
 ID3D11Device* Game::getDevice() { return device; }
 ID3D11DeviceContext* Game::getDeviceContext() { return deviceContext; }
 float Game::getAspectRatio() { return aspectRatio; }
+ID3D11SamplerState* Game::getShadowSampler() { return shadowSampler; }
+ID3D11ShaderResourceView* Game::getShadowSRV() { return shadowMapSRV; }
 
 void Game::update(float deltaTime, float totalTime)
 {
@@ -560,7 +634,38 @@ void Game::draw()
 	deviceContext->ClearRenderTargetView(renderTargetView, color);
 	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+	renderShadowMap();
 	drawAllGameObjects();
+	// render volumetric light(s)
 
 	HR(swapChain->Present(0, 0));
+}
+
+// Renders the shadow map for this frame
+void Game::renderShadowMap()
+{
+	// Initial setup - No RTV necessary - Clear shadow map
+	deviceContext->OMSetRenderTargets(0, 0, shadowMapDSV);
+	deviceContext->ClearDepthStencilView(shadowMapDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	deviceContext->RSSetState(shadowRS);
+
+	// Need a viewport!  Copy from existing, and change w/h
+	D3D11_VIEWPORT shadowVP = viewport;
+	shadowVP.Width = (float)shadowMapSize;
+	shadowVP.Height = (float)shadowMapSize;
+	deviceContext->RSSetViewports(1, &shadowVP);
+
+	// Set up shader
+	shadowVS->SetShader(false); // Don't copy yet
+
+	SpotLight light = DEFAULT_LIGHT->getSpotLight();
+	shadowVS->SetData("spotLight", &light, sizeof(SpotLight));
+	deviceContext->PSSetShader(0, 0, 0);
+
+	shadowAllGameObjects(shadowVS);
+
+	// Revert to original targets and viewport
+	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+	deviceContext->RSSetViewports(1, &viewport);
+	deviceContext->RSSetState(0);
 }

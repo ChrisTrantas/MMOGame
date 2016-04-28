@@ -194,7 +194,7 @@ void Transform::setLocalRotation(quat value)
 
 void Transform::updateChildren()
 {
-	for (size_t i = 0; i < children.size(); i += 1)
+	for (size_t i = 0; i < children.size(); ++i)
 	{
 		children[i]->localRotation = children[i]->localRotation;
 		children[i]->localPosition = children[i]->localPosition;

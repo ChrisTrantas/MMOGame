@@ -49,6 +49,7 @@ vector<GameObject*> findGameObjectsWithTags(size_t numTag, ...);
 void earlyUpdateAllGameObjects(float deltaTime, float totalTime);
 void updateAllGameObjects(float deltaTime, float totalTime);
 void drawAllGameObjects();
+void shadowAllGameObjects(SimpleVertexShader* shadowVS);
 void freeAllGameObjects();
 
 template<typename T>
@@ -83,7 +84,7 @@ vector<T*> GameObject::getComponents()
 	vector<T*> copiedComponents;
 	auto typeCheck = components.find(type_index(typeid(T)));
 	if (typeCheck == components.end())
-		for (size_t i = 0; i < typeCheck->second.size(); i += 1)
+		for (size_t i = 0; i < typeCheck->second.size(); ++i)
 			copiedComponents.push_back((T*)(typeCheck->second[i]));
 	return copiedComponents;
 }

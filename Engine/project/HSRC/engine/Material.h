@@ -29,6 +29,7 @@ public:
 	~Material();
 
 	void apply();
+	void remove();
 	void setAttribute(uint8_t shaderMask, string name, void* data, size_t dataSize, bool allocate);
 
 	map<string, Texture*> textures;

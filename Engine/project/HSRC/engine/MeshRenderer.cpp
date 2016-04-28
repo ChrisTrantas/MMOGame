@@ -31,12 +31,12 @@ void MeshRenderer::draw(Camera* camera, Transform* transform)
 	material->setAttribute(VERTEX_BIT, "view", explodedCamera, sizeof(float) * 16, false);
 	material->setAttribute(VERTEX_BIT, "projection", explodedPerspective, sizeof(float) * 16, false);
 
-	DirectionalLight light = DEFAULT_LIGHT->getDirectionalLight();
-	material->setAttribute(PIXEL_BIT, "light1", &light, sizeof(DirectionalLight), false);
-	DirectionalLight light2 = Light::getLight("light2")->getDirectionalLight();
-	material->setAttribute(PIXEL_BIT, "light2", &light2, sizeof(DirectionalLight), false);
+	SpotLight light = DEFAULT_LIGHT->getSpotLight();
+	material->setAttribute(VERTEX_BIT | PIXEL_BIT, "spotLight", &light, sizeof(SpotLight), false);
 
 	material->apply();
 
 	mesh->draw();
+
+	material->remove();
 }

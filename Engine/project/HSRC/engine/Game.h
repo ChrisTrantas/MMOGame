@@ -26,6 +26,8 @@ public:
 	ID3D11Device* getDevice();
 	ID3D11DeviceContext* getDeviceContext();
 	float getAspectRatio();
+	ID3D11SamplerState* getShadowSampler();
+	ID3D11ShaderResourceView* getShadowSRV();
 
 	LRESULT ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 private:
@@ -39,6 +41,14 @@ private:
 	void initEngine();
 	void update(float deltaTime, float totalTime);
 	void draw();
+
+	void renderShadowMap();
+	size_t shadowMapSize = 1024;
+	ID3D11DepthStencilView* shadowMapDSV;
+	ID3D11ShaderResourceView* shadowMapSRV;
+	ID3D11SamplerState* shadowSampler;
+	ID3D11RasterizerState* shadowRS;
+	SimpleVertexShader* shadowVS;
 
 	bool InitMainWindow();
 	bool InitDirect3D();

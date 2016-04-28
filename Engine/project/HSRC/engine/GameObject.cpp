@@ -88,7 +88,7 @@ void GameObject::earlyUpdate(float deltaTime, float totalTime)
 	auto componentBucket = components.begin();
 	while (componentBucket != components.end())
 	{
-		for (size_t i = 0; i < componentBucket->second.size(); i += 1)
+		for (size_t i = 0; i < componentBucket->second.size(); ++i)
 		{
 			if (componentBucket->second[i]->enabled)
 				componentBucket->second[i]->earlyUpdate(deltaTime, totalTime);
@@ -102,7 +102,7 @@ void GameObject::update(float deltaTime, float totalTime)
 	auto componentBucket = components.begin();
 	while (componentBucket != components.end())
 	{
-		for (size_t i = 0; i < componentBucket->second.size(); i += 1)
+		for (size_t i = 0; i < componentBucket->second.size(); ++i)
 		{
 			if (componentBucket->second[i]->enabled)
 				componentBucket->second[i]->update(deltaTime, totalTime);
@@ -116,7 +116,7 @@ void GameObject::draw()
 	auto componentBucket = components.begin();
 	while (componentBucket != components.end())
 	{
-		for (size_t i = 0; i < componentBucket->second.size(); i += 1)
+		for (size_t i = 0; i < componentBucket->second.size(); ++i)
 		{
 			if (componentBucket->second[i]->enabled)
 				componentBucket->second[i]->draw();
@@ -209,20 +209,36 @@ vector<GameObject*> findGameObjectsWithTags(size_t numTag, ...)
 
 void earlyUpdateAllGameObjects(float deltaTime, float totalTime)
 {
-	for (size_t i = 0; i < objects.size(); i += 1)
+	for (size_t i = 0; i < objects.size(); ++i)
 		objects[i]->earlyUpdate(deltaTime, totalTime);
 }
 
 void updateAllGameObjects(float deltaTime, float totalTime)
 {
-	for (size_t i = 0; i < objects.size(); i += 1)
+	for (size_t i = 0; i < objects.size(); ++i)
 		objects[i]->update(deltaTime, totalTime);
 }
 
 void drawAllGameObjects()
 {
-	for (size_t i = 0; i < objects.size(); i += 1)
+	for (size_t i = 0; i < objects.size(); ++i)
 			objects[i]->draw();
+}
+
+void shadowAllGameObjects(SimpleVertexShader* shadowVS)
+{
+	for (size_t i = 0; i < objects.size(); ++i)
+	{
+		MeshRenderer* mr = objects[i]->getComponent<MeshRenderer>();
+		if (mr->visible)
+		{
+			float explodedModel[16];
+			explodeMat4(transpose(objects[i]->getComponent<Transform>()->renderMatrix(true)), explodedModel);
+			shadowVS->SetData("world", explodedModel, sizeof(float) * 16);
+			shadowVS->CopyAllBufferData();
+			mr->mesh->draw();
+		}
+	}
 }
 
 void freeAllGameObjects()

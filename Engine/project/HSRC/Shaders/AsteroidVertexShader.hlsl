@@ -1,8 +1,18 @@
+struct SpotLight
+{
+	matrix view;
+	matrix projection;
+	float3 direction;
+	float fov;
+	float range;
+};
+
 cbuffer externalData : register(b0)
 {
 	matrix world;
 	matrix view;
 	matrix projection;
+	SpotLight spotLight;
 	float3 seed;
 	float deformity;
 	float magnitude;
@@ -23,6 +33,7 @@ struct VertexToPixel
 	float3 tangent		: TANGENT;
 	float2 uv			: TEXCOORD0;
 	float3 worldPos		: TEXCOORD1;
+	float4 shadowPos	: TEXCOORD2;
 };
 
 // http://stackoverflow.com/questions/15628039/simplex-noise-shader
@@ -68,6 +79,9 @@ VertexToPixel main( VertexShaderInput input )
 	float3 perlinSample = seed + input.normal;
 	float n = noise(perlinSample * deformity) * magnitude;
 	output.position = float4(input.position + input.normal * n, 1);
+
+	matrix shadowWVP = mul(mul(world, spotLight.view), spotLight.projection);
+	output.shadowPos = mul(output.position, shadowWVP);
 
 	output.position = mul(output.position, worldViewProj);
 

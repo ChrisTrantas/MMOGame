@@ -81,15 +81,15 @@ bool Octree::satCheck(Collider* collider, Octree* octant)
 	axes[3] = vec3(1, 0, 0);
 	axes[4] = vec3(0, 1, 0);
 	axes[5] = vec3(0, 0, -1);
-	for (size_t i = 0; i < 9; i += 1)
+	for (size_t i = 0; i < 9; ++i)
 		axes[6 + i] = cross(axes[i / 3], axes[i % 3 + 3]);
 
 	vec3 tests[7];
 	tests[0] = octant->center - vec3(t->renderMatrix(false) * vec4(OBB.center, 1));
-	for (size_t i = 0; i < 6; i += 1)
+	for (size_t i = 0; i < 6; ++i)
 		tests[i + 1] = axes[i] * (i < 3 ? (OBB.halfSize[i % 3] * t->scale[i % 3]) : octant->halfSize[i % 3]);
 
-	for (size_t i = 0; i < 15; i += 1)
+	for (size_t i = 0; i < 15; ++i)
 	{
 		float abDot = 0.0f;
 		for (size_t j = 1; j < 7; j += 1)

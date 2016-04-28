@@ -82,7 +82,7 @@ namespace Input
 		auto controlBucket = controls.begin();
 		while (controlBucket != controls.end())
 		{
-			for (size_t i = 0; i < controlBucket->second.bindings.size(); i += 1)
+			for (size_t i = 0; i < controlBucket->second.bindings.size(); ++i)
 				if (btn == controlBucket->second.bindings[i])
 				{
 					controlBucket->second.isDown = true;
@@ -97,7 +97,7 @@ namespace Input
 		auto controlBucket = controls.begin();
 		while (controlBucket != controls.end())
 		{
-			for (size_t i = 0; i < controlBucket->second.bindings.size(); i += 1)
+			for (size_t i = 0; i < controlBucket->second.bindings.size(); ++i)
 				if (btn == controlBucket->second.bindings[i])
 				{
 					controlBucket->second.isDown = false;
@@ -122,7 +122,7 @@ namespace Input
 		auto controlBucket = controls.begin();
 		while (controlBucket != controls.end())
 		{
-			for (size_t i = 0; i < controlBucket->second.bindings.size(); i += 1)
+			for (size_t i = 0; i < controlBucket->second.bindings.size(); ++i)
 				if (btn == controlBucket->second.bindings[i])
 				{
 					controlBucket->second.isDown = true;
@@ -137,7 +137,7 @@ namespace Input
 		auto controlBucket = controls.begin();
 		while (controlBucket != controls.end())
 		{
-			for (size_t i = 0; i < controlBucket->second.bindings.size(); i += 1)
+			for (size_t i = 0; i < controlBucket->second.bindings.size(); ++i)
 				if (btn == controlBucket->second.bindings[i])
 				{
 					controlBucket->second.isDown = false;

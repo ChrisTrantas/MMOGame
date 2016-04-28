@@ -93,7 +93,7 @@ Mesh::Mesh(string modelPath) : Resource(modelPath, MY_TYPE_INDEX)
 
 	float dist = 0;
 	vec3 furthest;
-	for (size_t i = 0; i < vertCount; i += 1)
+	for (size_t i = 0; i < vertCount; ++i)
 	{
 		float distanceCheck = distanceSquared(vec3(verts[i].position.x, verts[i].position.y, verts[i].position.z), bounds.center);
 		if (distanceCheck > dist)
@@ -105,7 +105,7 @@ Mesh::Mesh(string modelPath) : Resource(modelPath, MY_TYPE_INDEX)
 
 	dist = 0;
 	vec3 furthest2;
-	for (size_t i = 0; i < vertCount; i += 1)
+	for (size_t i = 0; i < vertCount; ++i)
 	{
 		float distanceCheck = distanceSquared(vec3(verts[i].position.x, verts[i].position.y, verts[i].position.z), furthest);
 		if (distanceCheck > dist)

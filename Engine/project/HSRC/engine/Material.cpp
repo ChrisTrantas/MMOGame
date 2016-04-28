@@ -37,12 +37,14 @@ void Material::apply()
 	// all textures use first texture's sampler for now
 	if (texture != textures.end())
 		pixelShader->SetSamplerState("trilinear", textures[texture->first]->getSamplerState());
+	pixelShader->SetSamplerState("shadowSamp", Game::game->getShadowSampler());
 
 	while (texture != textures.end())
 	{
 		pixelShader->SetShaderResourceView(texture->first.c_str(), texture->second->getSRV());
 		++texture;
 	}
+	pixelShader->SetShaderResourceView("shadowMap", Game::game->getShadowSRV());
 
 	auto attribute = attributes.begin();
 	while (attribute != attributes.end())
@@ -58,6 +60,12 @@ void Material::apply()
 		vertexShader->SetShader(true);
 	if (pixelShader)
 		pixelShader->SetShader(true);
+}
+
+void Material::remove()
+{
+	if (pixelShader)
+		pixelShader->SetShaderResourceView("shadowMap", 0);
 }
 
 void Material::setAttribute(uint8_t shaderMask, string name, void* data, size_t dataSize, bool allocate)

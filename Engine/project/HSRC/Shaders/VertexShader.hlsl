@@ -1,8 +1,18 @@
+struct SpotLight
+{
+	matrix view;
+	matrix projection;
+	float3 direction;
+	float fov;
+	float range;
+};
+
 cbuffer externalData : register(b0)
 {
 	matrix world;
 	matrix view;
 	matrix projection;
+	SpotLight spotLight;
 };
 
 struct VertexShaderInput
@@ -20,6 +30,7 @@ struct VertexToPixel
 	float3 tangent		: TANGENT;
 	float2 uv			: TEXCOORD0;
 	float3 worldPos		: TEXCOORD1;
+	float4 shadowPos	: TEXCOORD2;
 };
 
 VertexToPixel main( VertexShaderInput input )
@@ -35,6 +46,9 @@ VertexToPixel main( VertexShaderInput input )
 	output.uv = input.uv;
 
 	output.worldPos = mul(float4(input.position, 1), world).xyz;
+
+	matrix shadowWVP = mul(mul(world, spotLight.view), spotLight.projection);
+	output.shadowPos = mul(float4(input.position, 1.0f), shadowWVP);
 
 	return output;
 }

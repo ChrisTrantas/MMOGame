@@ -1,14 +1,15 @@
-struct DirectionalLight
+struct SpotLight
 {
-	float4 AmbientColor;
-	float4 DiffuseColor;
-	float3 Direction;
+	matrix view;
+	matrix projection;
+	float3 direction;
+	float fov;
+	float range;
 };
 
 cbuffer externalData : register(b0)
 {
-	DirectionalLight light1;
-	DirectionalLight light2;
+	SpotLight spotLight;
 };
 
 struct VertexToPixel
@@ -18,26 +19,29 @@ struct VertexToPixel
 	float3 tangent		: TANGENT;
 	float2 uv			: TEXCOORD0;
 	float3 worldPos		: TEXCOORD1;
+	float4 shadowPos	: TEXCOORD2;
 };
 
 Texture2D diffuse		: register(t0);
+Texture2D shadowMap		: register(t1);
 SamplerState trilinear	: register(s0);
-
-float4 calcDirectionalLight(DirectionalLight light, float3 normal)
-{
-	float3 lightDir = normalize(light.Direction);
-	float lightAmount = saturate(dot(normal, -lightDir));
-
-	return light.DiffuseColor * lightAmount;
-}
+SamplerComparisonState shadowSamp : register(s1);
 
 float4 main(VertexToPixel input) : SV_TARGET
 {
-	input.normal = normalize(input.normal);
+	//input.normal = normalize(input.normal);
 
 	float4 diffuseColor = diffuse.Sample(trilinear, input.uv);
 
-	float4 lights = calcDirectionalLight(light1, input.normal) * 0.4f + calcDirectionalLight(light2, input.normal) * 0.4f;
-	lights += light1.AmbientColor * 0.05f + light2.AmbientColor * 0.05f;
-	return lights * diffuseColor;
+	float2 shadowUV = input.shadowPos.xy / input.shadowPos.w * 0.5f + 0.5f;
+	shadowUV.y = 1.0f - shadowUV.y;
+
+	float depthFromLight = input.shadowPos.z / input.shadowPos.w;
+
+	float shadowAmount = shadowMap.SampleCmpLevelZero(
+		shadowSamp,
+		shadowUV,
+		depthFromLight);
+
+	return diffuseColor * shadowAmount;
 }

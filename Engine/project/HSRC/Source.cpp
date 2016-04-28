@@ -26,6 +26,7 @@ void buildGame()
 
 	DEFAULT_MATERIAL->vertexShader = vs;
 	DEFAULT_MATERIAL->pixelShader = ps;
+	DEFAULT_MATERIAL->textures["diffuse"] = DEFAULT_TEXTURE;
 
 	Material::getMaterial("asteroid")->vertexShader = avs;
 	Material::getMaterial("asteroid")->pixelShader = aps;
@@ -34,26 +35,30 @@ void buildGame()
 	for (size_t i = 0; i < 8; ++i)
 	{
 		GameObject* go = GameObject::getGameObject();
-		float ang = M_PI * 2 * (i / 8.0f);
+		float ang = (float)M_PI * 2 * (i / 8.0f);
 		go->getComponent<Transform>()->translate(vec3(cosf(ang) * 4, sinf(ang) * 4, 0));
 		go->addComponent<Asteroid>(new Asteroid());
 	}
 
+	for (size_t i = 0; i < 20; ++i)
+	{
+		GameObject* go = GameObject::getGameObject();
+		float ang = (float)M_PI * 2 * (i / 20.0f);
+		go->getComponent<Transform>()->translate(vec3(cosf(ang) * 8, sinf(ang) * 8, 0));
+		go->addComponent<Asteroid>(new Asteroid());
+	}
+
 #pragma region LightSetup
-	DEFAULT_LIGHT->addComponent<Rotate>(new Rotate(1.18f, vec3(1, 0, 0)));
-	Light* secondLight = Light::getLight("light2");
-	secondLight->addComponent<Rotate>(new Rotate(0.87f, vec3(0, 1, 0)));
-	secondLight->ambientColor = vec4(0, 0.5f, 1, 1);
-	secondLight->diffuseColor = vec4(1, 0.5f, 0, 1);
+	DEFAULT_LIGHT->addComponent<Rotate>(new Rotate(0.5f, vec3(1, 0, 0)));
 #pragma endregion The light setup and binding phase
 
 #pragma region CameraSetup
 	Transform* camT = DEFAULT_CAMERA->getComponent<Transform>();
-	camT->translate(camT->forward() * -15.0f);
+	camT->translate(camT->forward() * -120.0f);
 	DEFAULT_CAMERA->addComponent<FPController>(new FPController());
 #pragma endregion The camera setup and binding phase
 
-	NetworkManager::init();
+	//NetworkManager::init();
 }
 
 void destructGame()
@@ -63,9 +68,9 @@ void destructGame()
 	delete avs;
 	delete aps;
 
-	NetworkManager::networkManager->ShutDownAllThreads();
-	NetworkManager::networkManager->shutDownClient();
-	delete NetworkManager::networkManager;
+	//NetworkManager::networkManager->ShutDownAllThreads();
+	//NetworkManager::networkManager->shutDownClient();
+	//delete NetworkManager::networkManager;
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)

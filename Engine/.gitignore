@@ -23,7 +23,7 @@
 !**/[Ii]nclude/**
 !**/[Ll]ib/*
 !**/[Mm]odels/**
-!**/[Ss]haders/**
+!**/[Ss]haders/*.hlsl
 !**/[Tt]extures/**
 !*.vcxproj
 !*.vcxproj.filters

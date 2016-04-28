@@ -41,7 +41,7 @@ vector<Collision> Collider::checkForCollisions()
 	octreeFilter.clear();
 
 	for each (Octree* b in bins)
-		for (size_t i = 0; i < b->binCount(); i += 1)
+		for (size_t i = 0; i < b->binCount(); ++i)
 		{
 			if (octreeFilter[(*b)[i]])
 				continue;
@@ -71,7 +71,7 @@ vector<Collision> Collider::checkForCollisions(bool completeMatch, size_t numTag
 		filter[i] = va_arg(args, char*);
 
 	for each (Octree* b in bins)
-		for (size_t i = 0; i < b->binCount(); i += 1)
+		for (size_t i = 0; i < b->binCount(); ++i)
 		{
 			if (octreeFilter[(*b)[i]])
 				continue;
