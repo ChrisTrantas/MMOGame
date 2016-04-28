@@ -10,10 +10,10 @@ Light* Light::getLight(string name)
 
 Light::Light(string name) : GameObject("Light " + name)
 {
-	meshRenderer->visible = false;
+	//meshRenderer->visible = false;
 	ambientColor = vec4(1, 1, 1, 1);
 	diffuseColor = vec4(0.5f, 0.5f, 0.5f, 0.5f);
-	fov = 0.25f * (float)M_2_PI;
+	fov = 0.5f * (float)M_PI;
 	range = 100;
 }
 

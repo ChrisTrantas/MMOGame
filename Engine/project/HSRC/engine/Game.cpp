@@ -141,8 +141,8 @@ int Game::start(void(*buildFunc)(), void(*destructFunc)())
 			if (test == false)
 			{
 
-				//NetworkManager::networkManager->Initialize(2);
-				//NetworkManager::networkManager->AssignTask([]() { NetworkManager::networkManager->startClient(); });
+				NetworkManager::networkManager->Initialize(2);
+				NetworkManager::networkManager->AssignTask([]() { NetworkManager::networkManager->startClient(); });
 				test = true;
 			}
 
@@ -595,10 +595,10 @@ void Game::initEngine()
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-	sampDesc.BorderColor[0] = 1.0f;
-	sampDesc.BorderColor[1] = 1.0f;
-	sampDesc.BorderColor[2] = 1.0f;
-	sampDesc.BorderColor[3] = 1.0f;
+	sampDesc.BorderColor[0] = 0.0f;
+	sampDesc.BorderColor[1] = 0.0f;
+	sampDesc.BorderColor[2] = 0.0f;
+	sampDesc.BorderColor[3] = 0.0f;
 	device->CreateSamplerState(&sampDesc, &shadowSampler);
 
 	// Create a rasterizer state for rendering the shadow map

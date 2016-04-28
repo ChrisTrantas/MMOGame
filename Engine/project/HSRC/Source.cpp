@@ -49,7 +49,7 @@ void buildGame()
 	}
 
 #pragma region LightSetup
-	DEFAULT_LIGHT->addComponent<Rotate>(new Rotate(0.5f, vec3(1, 0, 0)));
+	DEFAULT_LIGHT->addComponent<Rotate>(new Rotate(0.35f, vec3(1, 0, 0)));
 #pragma endregion The light setup and binding phase
 
 #pragma region CameraSetup
@@ -58,7 +58,7 @@ void buildGame()
 	DEFAULT_CAMERA->addComponent<FPController>(new FPController());
 #pragma endregion The camera setup and binding phase
 
-	//NetworkManager::init();
+	NetworkManager::init();
 }
 
 void destructGame()
@@ -68,9 +68,9 @@ void destructGame()
 	delete avs;
 	delete aps;
 
-	//NetworkManager::networkManager->ShutDownAllThreads();
-	//NetworkManager::networkManager->shutDownClient();
-	//delete NetworkManager::networkManager;
+	NetworkManager::networkManager->ShutDownAllThreads();
+	NetworkManager::networkManager->shutDownClient();
+	delete NetworkManager::networkManager;
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
