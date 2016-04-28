@@ -4,6 +4,7 @@ struct SpotLight
 	matrix projection;
 	float3 direction;
 	float fov;
+	float3 position;
 	float range;
 };
 
@@ -83,6 +84,8 @@ VertexToPixel main( VertexShaderInput input )
 	matrix shadowWVP = mul(mul(world, spotLight.view), spotLight.projection);
 	output.shadowPos = mul(output.position, shadowWVP);
 
+	output.worldPos = mul(output.position, world).xyz;
+
 	output.position = mul(output.position, worldViewProj);
 
 	// http://math.stackexchange.com/questions/1071662/surface-normal-to-point-on-displaced-sphere
@@ -98,8 +101,6 @@ VertexToPixel main( VertexShaderInput input )
 	output.tangent = mul(input.tangent, (float3x3)world);
 
 	output.uv = input.uv;
-
-	output.worldPos = mul(float4(input.position, 1), world).xyz;
 
 	return output;
 }

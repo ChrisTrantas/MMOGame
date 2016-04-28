@@ -4,6 +4,7 @@ struct SpotLight
 	matrix projection;
 	float3 direction;
 	float fov;
+	float3 position;
 	float range;
 };
 
@@ -29,7 +30,7 @@ SamplerComparisonState shadowSamp : register(s1);
 
 float4 main(VertexToPixel input) : SV_TARGET
 {
-	//input.normal = normalize(input.normal);
+	input.normal = normalize(input.normal);
 
 	float4 diffuseColor = diffuse.Sample(trilinear, input.uv);
 
