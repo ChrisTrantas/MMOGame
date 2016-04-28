@@ -30,19 +30,21 @@ SamplerComparisonState shadowSamp : register(s1);
 
 float4 main(VertexToPixel input) : SV_TARGET
 {
-	//input.normal = normalize(input.normal);
-	//input.tangent = normalize(input.tangent);
-	//
-	//float3 normalFromMap = normalMap.Sample(trilinear, input.uv).rgb;
-	//normalFromMap = normalFromMap * 2 - 1;
-	//
-	//float3 N = input.normal;
-	//float3 T = normalize(input.tangent - N * dot(input.tangent, N));
-	//float3 B = cross(T, N);
-	//
-	//float3x3 TBN = float3x3(T, B, N);
-	//
-	//input.normal = normalize(mul(normalFromMap, TBN));
+	input.normal = normalize(input.normal);
+	input.tangent = normalize(input.tangent);
+	
+	float3 normalFromMap = normalMap.Sample(trilinear, input.uv).rgb;
+	normalFromMap = normalFromMap * 2 - 1;
+	
+	float3 N = input.normal;
+	float3 T = normalize(input.tangent - N * dot(input.tangent, N));
+	float3 B = cross(T, N);
+	
+	float3x3 TBN = float3x3(T, B, N);
+	
+	input.normal = normalize(mul(normalFromMap, TBN));
+
+	float dirLight = saturate(dot(input.normal, -normalize(spotLight.direction)));
 
 	float4 diffuseColor = diffuse.Sample(trilinear, input.uv);
 
@@ -56,5 +58,5 @@ float4 main(VertexToPixel input) : SV_TARGET
 		shadowUV,
 		depthFromLight);
 
-	return diffuseColor * shadowAmount;
+	return dirLight * diffuseColor * shadowAmount;
 }

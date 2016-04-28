@@ -29,6 +29,7 @@ void FPController::awake()
 	Input::bindToControl("moveUp", 'I');
 	Input::bindToControl("moveLeft", 'J');
 	Input::bindToControl("moveDown", 'K');
+	Input::bindToControl("toggleColor", 'T');
 }
 
 void FPController::update(float deltaTime, float totalTime)
@@ -53,6 +54,24 @@ void FPController::update(float deltaTime, float totalTime)
 	{
 		ct->rotate(angleAxis(Input::mouseOffset().x * -0.001f, ct->up()));
 		ct->rotate(angleAxis(Input::mouseOffset().y * -0.001f, ct->right()));
+	}
+
+	if (Input::wasControlPressed("toggleColor"))
+	{
+		if (Game::game->color[0] == 0)
+		{
+			Game::game->color[0] = 0.4f;
+			Game::game->color[1] = 0.6f;
+			Game::game->color[2] = 0.75f;
+			Game::game->color[3] = 0.0f;
+		}
+		else
+		{
+			Game::game->color[0] = 0.0f;
+			Game::game->color[1] = 0.0f;
+			Game::game->color[2] = 0.0f;
+			Game::game->color[3] = 0.0f;
+		}
 	}
 	
 	if (Input::isControlDown("moveRight"))

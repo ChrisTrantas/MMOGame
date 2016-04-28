@@ -29,6 +29,8 @@ public:
 	ID3D11SamplerState* getShadowSampler();
 	ID3D11ShaderResourceView* getShadowSRV();
 
+	float color[4] = { 0.4f, 0.6f, 0.75f, 0.0f };
+
 	LRESULT ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 private:
 	Game(HINSTANCE hInstance);
@@ -70,7 +72,6 @@ private:
 	bool maximized = false;
 	bool resizing = false;
 	void OnResize();
-	const float color[4] = { 0.4f, 0.6f, 0.75f, 0.0f };
 
 	// DirectX related buffers, views, etc.
 	ID3D11Device*             device;

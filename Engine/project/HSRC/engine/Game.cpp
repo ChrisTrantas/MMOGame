@@ -92,7 +92,6 @@ Game::~Game()
 
 int Game::start(void(*buildFunc)(), void(*destructFunc)())
 {
-	bool test = false;
 	if (game == nullptr)
 		return EXIT_FAILURE;
 
@@ -114,6 +113,9 @@ int Game::start(void(*buildFunc)(), void(*destructFunc)())
 	initEngine();
 
 	buildFunc();
+
+	NetworkManager::networkManager->Initialize(2);
+	NetworkManager::networkManager->AssignTask([]() { NetworkManager::networkManager->startClient(); });
 
 	MSG msg = { 0 };
 
@@ -137,14 +139,6 @@ int Game::start(void(*buildFunc)(), void(*destructFunc)())
 			// Standard game loop type stuff
 			CalculateFrameStats();
 			update(deltaTime, totalTime);
-
-			if (test == false)
-			{
-
-				NetworkManager::networkManager->Initialize(2);
-				NetworkManager::networkManager->AssignTask([]() { NetworkManager::networkManager->startClient(); });
-				test = true;
-			}
 
 			draw();// (deltaTime, totalTime);
 			Input::updateControlStates();
