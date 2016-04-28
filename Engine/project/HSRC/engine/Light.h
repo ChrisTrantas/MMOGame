@@ -17,6 +17,7 @@ struct SpotLight
 	DirectX::XMFLOAT4X4 projection;
 	DirectX::XMFLOAT3 direction;
 	float fov;
+	DirectX::XMFLOAT3 position;
 	float range;
 };
 

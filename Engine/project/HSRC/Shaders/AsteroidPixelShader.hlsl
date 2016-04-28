@@ -4,6 +4,7 @@ struct SpotLight
 	matrix projection;
 	float3 direction;
 	float fov;
+	float3 position;
 	float range;
 };
 
@@ -44,7 +45,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 	
 	input.normal = normalize(mul(normalFromMap, TBN));
 
-	float dirLight = saturate(dot(input.normal, -normalize(spotLight.direction)));
+	float dirLight = saturate(dot(input.normal, normalize(spotLight.position - input.worldPos)));
 
 	float4 diffuseColor = diffuse.Sample(trilinear, input.uv);
 

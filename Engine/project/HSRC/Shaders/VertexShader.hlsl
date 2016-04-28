@@ -4,6 +4,7 @@ struct SpotLight
 	matrix projection;
 	float3 direction;
 	float fov;
+	float3 position;
 	float range;
 };
 

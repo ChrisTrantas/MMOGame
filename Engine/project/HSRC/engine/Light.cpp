@@ -41,6 +41,7 @@ SpotLight Light::getSpotLight()
 	float perspectiveMat[16];
 	explodeMat4(transpose(perspective(fov, 1.0f, 0.01f, 1000.0f)), perspectiveMat);
 	vec3 f = transform->forward();
+	vec3 p = transform->getPosition();
 
 	SpotLight light =
 	{
@@ -48,6 +49,7 @@ SpotLight Light::getSpotLight()
 		DirectX::XMFLOAT4X4(perspectiveMat),
 		DirectX::XMFLOAT3(f.x, f.y, f.z),
 		fov,
+		DirectX::XMFLOAT3(p.x, p.y, p.z),
 		range
 	};
 	return light;
