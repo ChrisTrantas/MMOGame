@@ -63,7 +63,7 @@ private:
 	WSADATA wsa;
 	int xPos;
 	int yPos;
-	int id = 888;
+	int id;
 
 	bool runClient;
 	int timeoutTime;
