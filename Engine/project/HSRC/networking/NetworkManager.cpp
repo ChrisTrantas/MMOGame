@@ -92,7 +92,7 @@ int NetworkManager::startClient()
 	data->id = 0;
 
 	//send the message
-	if (sendto(s, buf, recv_len, 0, (struct sockaddr *) &si_other, slen) == SOCKET_ERROR)
+	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, slen) == SOCKET_ERROR)
 	{
 		printf("sendto() failed with error code : %d", WSAGetLastError());
 		//exit(EXIT_FAILURE);
@@ -123,13 +123,13 @@ int NetworkManager::startClient()
 	fd_set fds;
 	while (runClient)
 	{
-		printf("Waiting for data...\n");
+		//printf("Waiting for data...\n");
 		fflush(stdout);
 
 		//clear the buffer by filling null, it might have previously received data
 		memset(buf, '\0', BUFLEN);
 
-		std::cout << "attempting to receive data" << std::endl;
+		//std::cout << "attempting to receive data" << std::endl;
 
 		tv.tv_sec = timeoutTime;
 		tv.tv_usec = 0;
@@ -144,11 +144,12 @@ int NetworkManager::startClient()
 		}
 		else if (timeoutError == 0)
 		{
-			printf("Server timed out\n");
+			//printf("Server timed out\n");
 		}
 		else
 		{
 			NetworkManager::networkManager->receiveData();
+			printf("Found some data\n");
 		}
 	}
 	return 0;
@@ -158,18 +159,25 @@ int NetworkManager::sendData()
 {
 	//int* bufPoint = (int*)&buf[0];
 	//bufPoint = id;
+	bufMutex.lock();
+	bufferData* data = (bufferData*)buf;
+	printf("casting data\n");
+	data->id = id;
+	printf("Sending ID: ", data->id);
 
 	//now reply the client with the same data
-	if (sendto(s, buf, recv_len, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
+	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
 	{
 		printf("sendto() failed with error code : %d", WSAGetLastError());
 		return EXIT_FAILURE;
 	}
 	printf("Sending Data to Server \n");
+	bufMutex.unlock();
 }
 
 int NetworkManager::receiveData()
 {
+	bufMutex.lock();
 	//try to receive some data, this is a blocking call
 	if ((recv_len = recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen)) == SOCKET_ERROR)
 	{
@@ -178,9 +186,19 @@ int NetworkManager::receiveData()
 	}
 
 	bufferData* data = (bufferData*)buf;
+
+	if (data->id != 0)
+	{
+		id = data->id;
+	}
+
+	//data->id = 3;
 	//id = (int*)&buf[0];
 	//print details of the client/peer and the data received
-	std::cout << "ID: " << data->id << std::endl;
+	std::cout << "Data ID: " << data->id << std::endl;
+	std::cout << "Client ID: " << id << std::endl;
+
+	bufMutex.unlock();
 	
 	printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
 	printf("Data: %s\n", buf);

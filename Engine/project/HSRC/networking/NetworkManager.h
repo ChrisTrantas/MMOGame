@@ -4,6 +4,7 @@
 #include<winsock2.h>
 #include<stdio.h>
 #include <iostream>
+#include <mutex>
 #include "..\threading\Thread.h"
 #include "..\engine\Game.h"
 
@@ -67,6 +68,8 @@ private:
 	bool runClient;
 	int timeoutTime;
 	char* server;
+
+	std::mutex bufMutex;
 
 	//Thread Management
 	Thread* m_ptrThread[5];

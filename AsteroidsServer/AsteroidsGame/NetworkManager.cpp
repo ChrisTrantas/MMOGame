@@ -166,6 +166,7 @@ int NetworkManager::startServer()
 
 int NetworkManager::sendData()
 {
+	bufMutex.lock();
 	bufferData* data = (bufferData*)buf;
 	std::cout << "Sending ID " << data->id << std::endl;
 
@@ -176,13 +177,16 @@ int NetworkManager::sendData()
 		return EXIT_FAILURE;
 	}
 
+	bufMutex.unlock();
+
 	printf("Data sent to client \n");
-	printf("Id sent to client: %d\n This is incorrect for some reason\n" + ids);
+	printf("Id sent to client: %d\n", ids);
 	//std::cout << "si_other " << si_other << std::endl;
 }
 
 int NetworkManager::sendToAllClients()
 {
+	bufMutex.lock();
 	std::cout << "Pushing to all clients" << std::endl;
 	for (int i = 0; i < clients.size(); i++)
 	{
@@ -194,10 +198,12 @@ int NetworkManager::sendToAllClients()
 	}
 
 	std::cout << "Finished sending to all clients" << std::endl;
+	bufMutex.unlock();
 }
 
 int NetworkManager::receiveData()
 {
+	bufMutex.lock();
 	//try to receive some data, this is a blocking call
 	if ((recv_len = recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen)) == SOCKET_ERROR)
 	{
@@ -215,12 +221,13 @@ int NetworkManager::receiveData()
 	if (data->id == 0)
 	{
 		data->id = GenerateID();
-		std::cout << "ID: " << (int)buf[0] << "\n" << std::endl;
+		std::cout << "Generated ID: " << (int)buf[0] << "\n" << std::endl;
 	}
 	else
 	{
 		std::cout << "There is an ID: " << data->id << "\n" << std::endl;
 	}
+	bufMutex.unlock();
 }
 
 void NetworkManager::updateData()

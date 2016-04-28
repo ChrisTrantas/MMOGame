@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <vector>
+#include <mutex>
 //#include <sys/time.h>
 
 #include "Thread.h"
@@ -66,6 +67,7 @@ private:
 	bool runServer;
 	int timeoutTime;
 	std::vector<sockaddr_in> clients;
+	std::mutex bufMutex;
 
 	//Thread Management
 	Thread* m_ptrThread[5];
