@@ -16,9 +16,9 @@
 
 struct bufferData
 {
-	int id = 0;
-	int xPos = 0;
-	int yPos = 0;
+	int id;
+	int xPos;
+	int yPos;
 	//char* data[];
 };
 
@@ -63,11 +63,12 @@ private:
 	WSADATA wsa;
 	int xPos;
 	int yPos;
-	int id = 0;
+	int id = 888;
 
 	bool runClient;
 	int timeoutTime;
 	char* server;
+	bufferData* data;
 
 	std::mutex bufMutex;
 

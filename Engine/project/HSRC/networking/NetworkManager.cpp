@@ -35,7 +35,7 @@ NetworkManager::NetworkManager()
 	s, slen = sizeof(si_other);
 	xPos = 0;
 	yPos = 0;
-
+	data = (bufferData*)buf;
 
 	//Initialise winsock
 	printf("\nInitialising Winsock...");
@@ -72,6 +72,7 @@ NetworkManager::NetworkManager()
 	{
 		si_other.sin_addr.S_un.S_addr = ip;
 	}
+	timeoutTime = 5;
 	runClient = true;
 }
 
@@ -86,10 +87,12 @@ int NetworkManager::startClient()
 	//printf("start client : ");
 	//gets_s(message);
 	recv_len = sizeof(bufferData);
+	//data = (bufferData*)buf;
 
 	memset(buf, '\0', BUFLEN);
-	bufferData* data = (bufferData*)buf;
 	data->id = 0;
+	data->xPos = 0;
+	data->yPos = 0;
 
 	//send the message
 	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, slen) == SOCKET_ERROR)
@@ -108,7 +111,6 @@ int NetworkManager::startClient()
 		//exit(EXIT_FAILURE);
 	}
 
-	data = (bufferData*)buf;
 	id = data->id;
 	//id = (int*)&buf[0];
 	printf("Id of Client: %d\n", data->id);
@@ -126,8 +128,10 @@ int NetworkManager::startClient()
 		//printf("Waiting for data...\n");
 		fflush(stdout);
 
+		bufMutex.lock();
 		//clear the buffer by filling null, it might have previously received data
 		memset(buf, '\0', BUFLEN);
+		bufMutex.unlock();
 
 		//std::cout << "attempting to receive data" << std::endl;
 
@@ -160,13 +164,11 @@ int NetworkManager::sendData()
 	//int* bufPoint = (int*)&buf[0];
 	//bufPoint = id;
 	bufMutex.lock();
-	bufferData* data = (bufferData*)buf;
-	printf("casting data\n");
 	data->id = id;
 	printf("Sending ID: ", data->id);
 
 	//now reply the client with the same data
-	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
+	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &si_other, slen) < 0)
 	{
 		printf("sendto() failed with error code : %d", WSAGetLastError());
 		return EXIT_FAILURE;
@@ -179,21 +181,17 @@ int NetworkManager::receiveData()
 {
 	bufMutex.lock();
 	//try to receive some data, this is a blocking call
-	if ((recv_len = recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen)) == SOCKET_ERROR)
+	if ((recv_len = recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen)) < 0)
 	{
 		printf("recvfrom() failed with error code : %d", WSAGetLastError());
 		return EXIT_FAILURE;
 	}
 
-	bufferData* data = (bufferData*)buf;
-
-	if (data->id != 0)
+	if (data && data->id != 0)
 	{
 		id = data->id;
 	}
 
-	//data->id = 3;
-	//id = (int*)&buf[0];
 	//print details of the client/peer and the data received
 	std::cout << "Data ID: " << data->id << std::endl;
 	std::cout << "Client ID: " << id << std::endl;
@@ -210,32 +208,34 @@ void NetworkManager::updateData(char btn)
 	//threadManager->CreateWorkerThread();
 	//int* bufPoint = (int*)&buf[0];
 	//bufPoint = id;
-	bufferData* data = (bufferData*)buf;
+	bufMutex.lock();
 	
 	if (btn == 'i')
 	{
-		xPos = *(int*)&buf[8];
-		yPos = *(int*)&buf[16];
+		xPos = data->xPos;
+		yPos = data->yPos;
 		printf("i pressed");
 	}
 	if (btn == 'j')
 	{
-		xPos = *(int*)&buf[8];
-		yPos = *(int*)&buf[16];
+		xPos = data->xPos;
+		yPos = data->yPos;
 		printf("j pressed");
 	}
 	if (btn == 'k')
 	{
-		xPos = *(int*)&buf[8];
-		yPos = *(int*)&buf[16];
+		xPos = data->xPos;
+		yPos = data->yPos;
 		printf("k pressed");
 	}
 	if (btn == 'l')
 	{
-		xPos = *(int*)&buf[8];
-		yPos = *(int*)&buf[16];
+		xPos = data->xPos;
+		yPos = data->yPos;
 		printf("l pressed");
 	}
+
+	bufMutex.unlock();
 	sendData();
 	receiveData();
 	printf("updating Data");

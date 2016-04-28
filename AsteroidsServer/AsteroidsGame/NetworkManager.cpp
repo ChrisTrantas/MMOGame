@@ -34,6 +34,7 @@ void NetworkManager::Initialize(int nThread)
 NetworkManager::NetworkManager()
 {
 	slen = sizeof(si_other);
+	data = (bufferData*)buf;
 
 	//Initialise winsock
 	printf("\nInitialising Winsock...");
@@ -125,8 +126,10 @@ int NetworkManager::startServer()
 		printf("Waiting for data...\n");
 		fflush(stdout);
 
+		bufMutex.lock();
 		//clear the buffer by filling null, it might have previously received data
 		memset(buf, '\0', BUFLEN);
+		bufMutex.unlock();
 
 		std::cout << "attempting to receive data" << std::endl;
 
@@ -167,11 +170,10 @@ int NetworkManager::startServer()
 int NetworkManager::sendData()
 {
 	bufMutex.lock();
-	bufferData* data = (bufferData*)buf;
 	std::cout << "Sending ID " << data->id << std::endl;
 
 	//now reply the client with the same data
-	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
+	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &si_other, slen) < 0)
 	{
 		printf("sendto() failed with error code : %d", WSAGetLastError());
 		return EXIT_FAILURE;
@@ -190,7 +192,7 @@ int NetworkManager::sendToAllClients()
 	std::cout << "Pushing to all clients" << std::endl;
 	for (int i = 0; i < clients.size(); i++)
 	{
-		if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &clients[i], slen) == SOCKET_ERROR)
+		if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &clients[i], slen) < 0)
 		{
 			printf("sendto() failed with error code : %d", WSAGetLastError());
 			return EXIT_FAILURE;
@@ -205,7 +207,7 @@ int NetworkManager::receiveData()
 {
 	bufMutex.lock();
 	//try to receive some data, this is a blocking call
-	if ((recv_len = recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen)) == SOCKET_ERROR)
+	if ((recv_len = recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen)) < 0)
 	{
 		printf("recvfrom() failed with error code : %d", WSAGetLastError());
 		return EXIT_FAILURE;
@@ -214,11 +216,9 @@ int NetworkManager::receiveData()
 	//print details of the client/peer and the data received
 	printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
 	printf("Data: %s\n", buf);
-
-	bufferData* data = (bufferData*)buf;
 	std::cout << "ID on receive: " << data->id << std::endl;
 
-	if (data->id == 0)
+	if (data && data->id == 0)
 	{
 		data->id = GenerateID();
 		std::cout << "Generated ID: " << (int)buf[0] << "\n" << std::endl;

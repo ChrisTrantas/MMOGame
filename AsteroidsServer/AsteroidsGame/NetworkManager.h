@@ -26,7 +26,9 @@
 
 struct bufferData
 {
-	int id = 0;
+	int id;
+	int xPos;
+	int yPos;
 	//char* data[];
 };
 
@@ -68,6 +70,7 @@ private:
 	int timeoutTime;
 	std::vector<sockaddr_in> clients;
 	std::mutex bufMutex;
+	bufferData* data;
 
 	//Thread Management
 	Thread* m_ptrThread[5];
