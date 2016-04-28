@@ -13,7 +13,7 @@
     <FxCompile Include="Shaders\VertexShader.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="ShadowMap.hlsl">
+    <FxCompile Include="Shaders\ShadowMap.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
   </ItemGroup>
