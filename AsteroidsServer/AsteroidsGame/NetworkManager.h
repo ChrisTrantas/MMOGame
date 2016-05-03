@@ -24,12 +24,29 @@
 #define PORT 8888   //The port on which to listen for incoming data
 #define MAX_CLIENTS 100 //max number of clients we can have attached
 
+enum ObjType
+{
+	PLAYER_SHIP,
+	PLAYER_LIGHT,
+	ASTEROID_BIG,
+	ASTEROID_MEDIUM,
+	ASTEROID_SMALL,
+	BULLET,
+	LIGHT
+};
+
+enum Command
+{
+	UPDATE,
+	PLAYER_DIED,
+	BULLET_FIRED,
+	PLAYER_DISCONNECT
+};
+
 struct bufferData
 {
 	int id;
-	int xPos;
-	int yPos;
-	//char* data[];
+	Command cmd;
 };
 
 class NetworkManager
