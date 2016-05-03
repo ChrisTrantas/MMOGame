@@ -34,7 +34,7 @@ void NetworkManager::Initialize(int nThread)
 NetworkManager::NetworkManager()
 {
 	slen = sizeof(si_other);
-	data = (bufferData*)buf;
+	data = (header*)buf;
 
 	//Initialise winsock
 	printf("\nInitialising Winsock...");

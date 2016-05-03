@@ -43,10 +43,29 @@ enum Command
 	PLAYER_DISCONNECT
 };
 
-struct bufferData
+struct header
 {
 	int id;
 	Command cmd;
+};
+
+struct dataUpdate
+{
+	int numObj;
+	struct
+	{
+		float xPos;
+		float yPos;
+		float rot;
+		ObjType type;
+	}* data;
+};
+
+struct dataFired
+{
+	float xPos;
+	float yPos;
+	float rot;
 };
 
 class NetworkManager
@@ -87,7 +106,7 @@ private:
 	int timeoutTime;
 	std::vector<sockaddr_in> clients;
 	std::mutex bufMutex;
-	bufferData* data;
+	header* data;
 
 	//Thread Management
 	Thread* m_ptrThread[5];
