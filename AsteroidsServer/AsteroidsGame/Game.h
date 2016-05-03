@@ -85,5 +85,20 @@ public:
 	/// </summary>
 	/// <param name="deltaTime">The change in time since the last update</param>
 	void Update(float deltaTime);
+
+	/// <summary>
+	/// Returns the number of alive ships
+	/// </summary>
+	int GetNumAliveShips();
+
+	/// <summary>
+	/// Returns a vec2 array of the positions of the alive ships
+	/// </summary>
+	Vec2* GetAliveShipPos();
+
+	/// <summary>
+	/// Returns an array of floats for the rotations of the ships
+	/// </summary>
+	float* GetAliveShipRot();
 };
 

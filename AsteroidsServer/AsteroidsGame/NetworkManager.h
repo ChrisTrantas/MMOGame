@@ -13,6 +13,7 @@
 
 #include "Thread.h"
 #include "Game.h"
+#include "MathVectors.h"
 
 //give this to Egert when I get stuck
 //This is the link to my thread manager example
@@ -26,6 +27,7 @@
 
 enum ObjType
 {
+	NONE,
 	PLAYER_SHIP,
 	PLAYER_LIGHT,
 	ASTEROID_BIG,
@@ -43,44 +45,51 @@ enum Command
 	PLAYER_DISCONNECT
 };
 
-struct header
+struct Header
 {
 	int id;
 	Command cmd;
 };
 
-struct dataUpdate
+struct ObjData
 {
-	int numObj;
-	struct
+	Vec2* pos;
+	float* rot;
+	ObjType type;
+
+	ObjData()
 	{
-		float xPos;
-		float yPos;
-		float rot;
-		ObjType type;
-	}* data;
+		//pos = 0;
+		//rot = 0;
+		type = NONE;
+	}
 };
 
-struct dataFired
+struct DataUpdate
 {
-	float xPos;
-	float yPos;
+	int numObj;
+	ObjData* data;
+};
+
+struct DataFired
+{
+	Vec2* pos;
 	float rot;
 };
 
 class NetworkManager
 {
 public:
-	static void init();
+	static void Init();
 	NetworkManager();
 	~NetworkManager();
-	int displayIP();
-	int startServer();
-	int sendData();
-	int sendToAllClients();
-	int receiveData();
-	void updateData();
-	void shutDownServer();
+	int DisplayIP();
+	int StartServer();
+	int SendData();
+	int SendToAllClients();
+	int ReceiveData();
+	void UpdateData();
+	void ShutDownServer();
 
 	//Thread Management
 	void Initialize(int nThread);
@@ -106,7 +115,7 @@ private:
 	int timeoutTime;
 	std::vector<sockaddr_in> clients;
 	std::mutex bufMutex;
-	header* data;
+	Header* head;
 
 	//Thread Management
 	Thread* m_ptrThread[5];

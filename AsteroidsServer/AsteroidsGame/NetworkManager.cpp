@@ -1,8 +1,9 @@
 #include "NetworkManager.h"
 
 NetworkManager* NetworkManager::networkManager = nullptr;
+Game* NetworkManager::game = nullptr;
 
-void NetworkManager::init()
+void NetworkManager::Init()
 {
 	if (networkManager == nullptr)
 	{
@@ -34,7 +35,7 @@ void NetworkManager::Initialize(int nThread)
 NetworkManager::NetworkManager()
 {
 	slen = sizeof(si_other);
-	data = (header*)buf;
+	head = (Header*)buf;
 
 	//Initialise winsock
 	printf("\nInitialising Winsock...");
@@ -58,6 +59,7 @@ NetworkManager::NetworkManager()
 	server.sin_port = htons(PORT);
 	timeoutTime = 5;
 	runServer = true;
+	//game = NULL;
 }
 
 
@@ -67,7 +69,7 @@ NetworkManager::~NetworkManager()
 	WSACleanup();
 }
 
-int NetworkManager::displayIP()
+int NetworkManager::DisplayIP()
 {
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 	{
@@ -97,9 +99,11 @@ int NetworkManager::displayIP()
 		memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
 		std::cout << "Address " << i << ": " << inet_ntoa(addr) << std::endl;
 	}
+
+	return EXIT_SUCCESS;
 }
 
-int NetworkManager::startServer()
+int NetworkManager::StartServer()
 {
 	if (networkManager == nullptr)
 	{
@@ -154,12 +158,12 @@ int NetworkManager::startServer()
 		}
 		else
 		{
-			NetworkManager::networkManager->receiveData();
-			NetworkManager::networkManager->updateData();
-			NetworkManager::networkManager->sendData();
+			NetworkManager::networkManager->ReceiveData();
+			NetworkManager::networkManager->UpdateData();
+			NetworkManager::networkManager->SendData();
 		}
 
-		NetworkManager::networkManager->sendToAllClients();
+		NetworkManager::networkManager->SendToAllClients();
 	}
 
 	delete networkManager;
@@ -167,10 +171,10 @@ int NetworkManager::startServer()
 	return 0;
 }
 
-int NetworkManager::sendData()
+int NetworkManager::SendData()
 {
 	bufMutex.lock();
-	std::cout << "Sending ID " << data->id << std::endl;
+	std::cout << "Sending ID " << head->id << std::endl;
 
 	//now reply the client with the same data
 	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
@@ -184,15 +188,35 @@ int NetworkManager::sendData()
 	printf("Data sent to client \n");
 	printf("Id sent to client: %d\n", ids);
 	//std::cout << "si_other " << si_other << std::endl;
+	return EXIT_SUCCESS;
 }
 
-int NetworkManager::sendToAllClients()
+int NetworkManager::SendToAllClients()
 {
 	bufMutex.lock();
 	std::cout << "Pushing to all clients" << std::endl;
+	head->cmd = UPDATE;
+	DataUpdate* data = (DataUpdate*)(buf + sizeof(Header*));
+	data->data = &ObjData();
+
+	game->bufferMutex.lock();
+	data->numObj = game->GetNumAliveShips();
+	data->data->pos = game->GetAliveShipPos();
+	data->data->rot = game->GetAliveShipRot();
+	data->data->type = PLAYER_SHIP;
+	game->bufferMutex.unlock();
+	//data->data = new ObjData[data->numObj];
+
+	/*for (int i = 0; i < data->numObj; i++)
+	{
+		data->data[i].pos = tempPos[i];
+		data->data[i].rot = tempRot[i];
+		data->data[i].type = PLAYER_SHIP;
+	}*/
+
 	for (int i = 0; i < clients.size(); i++)
 	{
-		if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &clients[i], slen) == SOCKET_ERROR)
+		if (sendto(s, buf, sizeof(head)+sizeof(data), 0, (struct sockaddr*) &clients[i], slen) == SOCKET_ERROR)
 		{
 			printf("sendto() failed with error code : %d", WSAGetLastError());
 			return EXIT_FAILURE;
@@ -201,9 +225,11 @@ int NetworkManager::sendToAllClients()
 
 	std::cout << "Finished sending to all clients" << std::endl;
 	bufMutex.unlock();
+
+	return EXIT_SUCCESS;
 }
 
-int NetworkManager::receiveData()
+int NetworkManager::ReceiveData()
 {
 	bufMutex.lock();
 	//try to receive some data, this is a blocking call
@@ -216,21 +242,23 @@ int NetworkManager::receiveData()
 	//print details of the client/peer and the data received
 	printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
 	printf("Data: %s\n", buf);
-	std::cout << "ID on receive: " << data->id << std::endl;
+	std::cout << "ID on receive: " << head->id << std::endl;
 
-	if (data && data->id == 0)
+	if (head && head->id == 0)
 	{
-		data->id = GenerateID();
+		head->id = GenerateID();
 		std::cout << "Generated ID: " << (int)buf[0] << "\n" << std::endl;
 	}
 	else
 	{
-		std::cout << "There is an ID: " << data->id << "\n" << std::endl;
+		std::cout << "There is an ID: " << head->id << "\n" << std::endl;
 	}
 	bufMutex.unlock();
+
+	return EXIT_SUCCESS;
 }
 
-void NetworkManager::updateData()
+void NetworkManager::UpdateData()
 {
 	//change locations in buf once client is work on client is
 	//finished and it is sending the proper data to server
@@ -243,9 +271,10 @@ void NetworkManager::updateData()
 
 }
 
-void NetworkManager::shutDownServer()
+void NetworkManager::ShutDownServer()
 {
 	runServer = false;
+	ShutDownAllThreads();
 }
 
 void NetworkManager::ShutDownAllThreads()

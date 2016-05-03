@@ -404,3 +404,18 @@ void Game::Update(float deltaTime){
 		shipsAlive[i + 3] = !shipCollisions->value[i + 3];
 	}
 }
+
+int Game::GetNumAliveShips()
+{
+	return 2;
+}
+
+Vec2* Game::GetAliveShipPos()
+{
+	return 0;
+}
+
+float* Game::GetAliveShipRot()
+{
+	return 0;
+}

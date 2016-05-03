@@ -11,14 +11,16 @@
 
 int main()
 {
-	NetworkManager::init();
+	Game myGame = Game();
+
+	NetworkManager::Init();
 	NetworkManager::networkManager->Initialize(4);
-	NetworkManager::networkManager->displayIP();
+	NetworkManager::networkManager->DisplayIP();
+	NetworkManager::game = &myGame;
+	//NetworkManager::networkManager->SetGame(myGame);
 
 	//std::thread network([](){ NetworkManager::networkManager->startServer(); });
-	NetworkManager::networkManager->AssignTask([](){ NetworkManager::networkManager->startServer(); });
-
-	Game myGame = Game();
+	NetworkManager::networkManager->AssignTask([](){ NetworkManager::networkManager->StartServer(); });
 
 	clock_t myClock;
 	myClock = clock();
@@ -37,9 +39,10 @@ int main()
 	int b = 0;
 	std::cin >> b;
 
-	NetworkManager::networkManager->shutDownServer();
+	NetworkManager::networkManager->ShutDownServer();
 	NetworkManager::networkManager->ShutDownAllThreads();
 	//network.join();
+	//delete myGame;
 
 	return 0;
 }
