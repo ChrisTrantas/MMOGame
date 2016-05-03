@@ -49,7 +49,8 @@ void buildGame()
 	}
 
 #pragma region LightSetup
-	DEFAULT_LIGHT->addComponent<Rotate>(new Rotate(0.35f, vec3(1, 0, 0)));
+	DEFAULT_LIGHT->getComponent<Transform>()->rotateEuler(vec3(-M_PI_2, 0, 0));
+	DEFAULT_LIGHT->addComponent<Rotate>(new Rotate(0.35f, vec3(0, 0, 1)));
 #pragma endregion The light setup and binding phase
 
 #pragma region CameraSetup

@@ -31,18 +31,27 @@ SamplerComparisonState shadowSamp : register(s1);
 float4 main(VertexToPixel input) : SV_TARGET
 {
 	input.normal = normalize(input.normal);
-
+	
 	float4 diffuseColor = diffuse.Sample(trilinear, input.uv);
-
+	
 	float2 shadowUV = input.shadowPos.xy / input.shadowPos.w * 0.5f + 0.5f;
 	shadowUV.y = 1.0f - shadowUV.y;
-
+	
 	float depthFromLight = input.shadowPos.z / input.shadowPos.w;
-
+	
 	float shadowAmount = shadowMap.SampleCmpLevelZero(
 		shadowSamp,
 		shadowUV,
 		depthFromLight);
-
-	return diffuseColor * shadowAmount;
+	
+	float lightDistance = length(input.worldPos - spotLight.position);
+	
+	float viewCheck = dot(spotLight.direction, input.worldPos - spotLight.position);
+	viewCheck = acos(viewCheck / lightDistance);
+	shadowAmount *= viewCheck <= spotLight.fov * 0.5f;
+	
+	float lightNormalDot = dot(input.normal, normalize(spotLight.position - input.worldPos));
+	float lightAmount = (1 - (viewCheck / (spotLight.fov * 0.5f))) * saturate(lightNormalDot) / (lightDistance * 0.5f);
+	
+	return diffuseColor * shadowAmount * lightAmount;
 }
