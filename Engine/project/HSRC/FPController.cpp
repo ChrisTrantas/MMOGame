@@ -89,8 +89,4 @@ void FPController::update(float deltaTime, float totalTime)
 	{
 		NetworkManager::networkManager->died();
 	}
-	if (Input::isControlDown("quit"))
-	{
-		NetworkManager::networkManager->clientDisconnect();
-	}
 }
