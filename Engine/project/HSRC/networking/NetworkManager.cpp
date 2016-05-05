@@ -38,7 +38,7 @@ NetworkManager::NetworkManager()
 
 	
 
-	data = (bufferData*)buf;
+	head = (Header*)buf;
 
 	//Initialise winsock
 	printf("\nInitialising Winsock...");
@@ -89,16 +89,12 @@ int NetworkManager::startClient()
 	//start communication
 	//printf("start client : ");
 	//gets_s(message);
-	recv_len = sizeof(bufferData);
+	recv_len = sizeof(Header*);
 	//data = (bufferData*)buf;
 
 	memset(buf, '\0', BUFLEN);
-	data->id = 0;
-	data->xPos = 0;
-	data->yPos = 0;
-	data->connected = true;
-	data->alive = true;
-	data->fired = false;
+	head->id = 0;
+
 	//send the message
 	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, slen) == SOCKET_ERROR)
 	{
@@ -116,9 +112,9 @@ int NetworkManager::startClient()
 		//exit(EXIT_FAILURE);
 	}
 
-	id = data->id;
+	id = head->id;
 	//id = (int*)&buf[0];
-	printf("Id of Client: %d\n", data->id);
+	printf("Id of Client: %d\n", head->id);
 	//int* xData = (int*)&buf[8];
 	//int* yData = (int*)&buf[16];
 	printf("size of int* %d\n", sizeof(int*));
@@ -168,12 +164,11 @@ int NetworkManager::sendData()
 {
 	//int* bufPoint = (int*)&buf[0];
 	//bufPoint = id;
-	bufMutex.lock();
-	data->id = id;
-	printf("Sending ID: ", data->id);
-	printf("Status: ", data->alive);
-	printf("Firing: ", data->fired);
-	printf("Connected: ", data->connected);
+	head->id = id;
+	printf("Sending ID: %d\n", head->id);
+	//printf("Status: %d\n", data->alive);
+	//printf("Firing: %d\n", data->fired);
+	//printf("Connected: %d\n", data->connected);
 
 	//now reply the client with the same data
 	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
@@ -182,7 +177,6 @@ int NetworkManager::sendData()
 		return EXIT_FAILURE;
 	}
 	printf("Sending Data to Server \n");
-	bufMutex.unlock();
 }
 
 int NetworkManager::receiveData()
@@ -195,13 +189,13 @@ int NetworkManager::receiveData()
 		return EXIT_FAILURE;
 	}
 
-	if (data && data->id != 0)
+	if (head && head->id != 0)
 	{
-		id = data->id;
+		id = head->id;
 	}
 
 	//print details of the client/peer and the data received
-	std::cout << "Data ID: " << data->id << std::endl;
+	std::cout << "Data ID: " << head->id << std::endl;
 	std::cout << "Client ID: " << id << std::endl;
 
 	bufMutex.unlock();
@@ -211,41 +205,47 @@ int NetworkManager::receiveData()
 	
 }
 
-void NetworkManager::updateData(char btn)
+void NetworkManager::updateData(glm::vec3 pos, glm::vec3 rot)
 {
 	//threadManager->CreateWorkerThread();
 	//int* bufPoint = (int*)&buf[0];
 	//bufPoint = id;
 	bufMutex.lock();
+	ObjData* data = (ObjData*)(buf + sizeof(Header*));
 	
-	if (btn == 'i')
+	data->pos = &(glm::vec2)pos;
+	data->rot = &rot.x;
+
+	/*if (btn == 'i')
 	{
-		xPos = data->xPos;
-		yPos = data->yPos;
+		xPos = data->pos->x;
+		yPos = data->pos->y;
 		printf("i pressed");
 	}
 	if (btn == 'j')
 	{
-		xPos = data->xPos;
-		yPos = data->yPos;
+		xPos = data->pos->x;
+		yPos = data->pos->y;
 		printf("j pressed");
 	}
 	if (btn == 'k')
 	{
-		xPos = data->xPos;
-		yPos = data->yPos;
+		xPos = data->pos->x;
+		yPos = data->pos->y;
 		printf("k pressed");
 	}
 	if (btn == 'l')
 	{
-		xPos = data->xPos;
-		yPos = data->yPos;
+		xPos = data->pos->x;
+		yPos = data->pos->y;
 		printf("l pressed");
-	}
+	}*/
+
+	head->cmd = UPDATE;
+	sendData();
 
 	bufMutex.unlock();
-	sendData();
-	receiveData();
+	//receiveData();
 	printf("updating Data");
 }
 
@@ -258,9 +258,9 @@ void NetworkManager::serverUpdate()
 
 	
 
-	bufMutex.unlock();
 	sendData();
-	receiveData();
+	bufMutex.unlock();
+	//receiveData();
 	printf("updating Data");
 }
 
@@ -268,36 +268,40 @@ void NetworkManager::died()
 {
 	bufMutex.lock();
 
-	data->alive = true;
+	//data->alive = true;
+	head->cmd = PLAYER_DIED;
 
-	bufMutex.unlock();
 	sendData();
+	bufMutex.unlock();
 }
 
 void NetworkManager::fired()
 {
 	bufMutex.lock();
 
-	data->fired = true;
+	//data->fired = true;
+	head->cmd = BULLET_FIRED;
 
-	bufMutex.unlock();
 	sendData();
-	data->fired = false;
+	bufMutex.unlock();
+	//data->fired = false;
 }
 
 void NetworkManager::clientDisconnect()
 {
 	bufMutex.lock();
 
-	data->connected = false;
+	//data->connected = false;
+	head->cmd = PLAYER_DISCONNECT;
 
-	bufMutex.unlock();
 	sendData();
+	bufMutex.unlock();
 }
 
 void NetworkManager::shutDownClient()
 {
 	runClient = false;
+	ShutDownAllThreads();
 }
 
 void NetworkManager::ShutDownAllThreads()

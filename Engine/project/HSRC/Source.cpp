@@ -69,7 +69,6 @@ void destructGame()
 	delete avs;
 	delete aps;
 
-	NetworkManager::networkManager->ShutDownAllThreads();
 	NetworkManager::networkManager->shutDownClient();
 	delete NetworkManager::networkManager;
 }

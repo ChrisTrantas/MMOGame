@@ -5,6 +5,8 @@
 #include<stdio.h>
 #include <iostream>
 #include <mutex>
+#include <glm\glm.hpp>
+#include <glm\gtx\transform.hpp>
 #include "..\threading\Thread.h"
 #include "..\engine\Game.h"
 
@@ -14,15 +16,56 @@
 #define BUFLEN 512  //Max length of buffer
 #define PORT 8888   //The port on which to listen for incoming data
 
-struct bufferData
+enum ObjType
+{
+	NONE,
+	PLAYER_SHIP,
+	PLAYER_LIGHT,
+	ASTEROID_BIG,
+	ASTEROID_MEDIUM,
+	ASTEROID_SMALL,
+	BULLET,
+	LIGHT
+};
+
+enum Command
+{
+	UPDATE,
+	PLAYER_DIED,
+	BULLET_FIRED,
+	PLAYER_DISCONNECT
+};
+
+struct Header
 {
 	int id;
-	int xPos;
-	int yPos;
-	bool alive;
-	bool fired;
-	bool connected;
-	//char* data[];
+	Command cmd;
+};
+
+struct ObjData
+{
+	glm::vec2* pos;
+	float* rot;
+	ObjType type;
+
+	ObjData()
+	{
+		//pos = 0;
+		//rot = 0;
+		type = NONE;
+	}
+};
+
+struct DataUpdate
+{
+	int numObj;
+	ObjData* data;
+};
+
+struct DataFired
+{
+	glm::vec2* pos;
+	float rot;
 };
 
 class NetworkManager
@@ -39,7 +82,7 @@ public:
 	int startServer();
 	int sendData();
 	int receiveData();
-	void updateData(char);
+	void updateData(glm::vec3 pos, glm::vec3 rot);
 	void serverUpdate();
 	void died();
 	void fired();
@@ -75,7 +118,7 @@ private:
 	bool runClient;
 	int timeoutTime;
 	char* server;
-	bufferData* data;
+	Header* head;
 
 	std::mutex bufMutex;
 

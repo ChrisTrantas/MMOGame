@@ -77,21 +77,9 @@ void FPController::update(float deltaTime, float totalTime)
 		}
 	}
 	
-	if (Input::isControlDown("moveRight"))
+	if (Input::isControlDown("moveRight") || Input::isControlDown("moveLeft") || Input::isControlDown("moveUp") || Input::isControlDown("moveDown"))
 	{
-		NetworkManager::networkManager->updateData('l');
-	}
-	if (Input::isControlDown("moveLeft"))
-	{
-		NetworkManager::networkManager->updateData('j');
-	}
-	if (Input::isControlDown("moveUp"))
-	{
-		NetworkManager::networkManager->updateData('i');
-	}
-	if (Input::isControlDown("moveDown"))
-	{
-		NetworkManager::networkManager->updateData('k');
+		NetworkManager::networkManager->updateData(ct->getPosition(), ct->getEuler());
 	}
 	if (Input::isControlDown("fire"))
 	{
