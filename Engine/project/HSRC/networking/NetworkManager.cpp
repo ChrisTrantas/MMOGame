@@ -364,7 +364,10 @@ void NetworkManager::ShutDownAllThreads()
 		for (int i = 0; i < m_nThreadCount; i++)
 		{
 			m_ptrThread[i]->ReleaseHandles();
-			delete m_ptrThread[i]; //THIS NEEDS TO BE FIXED SO THAT IT DOESN"T DESTROY THE THREADS
+			delete m_ptrThread[i]; // do not delete
+			// use a bool array for the threads to check "am I alive"
+				// if "I am not alive" have the thread return in it's method
+			// set all bools to false here, and join all the threads
 		}
 
 
