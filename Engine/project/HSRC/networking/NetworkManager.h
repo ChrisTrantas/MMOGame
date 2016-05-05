@@ -44,27 +44,39 @@ struct Header
 
 struct ObjData
 {
-	glm::vec2* pos;
-	float* rot;
+	int id;
+	glm::vec2 pos;
+	float rot;
 	ObjType type;
 
 	ObjData()
 	{
 		//pos = 0;
 		//rot = 0;
+		pos = glm::vec2();
+		rot = 0;
 		type = NONE;
+	}
+
+	ObjData(glm::vec2 p, float r, ObjType t)
+	{
+		//pos = 0;
+		//rot = 0;
+		pos = p;
+		rot = r;
+		type = t;
 	}
 };
 
 struct DataUpdate
 {
 	int numObj;
-	ObjData* data;
+	ObjData data;
 };
 
 struct DataFired
 {
-	glm::vec2* pos;
+	glm::vec2 pos;
 	float rot;
 };
 
@@ -119,6 +131,8 @@ private:
 	int timeoutTime;
 	char* server;
 	Header* head;
+	ObjData ship;
+	vector<ObjData> otherObjs;
 
 	std::mutex bufMutex;
 

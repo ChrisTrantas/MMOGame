@@ -30,7 +30,7 @@ void FPController::awake()
 	Input::bindToControl("moveLeft", 'J');
 	Input::bindToControl("moveDown", 'K');
 	Input::bindToControl("toggleColor", 'T');
-	Input::bindToControl("quit", 'Q');
+	Input::bindToControl("quity", 'Q');
 	Input::bindToControl("fire", 'F');
 	Input::bindToControl("die", 'B');
 }
@@ -89,7 +89,7 @@ void FPController::update(float deltaTime, float totalTime)
 	{
 		NetworkManager::networkManager->died();
 	}
-	if (Input::isControlDown("quit"))
+	if (Input::isControlDown("quity"))
 	{
 		NetworkManager::networkManager->clientDisconnect();
 	}

@@ -89,11 +89,21 @@ int NetworkManager::startClient()
 	//start communication
 	//printf("start client : ");
 	//gets_s(message);
-	recv_len = sizeof(Header*);
+	recv_len = sizeof(Header);
 	//data = (bufferData*)buf;
 
 	memset(buf, '\0', BUFLEN);
 	head->id = 0;
+	head->cmd = UPDATE;
+
+	DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
+	data->numObj = 1;
+	//data->data = &ObjData();
+	//data->data = (ObjData*)(data + sizeof(DataUpdate));
+	//data
+	int num = sizeof(Header);
+	int num2 = sizeof(Header*);
+	//data->data->pos.push_back
 
 	//send the message
 	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, slen) == SOCKET_ERROR)
@@ -194,6 +204,33 @@ int NetworkManager::receiveData()
 		id = head->id;
 	}
 
+	if (head->cmd == UPDATE)
+	{
+		DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
+		if (data->data.id == id)
+		{
+			ship = data->data;
+		}
+		else
+		{
+			bool inVector = false;
+			for (int i = 0; i < otherObjs.size(); i++)
+			{
+				if (otherObjs[i].id == data->data.id)
+				{
+					inVector = true;
+					otherObjs[i] = data->data;
+					break;
+				}
+			}
+
+			if (!inVector)
+			{
+				otherObjs.push_back(data->data);
+			}
+		}
+	}
+
 	//print details of the client/peer and the data received
 	std::cout << "Data ID: " << head->id << std::endl;
 	std::cout << "Client ID: " << id << std::endl;
@@ -211,10 +248,18 @@ void NetworkManager::updateData(glm::vec3 pos, glm::vec3 rot)
 	//int* bufPoint = (int*)&buf[0];
 	//bufPoint = id;
 	bufMutex.lock();
-	ObjData* data = (ObjData*)(buf + sizeof(Header*));
+	DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
+	int num = sizeof(Header);
 	
-	data->pos = &(glm::vec2)pos;
-	data->rot = &rot.x;
+	ship.pos = (glm::vec2)pos;
+	ship.rot = (rot.x);
+	data->data = ship;
+	//vector<ObjData> temp;
+	//temp.push_back(ObjData((glm::vec2)pos, rot.x, PLAYER_SHIP));
+	//data->data = temp;
+	//data->data.push_back
+	//data->datapos.push_back((glm::vec2)pos);
+	//data->data->rot.push_back(rot.x);
 
 	/*if (btn == 'i')
 	{
@@ -319,7 +364,7 @@ void NetworkManager::ShutDownAllThreads()
 		for (int i = 0; i < m_nThreadCount; i++)
 		{
 			m_ptrThread[i]->ReleaseHandles();
-			delete m_ptrThread[i];
+			delete m_ptrThread[i]; //THIS NEEDS TO BE FIXED SO THAT IT DOESN"T DESTROY THE THREADS
 		}
 
 

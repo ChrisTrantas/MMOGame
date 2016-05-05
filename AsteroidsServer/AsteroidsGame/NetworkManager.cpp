@@ -196,14 +196,14 @@ int NetworkManager::SendToAllClients()
 	bufMutex.lock();
 	std::cout << "Pushing to all clients" << std::endl;
 	head->cmd = UPDATE;
-	DataUpdate* data = (DataUpdate*)(buf + sizeof(Header*));
-	data->data = &ObjData();
+	DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
+	//data->data = &ObjData();
 
 	game->bufferMutex.lock();
-	data->numObj = game->GetNumAliveShips();
-	data->data->pos = game->GetAliveShipPos();
-	data->data->rot = game->GetAliveShipRot();
-	data->data->type = PLAYER_SHIP;
+	data->numObj = shipPos.size();// game->GetNumAliveShips();
+	//data->data->pos = shipPos;// game->GetAliveShipPos();
+	//data->data->rot = shipRot;// game->GetAliveShipRot();
+	//data->data->type = PLAYER_SHIP;
 	game->bufferMutex.unlock();
 	//data->data = new ObjData[data->numObj];
 
@@ -216,10 +216,13 @@ int NetworkManager::SendToAllClients()
 
 	for (int i = 0; i < clients.size(); i++)
 	{
-		if (sendto(s, buf, sizeof(head)+sizeof(data), 0, (struct sockaddr*) &clients[i], slen) == SOCKET_ERROR)
+		for (int j = 0; j < objs.size(); j++)
 		{
-			printf("sendto() failed with error code : %d", WSAGetLastError());
-			return EXIT_FAILURE;
+			if (sendto(s, buf, sizeof(head) + sizeof(data), 0, (struct sockaddr*) &clients[i], slen) == SOCKET_ERROR)
+			{
+				printf("sendto() failed with error code : %d", WSAGetLastError());
+				return EXIT_FAILURE;
+			}
 		}
 	}
 
@@ -256,6 +259,34 @@ int NetworkManager::ReceiveData()
 	else
 	{
 		std::cout << "There is an ID: " << head->id << "\n" << std::endl;
+	}
+
+	if (head->cmd == UPDATE)
+	{
+		DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
+		int num = sizeof(Header);
+		int num2 = sizeof(Header*);
+		int num3 = sizeof(head);
+		if (data)
+		{
+			bool foundObj = false;
+			for (int i = 0; i < objs.size(); i++)
+			{
+				if (objs[i].id == data->data.id)
+				{
+					foundObj = true;
+					objs[i] = data->data;
+					break;
+				}
+			}
+
+			if (!foundObj)
+			{
+				objs.push_back(data->data);
+				// .push_back(data->data.pos);
+				//shipRot.push_back(data->data.rot);
+			}
+		}
 	}
 	bufMutex.unlock();
 
@@ -316,7 +347,7 @@ int NetworkManager::GenerateID()
 		if (!(ids & ((uint64_t)1 << i)))
 		{
 			ids |= (1 << i);
-			return i;
+			return i+1;
 		}
 	}
 
@@ -325,7 +356,7 @@ int NetworkManager::GenerateID()
 
 void NetworkManager::FreeID(int id)
 {
-	ids &= ~(1 << id);
+	ids &= ~(1 << (id-1));
 	printf("ids after free %d", ids);
 }
 

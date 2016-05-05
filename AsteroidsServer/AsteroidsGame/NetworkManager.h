@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <vector>
 #include <mutex>
+#include <glm\glm.hpp>
+#include <glm\gtx\transform.hpp>
 //#include <sys/time.h>
 
 #include "Thread.h"
@@ -53,8 +55,9 @@ struct Header
 
 struct ObjData
 {
-	Vec2* pos;
-	float* rot;
+	int id;
+	glm::vec2 pos;
+	float rot;
 	ObjType type;
 
 	ObjData()
@@ -68,12 +71,12 @@ struct ObjData
 struct DataUpdate
 {
 	int numObj;
-	ObjData* data;
+	ObjData data;
 };
 
 struct DataFired
 {
-	Vec2* pos;
+	glm::vec2 pos;
 	float rot;
 };
 
@@ -117,6 +120,9 @@ private:
 	std::vector<sockaddr_in> clients;
 	std::mutex bufMutex;
 	Header* head;
+	std::vector<ObjData> objs;
+	std::vector<glm::vec2> shipPos;
+	std::vector<float> shipRot;
 
 	//Thread Management
 	Thread* m_ptrThread[5];
