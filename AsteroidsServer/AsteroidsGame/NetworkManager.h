@@ -97,6 +97,7 @@ public:
 	void ShutDownAllThreads();
 	void ShutDownThread(DWORD dwThreadID);
 	int GenerateID();
+	void FreeID(int id);
 	int GetFreeThread();
 	std::string GetTaskMessage();
 	int GetThreadCount();

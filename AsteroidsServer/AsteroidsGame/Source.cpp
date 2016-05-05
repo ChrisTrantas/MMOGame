@@ -40,7 +40,7 @@ int main()
 	std::cin >> b;
 
 	NetworkManager::networkManager->ShutDownServer();
-	NetworkManager::networkManager->ShutDownAllThreads();
+	//NetworkManager::networkManager->ShutDownAllThreads();
 	//network.join();
 	//delete myGame;
 
