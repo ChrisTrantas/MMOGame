@@ -35,6 +35,9 @@ NetworkManager::NetworkManager()
 	s, slen = sizeof(si_other);
 	xPos = 0;
 	yPos = 0;
+
+	
+
 	data = (bufferData*)buf;
 
 	//Initialise winsock
@@ -93,7 +96,9 @@ int NetworkManager::startClient()
 	data->id = 0;
 	data->xPos = 0;
 	data->yPos = 0;
-
+	data->connected = true;
+	data->alive = true;
+	data->fired = false;
 	//send the message
 	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, slen) == SOCKET_ERROR)
 	{
@@ -166,6 +171,9 @@ int NetworkManager::sendData()
 	bufMutex.lock();
 	data->id = id;
 	printf("Sending ID: ", data->id);
+	printf("Status: ", data->alive);
+	printf("Firing: ", data->fired);
+	printf("Connected: ", data->connected);
 
 	//now reply the client with the same data
 	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
@@ -239,6 +247,52 @@ void NetworkManager::updateData(char btn)
 	sendData();
 	receiveData();
 	printf("updating Data");
+}
+
+void NetworkManager::serverUpdate()
+{
+	//threadManager->CreateWorkerThread();
+	//int* bufPoint = (int*)&buf[0];
+	//bufPoint = id;
+	bufMutex.lock();
+
+	
+
+	bufMutex.unlock();
+	sendData();
+	receiveData();
+	printf("updating Data");
+}
+
+void NetworkManager::died()
+{
+	bufMutex.lock();
+
+	data->alive = true;
+
+	bufMutex.unlock();
+	sendData();
+}
+
+void NetworkManager::fired()
+{
+	bufMutex.lock();
+
+	data->fired = true;
+
+	bufMutex.unlock();
+	sendData();
+	data->fired = false;
+}
+
+void NetworkManager::clientDisconnect()
+{
+	bufMutex.lock();
+
+	data->connected = false;
+
+	bufMutex.unlock();
+	sendData();
 }
 
 void NetworkManager::shutDownClient()

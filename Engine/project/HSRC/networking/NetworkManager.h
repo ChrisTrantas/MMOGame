@@ -19,6 +19,9 @@ struct bufferData
 	int id;
 	int xPos;
 	int yPos;
+	bool alive;
+	bool fired;
+	bool connected;
 	//char* data[];
 };
 
@@ -37,6 +40,10 @@ public:
 	int sendData();
 	int receiveData();
 	void updateData(char);
+	void serverUpdate();
+	void died();
+	void fired();
+	void clientDisconnect();
 	void shutDownClient();
 
 
