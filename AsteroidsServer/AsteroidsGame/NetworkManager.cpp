@@ -244,7 +244,11 @@ int NetworkManager::ReceiveData()
 	printf("Data: %s\n", buf);
 	std::cout << "ID on receive: " << head->id << std::endl;
 
-	if (head && head->id == 0)
+	if (head && head->cmd == PLAYER_DISCONNECT)
+	{
+		FreeID(head->id);
+	}
+	else if (head && head->id == 0)
 	{
 		head->id = GenerateID();
 		std::cout << "Generated ID: " << (int)buf[0] << "\n" << std::endl;
@@ -317,6 +321,12 @@ int NetworkManager::GenerateID()
 	}
 
 	return -1;
+}
+
+void NetworkManager::FreeID(int id)
+{
+	ids &= ~(1 << id);
+	printf("ids after free %d", ids);
 }
 
 int NetworkManager::GetFreeThread()
