@@ -29,7 +29,7 @@
 
 enum ObjType
 {
-	NONE,
+	OBJ_NONE,
 	PLAYER_SHIP,
 	PLAYER_LIGHT,
 	ASTEROID_BIG,
@@ -41,16 +41,26 @@ enum ObjType
 
 enum Command
 {
-	UPDATE,
+	CMD_NONE,
+	SERVER_UPDATE,
+	PLAYER_COMMAND,
 	PLAYER_DIED,
 	BULLET_FIRED,
 	PLAYER_DISCONNECT
 };
 
+enum PlayerDir
+{
+	LEFT,
+	RIGHT,
+	UP,
+	DOWN
+};
+
 struct Header
 {
 	int id;
-	Command cmd;
+	Command cmd = CMD_NONE;
 };
 
 struct ObjData
@@ -64,7 +74,7 @@ struct ObjData
 	{
 		//pos = 0;
 		//rot = 0;
-		type = NONE;
+		type = OBJ_NONE;
 	}
 };
 
@@ -121,8 +131,8 @@ private:
 	std::mutex bufMutex;
 	Header* head;
 	std::vector<ObjData> objs;
-	std::vector<glm::vec2> shipPos;
-	std::vector<float> shipRot;
+	//std::vector<glm::vec2> shipPos;
+	//std::vector<float> shipRot;
 
 	//Thread Management
 	Thread* m_ptrThread[5];

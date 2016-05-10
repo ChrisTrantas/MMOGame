@@ -1,0 +1,27 @@
+﻿Build started 5/10/2016 8:36:12 AM.
+     1>Project "Z:\IGMProfile\College\MMO\MMOGame\AsteroidsServer\AsteroidsGame\AsteroidsGame.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Game.cpp NetworkManager.cpp Source.cpp Thread.cpp
+         Game.cpp
+         NetworkManager.cpp
+     1>NetworkManager.cpp(19): warning C4018: '>' : signed/unsigned mismatch
+     1>NetworkManager.cpp(200): warning C4018: '<' : signed/unsigned mismatch
+     1>NetworkManager.cpp(202): warning C4018: '<' : signed/unsigned mismatch
+     1>NetworkManager.cpp(256): warning C4018: '<' : signed/unsigned mismatch
+     1>NetworkManager.cpp(330): warning C4334: '<<' : result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+         Source.cpp
+     1>Source.cpp(35): warning C4244: 'initializing' : conversion from 'clock_t' to 'float', possible loss of data
+         Thread.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"Z:\IGMProfile\College\MMO\MMOGame\AsteroidsServer\Release\AsteroidsGame.exe" /NOLOGO User32.lib gdi32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"Z:\IGMProfile\College\MMO\MMOGame\AsteroidsServer\Release\AsteroidsGame.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"Z:\IGMProfile\College\MMO\MMOGame\AsteroidsServer\Release\AsteroidsGame.lib" /MACHINE:X86 /SAFESEH Release\Game.obj
+         Release\NetworkManager.obj
+         Release\Source.obj
+         Release\Thread.obj
+         Generating code
+         Finished generating code
+         AsteroidsGame.vcxproj -> Z:\IGMProfile\College\MMO\MMOGame\AsteroidsServer\Release\AsteroidsGame.exe
+     1>Done Building Project "Z:\IGMProfile\College\MMO\MMOGame\AsteroidsServer\AsteroidsGame\AsteroidsGame.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:09.21

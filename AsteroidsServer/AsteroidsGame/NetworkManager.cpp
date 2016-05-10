@@ -143,10 +143,6 @@ int NetworkManager::StartServer()
 		FD_ZERO(&fds);
 		FD_SET(s, &fds);
 
-		/*if (setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0)
-		{
-		perror("Error");
-		}*/
 		int timeoutError = select(s + 1, &fds, NULL, NULL, &tv);
 		if (timeoutError == -1)
 		{
@@ -187,7 +183,6 @@ int NetworkManager::SendData()
 
 	printf("Data sent to client \n");
 	printf("Id sent to client: %d\n", ids);
-	//std::cout << "si_other " << si_other << std::endl;
 	return EXIT_SUCCESS;
 }
 
@@ -195,30 +190,19 @@ int NetworkManager::SendToAllClients()
 {
 	bufMutex.lock();
 	std::cout << "Pushing to all clients" << std::endl;
-	head->cmd = UPDATE;
+	head->cmd = SERVER_UPDATE;
 	DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
-	//data->data = &ObjData();
 
-	game->bufferMutex.lock();
-	data->numObj = shipPos.size();// game->GetNumAliveShips();
-	//data->data->pos = shipPos;// game->GetAliveShipPos();
-	//data->data->rot = shipRot;// game->GetAliveShipRot();
-	//data->data->type = PLAYER_SHIP;
-	game->bufferMutex.unlock();
-	//data->data = new ObjData[data->numObj];
-
-	/*for (int i = 0; i < data->numObj; i++)
-	{
-		data->data[i].pos = tempPos[i];
-		data->data[i].rot = tempRot[i];
-		data->data[i].type = PLAYER_SHIP;
-	}*/
+	//game->bufferMutex.lock();
+	//data->numObj = shipPos.size();
+	//game->bufferMutex.unlock();
 
 	for (int i = 0; i < clients.size(); i++)
 	{
 		for (int j = 0; j < objs.size(); j++)
 		{
-			if (sendto(s, buf, sizeof(head) + sizeof(data), 0, (struct sockaddr*) &clients[i], slen) == SOCKET_ERROR)
+			data->data = objs[j];
+			if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &clients[i], slen) == SOCKET_ERROR)
 			{
 				printf("sendto() failed with error code : %d", WSAGetLastError());
 				return EXIT_FAILURE;
@@ -255,36 +239,61 @@ int NetworkManager::ReceiveData()
 	{
 		head->id = GenerateID();
 		std::cout << "Generated ID: " << (int)buf[0] << "\n" << std::endl;
+		//DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
+		//
+		//if (data)
+		//{
+		//	data->data.id = head->id;
+		//	data->data.type = PLAYER_SHIP;
+		//	objs.push_back(data->data);
+		//}
 	}
 	else
 	{
 		std::cout << "There is an ID: " << head->id << "\n" << std::endl;
 	}
 
-	if (head->cmd == UPDATE)
+	if (head->cmd == PLAYER_COMMAND)
 	{
-		DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
-		int num = sizeof(Header);
-		int num2 = sizeof(Header*);
-		int num3 = sizeof(head);
-		if (data)
+		PlayerDir* dir = (PlayerDir*)(buf + sizeof(Header));
+
+		if (dir)
 		{
 			bool foundObj = false;
 			for (int i = 0; i < objs.size(); i++)
 			{
-				if (objs[i].id == data->data.id)
+				if (objs[i].id == head->id)
 				{
 					foundObj = true;
-					objs[i] = data->data;
+					if (*dir == LEFT)
+					{
+						objs[i].pos.x -= 5;
+					}
+					else if (*dir == RIGHT)
+					{
+						objs[i].pos.x += 5;
+					}
+					else if (*dir == UP)
+					{
+						objs[i].pos.y += 5;
+					}
+					else
+					{
+						objs[i].pos.y -= 5;
+					}
+					
 					break;
 				}
 			}
 
 			if (!foundObj)
 			{
-				objs.push_back(data->data);
-				// .push_back(data->data.pos);
-				//shipRot.push_back(data->data.rot);
+				ObjData data = ObjData();
+				data.pos = glm::vec2(0, 0);
+				data.rot = 0;
+				data.type = PLAYER_SHIP;
+				data.id = head->id;
+				objs.push_back(data);
 			}
 		}
 	}
@@ -338,7 +347,7 @@ void NetworkManager::ShutDownAllThreads()
 
 int NetworkManager::GenerateID()
 {
-	printf("ids %d", ids);
+	printf("ids %d\n", ids);
 	clients.push_back(si_other);
 
 	for (int i = 0; i < 64; i++)

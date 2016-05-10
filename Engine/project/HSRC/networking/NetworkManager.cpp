@@ -94,16 +94,13 @@ int NetworkManager::startClient()
 
 	memset(buf, '\0', BUFLEN);
 	head->id = 0;
-	head->cmd = UPDATE;
+	//head->cmd = UPDATE;
 
 	DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
 	data->numObj = 1;
 	//data->data = &ObjData();
 	//data->data = (ObjData*)(data + sizeof(DataUpdate));
 	//data
-	int num = sizeof(Header);
-	int num2 = sizeof(Header*);
-	//data->data->pos.push_back
 
 	//send the message
 	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, slen) == SOCKET_ERROR)
@@ -123,15 +120,9 @@ int NetworkManager::startClient()
 	}
 
 	id = head->id;
-	//id = (int*)&buf[0];
 	printf("Id of Client: %d\n", head->id);
-	//int* xData = (int*)&buf[8];
-	//int* yData = (int*)&buf[16];
 	printf("size of int* %d\n", sizeof(int*));
-	//xPos = *xData;
-	//yPos = *yData;
-	//printf("xPos: %d\n", data->xPos);
-	//printf("yPos: %d\n", data->yPos);
+
 	timeval tv;
 	fd_set fds;
 	while (runClient)
@@ -176,9 +167,6 @@ int NetworkManager::sendData()
 	//bufPoint = id;
 	head->id = id;
 	printf("Sending ID: %d\n", head->id);
-	//printf("Status: %d\n", data->alive);
-	//printf("Firing: %d\n", data->fired);
-	//printf("Connected: %d\n", data->connected);
 
 	//now reply the client with the same data
 	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
@@ -204,7 +192,7 @@ int NetworkManager::receiveData()
 		id = head->id;
 	}
 
-	if (head->cmd == UPDATE)
+	if (head->cmd == SERVER_UPDATE)
 	{
 		DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
 		if (data->data.id == id)
@@ -242,55 +230,16 @@ int NetworkManager::receiveData()
 	
 }
 
-void NetworkManager::updateData(glm::vec3 pos, glm::vec3 rot)
+void NetworkManager::updateData(PlayerDir dir)
 {
-	//threadManager->CreateWorkerThread();
-	//int* bufPoint = (int*)&buf[0];
-	//bufPoint = id;
 	bufMutex.lock();
-	DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
-	int num = sizeof(Header);
-	
-	ship.pos = (glm::vec2)pos;
-	ship.rot = (rot.x);
-	data->data = ship;
-	//vector<ObjData> temp;
-	//temp.push_back(ObjData((glm::vec2)pos, rot.x, PLAYER_SHIP));
-	//data->data = temp;
-	//data->data.push_back
-	//data->datapos.push_back((glm::vec2)pos);
-	//data->data->rot.push_back(rot.x);
+	PlayerDir* direction = (PlayerDir*)(buf + sizeof(Header));
+	*direction = dir;
 
-	/*if (btn == 'i')
-	{
-		xPos = data->pos->x;
-		yPos = data->pos->y;
-		printf("i pressed");
-	}
-	if (btn == 'j')
-	{
-		xPos = data->pos->x;
-		yPos = data->pos->y;
-		printf("j pressed");
-	}
-	if (btn == 'k')
-	{
-		xPos = data->pos->x;
-		yPos = data->pos->y;
-		printf("k pressed");
-	}
-	if (btn == 'l')
-	{
-		xPos = data->pos->x;
-		yPos = data->pos->y;
-		printf("l pressed");
-	}*/
-
-	head->cmd = UPDATE;
+	head->cmd = PLAYER_COMMAND;
 	sendData();
 
 	bufMutex.unlock();
-	//receiveData();
 	printf("updating Data");
 }
 
