@@ -5,6 +5,9 @@ Game::Game()
 	bulletHighIndex = 0;
 	bulletLowIndex = 0;
 
+	asteroidsHighIndex = 0;
+	asteroidsLowIndex = 0;
+
 	// Create everything and initialize it all to zero
 	asteroidPositions = new Vec2(MAX_ASTEROIDS);
 	asteroidVelocities = new Vec2(MAX_ASTEROIDS);
@@ -25,6 +28,7 @@ Game::Game()
 
 	results = (float*)_aligned_malloc(sizeof(float) * 4, 32);
 	memset(results, 0, sizeof(float) * 4);
+	memset(asteroidRadius->value, STARTING_ASTEROID_RADIUS, sizeof(float) * 8);
 
 	for (int i = 0; i < MAX_SHIPS; i+=4){
 		shipsAlive[i] = false;
@@ -235,6 +239,28 @@ void Game::Update(float deltaTime){
 				}
 
 			}
+		}
+	}
+	// Now that we know where any split asteroids are, let's split them.
+	for (int i = 0; i < asteroidsHighIndex; ++i){
+		if (splitAsteroids[i]){
+			splitAsteroids[i] = false;
+			asteroidRadius->value[i] = asteroidRadius->value[i] / 2.0f;
+			if (asteroidRadius->value[i] < 1.0f){
+				asteroidRadius->value[i] = 0;
+				continue;
+			}
+			asteroidRadius->value[asteroidsLowIndex] = asteroidRadius->value[i];
+			for (int j = asteroidsLowIndex; j < MAX_ASTEROIDS; ++j){
+				if (asteroidRadius->value[j] == 0){
+					asteroidsLowIndex = j;
+					if (j > asteroidsHighIndex){
+						asteroidsHighIndex = j;
+					}
+					break;
+				}
+			}
+
 		}
 	}
 

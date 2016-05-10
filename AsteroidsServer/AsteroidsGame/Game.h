@@ -11,6 +11,7 @@
 #define MAX_LIGHTS 4 * (8/4)
 #define MAX_BULLETS 4 * (128/4)
 
+#define STARTING_ASTEROID_RADIUS 8
 #define SHIP_RADIUS 1.0f
 #define MAX_SHIP_SPEED 8.0f
 
@@ -59,6 +60,8 @@ private:
 	int bulletHighIndex;//The highest index reached so far.
 	int bulletLowIndex;//The lowest free index so far.
 	bool splitAsteroids[MAX_ASTEROIDS];
+	int asteroidsHighIndex;
+	int asteroidsLowIndex;
 
 	// Temporary buffer for math
 	float* results;
