@@ -2,6 +2,12 @@
 
 Game::Game()
 {
+	bulletHighIndex = 0;
+	bulletLowIndex = 0;
+
+	asteroidsHighIndex = 0;
+	asteroidsLowIndex = 0;
+
 	// Create everything and initialize it all to zero
 	asteroidPositions = new Vec2(MAX_ASTEROIDS);
 	asteroidVelocities = new Vec2(MAX_ASTEROIDS);
@@ -22,6 +28,7 @@ Game::Game()
 
 	results = (float*)_aligned_malloc(sizeof(float) * 4, 32);
 	memset(results, 0, sizeof(float) * 4);
+	memset(asteroidRadius->value, STARTING_ASTEROID_RADIUS, sizeof(float) * 8);
 
 	for (int i = 0; i < MAX_SHIPS; i+=4){
 		shipsAlive[i] = false;
@@ -131,7 +138,7 @@ void Game::Update(float deltaTime){
 	memcpy(bulletPrevPositions->y, bulletPositions->y, sizeof(float) * MAX_BULLETS);
 
 	// Update data for all bullets
-	for (int i = 0; i < MAX_BULLETS; i += 4){
+	for (int i = 0; i < bulletHighIndex / 4; i += 4){
 		// Load bullet memory
 		__m128 velocitiesX = _mm_load_ps(bulletVelocities->x + i);
 		__m128 positionsX = _mm_load_ps(bulletPositions->x + i);
@@ -157,7 +164,7 @@ void Game::Update(float deltaTime){
 
 	
 	// Bullet vs asteroid collision detection
-	for (int i = 0; i < MAX_BULLETS; ++i){
+	for (int i = 0; i < bulletHighIndex; ++i){
 		if (bulletsActive[i]){
 
 			//  Continuous because I'm assuming the bullet is a point, and the asteroids are all circles.
@@ -200,31 +207,65 @@ void Game::Update(float deltaTime){
 				if (results[0]){
 					splitAsteroids[j] = splitAsteroids[j] || results[0];
 					bulletsActive[i] = false;
+					if (i < bulletLowIndex){
+						bulletLowIndex = i;
+					}
 					break;
 				}
 				if (results[1])
 				{
 					splitAsteroids[j + 1] = splitAsteroids[j + 1] || results[1];
 					bulletsActive[i] = false;
+					if (i < bulletLowIndex){
+						bulletLowIndex = i;
+					}
 					break;
 				}
 				if (results[2]){
 					splitAsteroids[j + 2] = splitAsteroids[j + 2] || results[2];
 					bulletsActive[i] = false;
+					if (i < bulletLowIndex){
+						bulletLowIndex = i;
+					}
 					break;
 				}
 				if (results[3]){
 					splitAsteroids[j + 3] = splitAsteroids[j + 3] || results[3];
 					bulletsActive[i] = false;
+					if (i < bulletLowIndex){
+						bulletLowIndex = i;
+					}
 					break;
 				}
 
 			}
 		}
 	}
+	// Now that we know where any split asteroids are, let's split them.
+	for (int i = 0; i < asteroidsHighIndex; ++i){
+		if (splitAsteroids[i]){
+			splitAsteroids[i] = false;
+			asteroidRadius->value[i] = asteroidRadius->value[i] / 2.0f;
+			if (asteroidRadius->value[i] < 1.0f){
+				asteroidRadius->value[i] = 0;
+				continue;
+			}
+			asteroidRadius->value[asteroidsLowIndex] = asteroidRadius->value[i];
+			for (int j = asteroidsLowIndex; j < MAX_ASTEROIDS; ++j){
+				if (asteroidRadius->value[j] == 0){
+					asteroidsLowIndex = j;
+					if (j > asteroidsHighIndex){
+						asteroidsHighIndex = j;
+					}
+					break;
+				}
+			}
+
+		}
+	}
 
 	// Need to do the bullet boundary movement after the collision check since otherwise that bullet moves really far really fast.
-	for (int i = 0; i < MAX_BULLETS; i += 4){
+	for (int i = 0; i < bulletHighIndex / 4; i += 4){
 		// Load bullet memory
 		__m128 positionsX = _mm_load_ps(bulletPositions->x + i);
 		__m128 positionsY = _mm_load_ps(bulletPositions->y + i);
@@ -403,6 +444,29 @@ void Game::Update(float deltaTime){
 		shipsAlive[i + 2] = !shipCollisions->value[i + 2];
 		shipsAlive[i + 3] = !shipCollisions->value[i + 3];
 	}
+}
+
+void Game::FireBullet(float x, float y, float xVel, float yVel){
+
+	bulletPositions->x[bulletLowIndex] = x;
+	bulletPositions->y[bulletLowIndex] = y;
+	bulletPrevPositions->x[bulletLowIndex] = x;
+	bulletPrevPositions->y[bulletLowIndex] = y;
+	bulletVelocities->x[bulletLowIndex] = xVel;
+	bulletVelocities->y[bulletLowIndex] = yVel;
+
+	bulletsActive[bulletLowIndex] = true;
+
+	for (int i = bulletLowIndex; i < MAX_BULLETS; ++i){
+		if (!bulletsActive[i]){
+			bulletLowIndex = i;
+			if (i > bulletHighIndex){
+				bulletHighIndex = i;
+			}
+			break;
+		}
+	}
+
 }
 
 int Game::GetNumAliveShips()
