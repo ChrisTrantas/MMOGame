@@ -56,6 +56,8 @@ private:
 
 	bool shipsAlive[MAX_SHIPS];
 	bool bulletsActive[MAX_BULLETS];
+	int bulletHighIndex;//The highest index reached so far.
+	int bulletLowIndex;//The lowest free index so far.
 	bool splitAsteroids[MAX_ASTEROIDS];
 
 	// Temporary buffer for math
@@ -67,6 +69,7 @@ public:
 	~Game();
 
 	std::mutex bufferMutex;
+	std::mutex physicsMutex;
 	// If true, updates acceleration data.
 	bool dirtyBuffers;
 
@@ -85,6 +88,11 @@ public:
 	/// </summary>
 	/// <param name="deltaTime">The change in time since the last update</param>
 	void Update(float deltaTime);
+
+	/// <summary>
+	/// Fires a bullet in the direction specified from the position listed.
+	/// </summary>
+	void FireBullet(float x, float y, float xVel, float yVel);
 
 	/// <summary>
 	/// Returns the number of alive ships
