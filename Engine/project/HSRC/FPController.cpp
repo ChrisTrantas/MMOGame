@@ -25,10 +25,6 @@ void FPController::awake()
 	Input::bindToControl("up", VK_SPACE);
 	Input::bindToControl("down", VK_CONTROL);
 	Input::bindToControl("look", VK_LBUTTON);
-	Input::bindToControl("moveRight", 'L');
-	Input::bindToControl("moveUp", 'I');
-	Input::bindToControl("moveLeft", 'J');
-	Input::bindToControl("moveDown", 'K');
 	Input::bindToControl("toggleColor", 'T');
 	Input::bindToControl("quity", 'Q');
 	Input::bindToControl("fire", 'F');
@@ -77,22 +73,7 @@ void FPController::update(float deltaTime, float totalTime)
 		}
 	}
 	
-	if (Input::isControlDown("moveRight"))
-	{
-		NetworkManager::networkManager->updateData(RIGHT);
-	}
-	if (Input::isControlDown("moveLeft"))
-	{
-		NetworkManager::networkManager->updateData(LEFT);
-	}
-	if (Input::isControlDown("moveUp"))
-	{
-		NetworkManager::networkManager->updateData(UP);
-	}
-	if (Input::isControlDown("moveDown"))
-	{
-		NetworkManager::networkManager->updateData(DOWN);
-	}
+	
 	if (Input::isControlDown("fire"))
 	{
 		NetworkManager::networkManager->fired();

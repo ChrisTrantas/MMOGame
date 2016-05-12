@@ -9,6 +9,7 @@
 #include <glm\gtx\transform.hpp>
 #include "..\threading\Thread.h"
 #include "..\engine\Game.h"
+#include "..\Ship.h"
 
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 
@@ -144,6 +145,7 @@ private:
 	ObjData ship;
 	vector<ObjData> otherObjs;
 
+	
 	std::mutex bufMutex;
 
 	//Thread Management

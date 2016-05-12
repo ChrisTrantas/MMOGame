@@ -48,6 +48,9 @@ void buildGame()
 		go->addComponent<Asteroid>(new Asteroid());
 	}
 
+	// make the ships here
+
+
 #pragma region LightSetup
 	DEFAULT_LIGHT->getComponent<Transform>()->rotateEuler(vec3(-M_PI_2, 0, 0));
 	DEFAULT_LIGHT->addComponent<Rotate>(new Rotate(0.35f, vec3(0, 0, 1)));
