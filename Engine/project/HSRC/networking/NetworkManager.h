@@ -145,7 +145,8 @@ private:
 	ObjData ship;
 	vector<ObjData> otherObjs;
 
-	
+	GameObject* testShip = GameObject::getGameObject("clientShip");
+
 	std::mutex bufMutex;
 
 	//Thread Management

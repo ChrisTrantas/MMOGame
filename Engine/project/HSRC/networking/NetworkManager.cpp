@@ -38,8 +38,6 @@ NetworkManager::NetworkManager()
 
 	head = (Header*)buf;
 
-	Ship clientShip = Ship();
-	clientShip.awake();
 
 	//Initialise winsock
 	printf("\nInitialising Winsock...");
@@ -82,6 +80,9 @@ NetworkManager::NetworkManager()
 
 int NetworkManager::startClient()
 {
+	
+	
+
 	if (networkManager == nullptr)
 	{
 		return EXIT_FAILURE;
@@ -151,6 +152,7 @@ int NetworkManager::startClient()
 			printf("Found some data\n");
 		}
 	}
+	testShip->addComponent<Ship>(new Ship());
 	return 0;
 }
 
@@ -218,6 +220,9 @@ int NetworkManager::receiveData()
 	
 	printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
 	printf("Data: %s\n", buf);
+	
+	//testShip->getComponent<Transform>()->position
+	
 	
 }
 

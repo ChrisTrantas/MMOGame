@@ -29,6 +29,7 @@ void FPController::awake()
 	Input::bindToControl("quity", 'Q');
 	Input::bindToControl("fire", 'F');
 	Input::bindToControl("die", 'B');
+
 }
 
 void FPController::update(float deltaTime, float totalTime)

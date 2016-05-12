@@ -9,10 +9,11 @@ public:
 	~Ship();
 	void awake();
 	void update(float deltaTime, float totalTime);
-	void draw();
+	void move(vec2 moveDir);
+	void draw();	
 private:
 	Transform* t;
-	MeshRenderer* mr;
-	vec3 perlinSeed;
+	//MeshRenderer* mr;
+	//vec3 perlinSeed;
 };
 
