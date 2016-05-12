@@ -13,17 +13,17 @@ Ship::~Ship()
 void Ship::awake()
 {
 	//t = gameObject->getComponent<Transform>();
-
-	mr->mesh = Mesh::getMesh("Models/geodesicTriSphere20.fbx");
-	mr->material = Material::getMaterial("asteroid");
-	mr->material->textures["diffuse"] = Texture::getTexture("Textures/rock.jpg");
-	mr->material->textures["normalMap"] = Texture::getTexture("Textures/rockNormals.jpg");
-
-	perlinSeed = RAND_VEC3;
-	float deformity = 3.12f;
-	float magnitude = 0.3f;
-	mr->material->setAttribute(VERTEX_BIT, "deformity", &deformity, sizeof(float), true);
-	mr->material->setAttribute(VERTEX_BIT, "magnitude", &magnitude, sizeof(float), true);
+	//
+	//mr->mesh = Mesh::getMesh("Models/geodesicTriSphere20.fbx");
+	//mr->material = Material::getMaterial("asteroid");
+	//mr->material->textures["diffuse"] = Texture::getTexture("Textures/rock.jpg");
+	//mr->material->textures["normalMap"] = Texture::getTexture("Textures/rockNormals.jpg");
+	//
+	//perlinSeed = RAND_VEC3;
+	//float deformity = 3.12f;
+	//float magnitude = 0.3f;
+	//mr->material->setAttribute(VERTEX_BIT, "deformity", &deformity, sizeof(float), true);
+	//mr->material->setAttribute(VERTEX_BIT, "magnitude", &magnitude, sizeof(float), true);
 
 	Input::bindToControl("moveRight", 'L');
 	Input::bindToControl("moveUp", 'I');
