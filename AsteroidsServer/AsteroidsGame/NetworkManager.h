@@ -42,19 +42,21 @@ enum ObjType
 enum Command
 {
 	CMD_NONE,
-	SERVER_UPDATE,
-	PLAYER_COMMAND,
-	PLAYER_DIED,
-	BULLET_FIRED,
-	PLAYER_DISCONNECT
+	SERVER_UPDATE,		//CMD FROM SERVER TO CLIENT WITH EVERYONES DATA
+	PLAYER_DIED,		//CMD FROM SERVER TO CLIENT THAT SAYS THE PLAYER DIED SO DISPLAY THE DEATH STUFF
+	PLAYER_COMMAND,		//CMD FROM CLIENT TO SERVER THAT UPDATES THE SERVER WITH THE KEYBOARD INPUT
+	BULLET_FIRED,		//CMD FROM CLIENT TO SERVER THAT SAYS THE CLIENT IS PRESSING SPACE TO FIRE A BULLET
+	PLAYER_CONNECT,		//CMD FROM CLIENT TO SERVER THAT SAYS THE CLIENT IS TRYING TO CONNECT
+	PLAYER_DISCONNECT	//CMD FROM CLIENT TO SERVER THAT SAYS THE CLIENT WANTS TO DISCONNECT
 };
 
-enum PlayerDir
+enum Input
 {
+	INPUT_NONE,
 	LEFT,
 	RIGHT,
 	UP,
-	DOWN
+	FIRE,
 };
 
 struct Header
@@ -84,10 +86,17 @@ struct DataUpdate
 	ObjData data;
 };
 
-struct DataFired
+struct PlayerData
 {
-	glm::vec2 pos;
-	float rot;
+
+};
+
+struct BulletData
+{
+	float xPos;
+	float yPos;
+	float xVel;
+	float yVel;
 };
 
 class NetworkManager
@@ -98,10 +107,9 @@ public:
 	~NetworkManager();
 	int DisplayIP();
 	int StartServer();
-	int SendData();
-	int SendToAllClients();
+	int UpdateAllClients();
 	int ReceiveData();
-	void UpdateData();
+	void UpdateData(int id, float xVel, float yVel, float rot);
 	void ShutDownServer();
 
 	//Thread Management
@@ -109,12 +117,16 @@ public:
 	void AssignTask(void(*calback)());
 	void ShutDownAllThreads();
 	void ShutDownThread(DWORD dwThreadID);
-	int GenerateID();
-	void FreeID(int id);
 	int GetFreeThread();
 	std::string GetTaskMessage();
 	int GetThreadCount();
 	HANDLE GetMutex();
+
+	//Server Stuff
+	int GenerateID(ObjType type);
+	void FreeID(int id);
+	void PlayerDied(int id);
+	std::vector<Input> inputBuf;
 
 	static Game* game;
 	static NetworkManager* networkManager;
@@ -133,6 +145,9 @@ private:
 	std::vector<ObjData> objs;
 	//std::vector<glm::vec2> shipPos;
 	//std::vector<float> shipRot;
+
+	int SendData(sockaddr* client);
+	int SendToAllClients();
 
 	//Thread Management
 	Thread* m_ptrThread[5];

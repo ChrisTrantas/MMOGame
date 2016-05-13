@@ -76,8 +76,6 @@ void Game::Update(float deltaTime){
 		memcpy(shipAccelerations->y, shipAccelerationYBuffer, sizeof(float) * MAX_SHIPS);
 		memcpy(lightAccelerations->x, lightAccelerationXBuffer, sizeof(float) * MAX_LIGHTS);
 		memcpy(lightAccelerations->y, lightAccelerationYBuffer, sizeof(float) * MAX_LIGHTS);
-		memcpy(asteroidVelocities->x, asteroidVelocitiesXBuffer, sizeof(float) * MAX_ASTEROIDS);
-		memcpy(asteroidVelocities->y, asteroidVelocitiesYBuffer, sizeof(float) * MAX_ASTEROIDS);
 		bufferMutex.unlock();
 		dirtyBuffers = false;
 	}
@@ -446,6 +444,7 @@ void Game::Update(float deltaTime){
 	}
 }
 
+
 void Game::FireBullet(float x, float y, float xVel, float yVel){
 
 	bulletPositions->x[bulletLowIndex] = x;
@@ -482,4 +481,39 @@ Vec2* Game::GetAliveShipPos()
 float* Game::GetAliveShipRot()
 {
 	return 0;
+}
+
+Vec2* Game::GetAsteroidPos()
+{
+	return asteroidPositions;
+}
+
+Vec1* Game::GetAsteroidRadius()
+{
+	return asteroidRadius;
+}
+
+Vec2* Game::GetShipPos()
+{
+	return shipPositions;
+}
+
+Vec1* Game::GetShipRot()
+{
+	return shipRot;
+}
+
+Vec2* Game::GetLightPos()
+{
+	return lightPositions;
+}
+
+Vec1* Game::GetLightRot()
+{
+	return lightRot;
+}
+
+Vec2* Game::GetBulletPos()
+{
+	return bulletPositions;
 }

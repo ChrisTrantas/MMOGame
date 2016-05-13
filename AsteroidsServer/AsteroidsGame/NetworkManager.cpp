@@ -155,11 +155,11 @@ int NetworkManager::StartServer()
 		else
 		{
 			NetworkManager::networkManager->ReceiveData();
-			NetworkManager::networkManager->UpdateData();
-			NetworkManager::networkManager->SendData();
+			//NetworkManager::networkManager->UpdateData();
+			//NetworkManager::networkManager->SendData();
 		}
 
-		NetworkManager::networkManager->SendToAllClients();
+		//NetworkManager::networkManager->SendToAllClients();
 	}
 
 	delete networkManager;
@@ -167,19 +167,16 @@ int NetworkManager::StartServer()
 	return 0;
 }
 
-int NetworkManager::SendData()
+int NetworkManager::SendData(sockaddr* client)
 {
-	bufMutex.lock();
 	std::cout << "Sending ID " << head->id << std::endl;
 
 	//now reply the client with the same data
-	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
+	if (sendto(s, buf, BUFLEN, 0, client, slen) == SOCKET_ERROR)
 	{
 		printf("sendto() failed with error code : %d", WSAGetLastError());
 		return EXIT_FAILURE;
 	}
-
-	bufMutex.unlock();
 
 	printf("Data sent to client \n");
 	printf("Id sent to client: %d\n", ids);
@@ -188,30 +185,13 @@ int NetworkManager::SendData()
 
 int NetworkManager::SendToAllClients()
 {
-	bufMutex.lock();
-	std::cout << "Pushing to all clients" << std::endl;
-	head->cmd = SERVER_UPDATE;
-	DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
-
-	//game->bufferMutex.lock();
-	//data->numObj = shipPos.size();
-	//game->bufferMutex.unlock();
-
 	for (int i = 0; i < clients.size(); i++)
 	{
 		for (int j = 0; j < objs.size(); j++)
 		{
-			data->data = objs[j];
-			if (sendto(s, buf, BUFLEN, 0, (struct sockaddr*) &clients[i], slen) == SOCKET_ERROR)
-			{
-				printf("sendto() failed with error code : %d", WSAGetLastError());
-				return EXIT_FAILURE;
-			}
+			SendData((struct sockaddr*) &clients[i]);
 		}
 	}
-
-	std::cout << "Finished sending to all clients" << std::endl;
-	bufMutex.unlock();
 
 	return EXIT_SUCCESS;
 }
@@ -235,9 +215,9 @@ int NetworkManager::ReceiveData()
 	{
 		FreeID(head->id);
 	}
-	else if (head && head->id == 0)
+	else if (head && head->cmd == PLAYER_CONNECT)
 	{
-		head->id = GenerateID();
+		head->id = GenerateID(*((ObjType*)buf+sizeof(Header)));
 		std::cout << "Generated ID: " << (int)buf[0] << "\n" << std::endl;
 		//DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
 		//
@@ -251,68 +231,108 @@ int NetworkManager::ReceiveData()
 	else
 	{
 		std::cout << "There is an ID: " << head->id << "\n" << std::endl;
-	}
-
-	if (head->cmd == PLAYER_COMMAND)
-	{
-		PlayerDir* dir = (PlayerDir*)(buf + sizeof(Header));
-
-		if (dir)
+		if (head->cmd == PLAYER_COMMAND)
 		{
-			bool foundObj = false;
-			for (int i = 0; i < objs.size(); i++)
-			{
-				if (objs[i].id == head->id)
-				{
-					foundObj = true;
-					if (*dir == LEFT)
-					{
-						objs[i].pos.x -= 5;
-					}
-					else if (*dir == RIGHT)
-					{
-						objs[i].pos.x += 5;
-					}
-					else if (*dir == UP)
-					{
-						objs[i].pos.y += 5;
-					}
-					else
-					{
-						objs[i].pos.y -= 5;
-					}
-					
-					break;
-				}
-			}
+			Input* cmd = (Input*)(buf + sizeof(Header));
 
-			if (!foundObj)
+			if (*cmd == FIRE)
 			{
-				ObjData data = ObjData();
-				data.pos = glm::vec2(0, 0);
-				data.rot = 0;
-				data.type = PLAYER_SHIP;
-				data.id = head->id;
-				objs.push_back(data);
+				BulletData* bullet = (BulletData*)(buf + sizeof(Header) + sizeof(Input));
+				game->FireBullet(bullet->xPos, bullet->yPos, bullet->xVel, bullet->yVel);
+			}
+			else if (*cmd == LEFT)
+			{
+				//TODO: THINK ABOUT SENDING THE DATA IN INSTEAD OF DOING IT IN THE METHOD
+				UpdateData(head->id, 0, 0, -5);
+			}
+			else if (*cmd == RIGHT)
+			{
+				//TODO: THINK ABOUT SENDING THE DATA IN INSTEAD OF DOING IT IN THE METHOD
+				UpdateData(head->id, 0, 0, 5);
+			}
+			else if (*cmd == UP)
+			{
+				//TODO: THINK ABOUT SENDING THE DATA IN INSTEAD OF DOING IT IN THE METHOD
+				UpdateData(head->id, 0, 0, 0);
+			}
+			else if (*cmd == INPUT_NONE)
+			{
+				UpdateData(head->id, 0, 0, 0);
+			}
+			else
+			{
+				printf("Client sent an illegal command %d\n", *cmd);
 			}
 		}
 	}
+
+	//if (head->cmd == PLAYER_COMMAND)
+	//{
+	//	PlayerDir* dir = (PlayerDir*)(buf + sizeof(Header));
+	//
+	//	if (dir)
+	//	{
+	//		bool foundObj = false;
+	//		for (int i = 0; i < objs.size(); i++)
+	//		{
+	//			if (objs[i].id == head->id)
+	//			{
+	//				foundObj = true;
+	//				if (*dir == LEFT)
+	//				{
+	//					objs[i].pos.x -= 5;
+	//				}
+	//				else if (*dir == RIGHT)
+	//				{
+	//					objs[i].pos.x += 5;
+	//				}
+	//				else if (*dir == UP)
+	//				{
+	//					objs[i].pos.y += 5;
+	//				}
+	//				else
+	//				{
+	//					objs[i].pos.y -= 5;
+	//				}
+	//				
+	//				break;
+	//			}
+	//		}
+	//
+	//		if (!foundObj)
+	//		{
+	//			ObjData data = ObjData();
+	//			data.pos = glm::vec2(0, 0);
+	//			data.rot = 0;
+	//			data.type = PLAYER_SHIP;
+	//			data.id = head->id;
+	//			objs.push_back(data);
+	//		}
+	//	}
+	//}
 	bufMutex.unlock();
 
 	return EXIT_SUCCESS;
 }
 
-void NetworkManager::UpdateData()
+void NetworkManager::UpdateData(int id, float xVel, float yVel, float rot)
 {
-	//change locations in buf once client is work on client is
-	//finished and it is sending the proper data to server
-	//game->shipAccelerationXBuffer[0] = (float)buf[];
-	//game->shipAccelerationYBuffer[0] = (float)buf[];
-	//game->lightAccelerationXBuffer[0] = (float)buf[];
-	//game->lightAccelerationYBuffer[0] = (float)buf[];
-	//game->asteroidVelocitiesXBuffer[0] = (float)buf[];
-	//game->asteroidVelocitiesYBuffer[0] = (float)buf[];
+	game->bufferMutex.lock();
+	if (id > 7)
+	{
+		memcpy(game->lightAccelerationXBuffer + ((id % 8)*sizeof(float)), &xVel, sizeof(float));
+		memcpy(game->lightAccelerationYBuffer + ((id % 8)*sizeof(float)), &yVel, sizeof(float));
+		//memcpy(game->lightRotationBuffer + ((id % 8)*sizeof(float)), &rot, sizeof(float));
+	}
+	else
+	{
+		memcpy(game->shipAccelerationXBuffer + (id*sizeof(float)), &xVel, sizeof(float));
+		memcpy(game->shipAccelerationYBuffer + (id*sizeof(float)), &yVel, sizeof(float));
+		//memcpy(game->lightRotationBuffer + (id*sizeof(float)), &rot, sizeof(float));
+	}
 
+	game->dirtyBuffers = true;
+	game->bufferMutex.unlock();
 }
 
 void NetworkManager::ShutDownServer()
@@ -345,18 +365,62 @@ void NetworkManager::ShutDownAllThreads()
 	}
 }
 
-int NetworkManager::GenerateID()
+void NetworkManager::PlayerDied(int id)
+{
+	bufMutex.lock();
+
+	head->id = id;
+	head->cmd = PLAYER_DIED;
+	SendToAllClients();
+
+	bufMutex.unlock();
+}
+
+//TODO: THERE IS A TODO IN HERE!!!
+int NetworkManager::UpdateAllClients()
+{
+	bufMutex.lock();
+
+	std::cout << "Pushing to all clients" << std::endl;
+	head->cmd = SERVER_UPDATE;
+	DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
+	//TODO: FILL THE BUFFER WITH THE ENTIRE OF EVERYTHING FOR ALL CLIENTS
+	memcpy(buf + sizeof(Header), game->GetAliveShipPos(), sizeof(float) * 64);
+	memcpy(buf + sizeof(Header) + sizeof(float) * 64, game->GetAliveShipRot(), sizeof(float) * 64);
+	memcpy(buf + sizeof(Header) + sizeof(float) * 64 * 2, game->GetLightPos(), sizeof(float) * 64);
+	memcpy(buf + sizeof(Header) + sizeof(float) * 64 * 3, game->GetLightRot(), sizeof(float) * 64);
+	memcpy(buf + sizeof(Header) + sizeof(float) * 64 * 4, game->GetAsteroidPos(), sizeof(float) * 64);
+	memcpy(buf + sizeof(Header) + sizeof(float) * 64 * 5, game->GetAsteroidRadius(), sizeof(float) * 64);
+	memcpy(buf + sizeof(Header) + sizeof(float) * 64 * 6, game->GetBulletPos(), sizeof(float) * 64);
+	SendToAllClients();
+
+	bufMutex.unlock();
+
+	std::cout << "Finished sending to all clients" << std::endl;
+	return EXIT_SUCCESS;
+}
+
+//TODO: FIX THIS SO THAT IT TAKES THE TYPE INTO CONSIDERATION. SHIPS ARE 0-7 AND LIGHTS ARE 8-15
+//It might be done now
+int NetworkManager::GenerateID(ObjType type)
 {
 	printf("ids %d\n", ids);
 	clients.push_back(si_other);
 
-	for (int i = 0; i < 64; i++)
+	int typeDisp = 0;
+
+	if (type == PLAYER_LIGHT)
+	{
+		typeDisp = 8;
+	}
+
+	for (int i = 0 + typeDisp; i < 8 + typeDisp; i++)
 	{
 
 		if (!(ids & ((uint64_t)1 << i)))
 		{
 			ids |= (1 << i);
-			return i+1;
+			return i;
 		}
 	}
 
@@ -365,7 +429,7 @@ int NetworkManager::GenerateID()
 
 void NetworkManager::FreeID(int id)
 {
-	ids &= ~(1 << (id-1));
+	ids &= ~(1 << id);
 	printf("ids after free %d", ids);
 }
 

@@ -38,20 +38,22 @@ private:
 
 
 	// Arrays storing all of the game's data.
-	Vec2* asteroidPositions;
+	Vec2* asteroidPositions;//  sizeof(float)*64;  memcpy(buffer + sizeof(float)*64, asteroidPositions->y, sizeof(float)* 64);
 	Vec2* asteroidVelocities;
-	Vec1* asteroidRadius;
+	Vec1* asteroidRadius;//
 
-	Vec2* shipPositions;
+	Vec2* shipPositions;//
 	Vec2* shipVelocities;
 	Vec2* shipAccelerations;
 	Vec1* shipCollisions;
+	Vec1* shipRot;//
 	
-	Vec2* lightPositions;
+	Vec2* lightPositions;//
 	Vec2* lightVelocities;
 	Vec2* lightAccelerations;
+	Vec1* lightRot;//
 
-	Vec2* bulletPositions;
+	Vec2* bulletPositions;//
 	Vec2* bulletPrevPositions;
 	Vec2* bulletVelocities;
 
@@ -111,5 +113,16 @@ public:
 	/// Returns an array of floats for the rotations of the ships
 	/// </summary>
 	float* GetAliveShipRot();
+
+	Vec2* GetAsteroidPos();
+	Vec1* GetAsteroidRadius();
+
+	Vec2* GetShipPos();
+	Vec1* GetShipRot();
+
+	Vec2* GetLightPos();
+	Vec1* GetLightRot();
+
+	Vec2* GetBulletPos();
 };
 
