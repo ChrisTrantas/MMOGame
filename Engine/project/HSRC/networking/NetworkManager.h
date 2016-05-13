@@ -9,6 +9,7 @@
 #include <glm\gtx\transform.hpp>
 #include "..\threading\Thread.h"
 #include "..\engine\Game.h"
+#include "..\Ship.h"
 
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 
@@ -143,6 +144,8 @@ private:
 	Header* head;
 	ObjData ship;
 	vector<ObjData> otherObjs;
+
+	GameObject* testShip = GameObject::getGameObject("clientShip");
 
 	std::mutex bufMutex;
 

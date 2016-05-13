@@ -104,6 +104,7 @@
     <ClCompile Include="FPController.cpp" />
     <ClCompile Include="networking\NetworkManager.cpp" />
     <ClCompile Include="Rotate.cpp" />
+    <ClCompile Include="Ship.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="threading\Thread.cpp" />
   </ItemGroup>
@@ -130,6 +131,7 @@
     <ClInclude Include="FPController.h" />
     <ClInclude Include="networking\NetworkManager.h" />
     <ClInclude Include="Rotate.h" />
+    <ClInclude Include="Ship.h" />
     <ClInclude Include="threading\Thread.h" />
   </ItemGroup>
   <ItemGroup>
