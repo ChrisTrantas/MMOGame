@@ -32,25 +32,27 @@ enum ObjType
 enum Command
 {
 	CMD_NONE,
-	SERVER_UPDATE,
-	PLAYER_COMMAND,
-	PLAYER_DIED,
-	BULLET_FIRED,
-	PLAYER_DISCONNECT
+	SERVER_UPDATE,		//CMD FROM SERVER TO CLIENT WITH EVERYONES DATA
+	PLAYER_DIED,		//CMD FROM SERVER TO CLIENT THAT SAYS THE PLAYER DIED SO DISPLAY THE DEATH STUFF
+	PLAYER_COMMAND,		//CMD FROM CLIENT TO SERVER THAT UPDATES THE SERVER WITH THE KEYBOARD INPUT
+	//BULLET_FIRED,		//CMD FROM CLIENT TO SERVER THAT SAYS THE CLIENT IS PRESSING SPACE TO FIRE A BULLET	NO LONGER NEEDED!!!
+	PLAYER_CONNECT,		//CMD FROM CLIENT TO SERVER THAT SAYS THE CLIENT IS TRYING TO CONNECT
+	PLAYER_DISCONNECT	//CMD FROM CLIENT TO SERVER THAT SAYS THE CLIENT WANTS TO DISCONNECT
 };
 
-enum PlayerDir
+enum PlayerInput
 {
+	INPUT_NONE,
 	LEFT,
 	RIGHT,
 	UP,
-	DOWN
+	FIRE,
 };
 
 struct Header
 {
 	int id;
-	Command cmd;
+	Command cmd = CMD_NONE;
 };
 
 struct ObjData
@@ -85,10 +87,17 @@ struct DataUpdate
 	ObjData data;
 };
 
-struct DataFired
+struct PlayerData
 {
-	glm::vec2 pos;
-	float rot;
+
+};
+
+struct BulletData
+{
+	float xPos;
+	float yPos;
+	float xVel;
+	float yVel;
 };
 
 class NetworkManager
@@ -105,10 +114,10 @@ public:
 	int startServer();
 	int sendData();
 	int receiveData();
-	void updateData(PlayerDir dir);
+	void updateData(PlayerInput dir);
 	void serverUpdate();
-	void died();
-	void fired();
+	//void died();
+	//void fired();
 	void clientDisconnect();
 	void shutDownClient();
 

@@ -18,9 +18,10 @@ void Ship::awake()
 	Input::bindToControl("moveUp", 'I');
 	Input::bindToControl("moveLeft", 'J');
 	Input::bindToControl("moveDown", 'K');
+	Input::bindToControl("fire", 'E');
 }
 
-void Ship::update(float deltaTime, float totalTime)
+void Ship::update()
 {
 	if (Input::isControlDown("moveRight"))
 	{
@@ -37,11 +38,34 @@ void Ship::update(float deltaTime, float totalTime)
 		NetworkManager::networkManager->updateData(UP);
 		move(vec2(0, 1));
 	}
-	if (Input::isControlDown("moveDown"))
+	if (Input::isControlDown("fire"))
+	{
+		NetworkManager::networkManager->updateData(FIRE);
+		//move(vec2(0, 1));
+	}
+
+	if (Input::wasControlReleased("moveRight"))
+	{
+		NetworkManager::networkManager->updateData(RIGHT);
+		move(vec2(1, 0));
+	}
+	if (Input::wasControlReleased("moveLeft"))
+	{
+		NetworkManager::networkManager->updateData(LEFT);
+		move(vec2(-1, 0));
+	}
+	if (Input::wasControlReleased("moveUp"))
+	{
+		NetworkManager::networkManager->updateData(UP);
+		move(vec2(0, 1));
+	}
+
+	//You cant move down in asteroids
+	/*if (Input::isControlDown("moveDown"))
 	{
 		NetworkManager::networkManager->updateData(DOWN);
 		move(vec2(0, -1));
-	}
+	}*/
 }
 
 void Ship::move(vec2 moveDir)

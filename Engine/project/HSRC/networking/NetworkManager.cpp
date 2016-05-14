@@ -28,6 +28,8 @@ void NetworkManager::Initialize(int nThread)
 		m_ptrThread[i]->CreateWorkerThread();
 		m_hThreadPool[i] = m_ptrThread[i]->GetThreadHandle();
 	}
+
+	testShip->addComponent<Ship>(new Ship());
 }
 
 NetworkManager::NetworkManager()
@@ -80,9 +82,6 @@ NetworkManager::NetworkManager()
 
 int NetworkManager::startClient()
 {
-	
-	
-
 	if (networkManager == nullptr)
 	{
 		return EXIT_FAILURE;
@@ -91,10 +90,12 @@ int NetworkManager::startClient()
 	recv_len = sizeof(Header);
 
 	memset(buf, '\0', BUFLEN);
-	head->id = 0;
+	head->id = -1;
+	head->cmd = PLAYER_CONNECT;
 
-	DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
-	data->numObj = 1;
+
+	ObjType* type = (ObjType*)(buf + sizeof(Header));
+	*type = PLAYER_SHIP;
 
 	//send the message
 	if (sendto(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, slen) == SOCKET_ERROR)
@@ -152,7 +153,6 @@ int NetworkManager::startClient()
 			printf("Found some data\n");
 		}
 	}
-	testShip->addComponent<Ship>(new Ship());
 	return 0;
 }
 
@@ -180,7 +180,7 @@ int NetworkManager::receiveData()
 		return EXIT_FAILURE;
 	}
 
-	if (head && head->id != 0)
+	if (head && head->id != -1)
 	{
 		id = head->id;
 	}
@@ -211,6 +211,11 @@ int NetworkManager::receiveData()
 			}
 		}
 	}
+	else if (head->cmd == PLAYER_DIED)
+	{
+		printf("\nThe player died! Long live the player\n\n");
+		testShip->getComponent<MeshRenderer>()->enabled = false;
+	}
 
 	//print details of the client/peer and the data received
 	std::cout << "Data ID: " << head->id << std::endl;
@@ -226,10 +231,10 @@ int NetworkManager::receiveData()
 	
 }
 
-void NetworkManager::updateData(PlayerDir dir)
+void NetworkManager::updateData(PlayerInput dir)
 {
 	bufMutex.lock();
-	PlayerDir* direction = (PlayerDir*)(buf + sizeof(Header));
+	PlayerInput* direction = (PlayerInput*)(buf + sizeof(Header));
 	*direction = dir;
 	head->cmd = PLAYER_COMMAND;
 	sendData();
@@ -245,28 +250,10 @@ void NetworkManager::serverUpdate()
 	printf("updating Data");
 }
 
-void NetworkManager::died()
-{
-	bufMutex.lock();
-	head->cmd = PLAYER_DIED;
-	sendData();
-	bufMutex.unlock();
-}
-
-void NetworkManager::fired()
-{
-	bufMutex.lock();
-	head->cmd = BULLET_FIRED;
-	sendData();
-	bufMutex.unlock();
-
-}
-
 void NetworkManager::clientDisconnect()
 {
 	bufMutex.lock();
 	head->cmd = PLAYER_DISCONNECT;
-
 	sendData();
 	bufMutex.unlock();
 }
@@ -274,6 +261,7 @@ void NetworkManager::clientDisconnect()
 void NetworkManager::shutDownClient()
 {
 	runClient = false;
+	clientDisconnect();
 	ShutDownAllThreads();
 }
 

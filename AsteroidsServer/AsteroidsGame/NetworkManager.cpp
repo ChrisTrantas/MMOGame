@@ -217,8 +217,16 @@ int NetworkManager::ReceiveData()
 	}
 	else if (head && head->cmd == PLAYER_CONNECT)
 	{
-		head->id = GenerateID(*((ObjType*)buf+sizeof(Header)));
-		std::cout << "Generated ID: " << (int)buf[0] << "\n" << std::endl;
+		head->id = GenerateID(*((ObjType*)(buf+sizeof(Header))));
+		std::cout << "Generated ID: " << (int)buf[0] << std::endl;
+		if (head->id != -1)
+		{
+			SendData((struct sockaddr*) &si_other);
+		}
+		else
+		{
+			printf("Rejecting client\n");
+		}
 		//DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
 		//
 		//if (data)
@@ -233,11 +241,11 @@ int NetworkManager::ReceiveData()
 		std::cout << "There is an ID: " << head->id << "\n" << std::endl;
 		if (head->cmd == PLAYER_COMMAND)
 		{
-			Input* cmd = (Input*)(buf + sizeof(Header));
+			PlayerInput* cmd = (PlayerInput*)(buf + sizeof(Header));
 
 			if (*cmd == FIRE)
 			{
-				BulletData* bullet = (BulletData*)(buf + sizeof(Header) + sizeof(Input));
+				BulletData* bullet = (BulletData*)(buf + sizeof(Header) + sizeof(PlayerInput));
 				game->FireBullet(bullet->xPos, bullet->yPos, bullet->xVel, bullet->yVel);
 			}
 			else if (*cmd == LEFT)
@@ -413,6 +421,11 @@ int NetworkManager::GenerateID(ObjType type)
 	{
 		typeDisp = 8;
 	}
+	else if (type != PLAYER_SHIP)
+	{
+		printf("The player is not a correct type.\nExiting\n");
+		return -1;
+	}
 
 	for (int i = 0 + typeDisp; i < 8 + typeDisp; i++)
 	{
@@ -430,7 +443,7 @@ int NetworkManager::GenerateID(ObjType type)
 void NetworkManager::FreeID(int id)
 {
 	ids &= ~(1 << id);
-	printf("ids after free %d", ids);
+	printf("ids after free %d\n", ids);
 }
 
 int NetworkManager::GetFreeThread()

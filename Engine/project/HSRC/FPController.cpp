@@ -73,14 +73,4 @@ void FPController::update(float deltaTime, float totalTime)
 			Game::game->color[3] = 0.0f;
 		}
 	}
-	
-	
-	if (Input::isControlDown("fire"))
-	{
-		NetworkManager::networkManager->fired();
-	}
-	if (Input::isControlDown("die"))
-	{
-		NetworkManager::networkManager->died();
-	}
 }

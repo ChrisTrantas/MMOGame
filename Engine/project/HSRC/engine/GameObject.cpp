@@ -217,6 +217,7 @@ void updateAllGameObjects(float deltaTime, float totalTime)
 {
 	for (size_t i = 0; i < objects.size(); ++i)
 		objects[i]->update(deltaTime, totalTime);
+
 }
 
 void drawAllGameObjects()
