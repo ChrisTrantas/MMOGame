@@ -187,10 +187,7 @@ int NetworkManager::SendToAllClients()
 {
 	for (int i = 0; i < clients.size(); i++)
 	{
-		for (int j = 0; j < objs.size(); j++)
-		{
-			SendData((struct sockaddr*) &clients[i]);
-		}
+		SendData((struct sockaddr*) &clients[i]);
 	}
 
 	return EXIT_SUCCESS;
@@ -269,7 +266,7 @@ int NetworkManager::ReceiveData()
 		{
 			printf("Client sent an illegal command %d\n", *cmd);
 		}
-		SendToAllClients();
+		UpdateAllClients();
 	}
 
 	//if (head->cmd == PLAYER_COMMAND)
@@ -385,22 +382,22 @@ void NetworkManager::PlayerDied(int id)
 //TODO: THERE IS A TODO IN HERE!!!
 int NetworkManager::UpdateAllClients()
 {
-	bufMutex.lock();
+	//bufMutex.lock();
 
 	std::cout << "Pushing to all clients" << std::endl;
 	head->cmd = SERVER_UPDATE;
-	DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
+	//DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
 	//TODO: FILL THE BUFFER WITH THE ENTIRE OF EVERYTHING FOR ALL CLIENTS
-	memcpy(buf + sizeof(Header), game->GetAliveShipPos(), sizeof(float) * 64);
-	memcpy(buf + sizeof(Header) + sizeof(float) * 64, game->GetAliveShipRot(), sizeof(float) * 64);
+	memcpy(buf + sizeof(Header), game->GetShipPos(), sizeof(float) * 64);
+	memcpy(buf + sizeof(Header) + sizeof(float) * 64, game->GetShipPos()/*game->GetShipRot()*/, sizeof(float) * 64);
 	memcpy(buf + sizeof(Header) + sizeof(float) * 64 * 2, game->GetLightPos(), sizeof(float) * 64);
-	memcpy(buf + sizeof(Header) + sizeof(float) * 64 * 3, game->GetLightRot(), sizeof(float) * 64);
+	memcpy(buf + sizeof(Header) + sizeof(float) * 64 * 3, game->GetLightPos()/*game->GetLightRot()*/, sizeof(float) * 64);
 	memcpy(buf + sizeof(Header) + sizeof(float) * 64 * 4, game->GetAsteroidPos(), sizeof(float) * 64);
 	memcpy(buf + sizeof(Header) + sizeof(float) * 64 * 5, game->GetAsteroidRadius(), sizeof(float) * 64);
 	memcpy(buf + sizeof(Header) + sizeof(float) * 64 * 6, game->GetBulletPos(), sizeof(float) * 64);
 	SendToAllClients();
 
-	bufMutex.unlock();
+	//bufMutex.unlock();
 
 	std::cout << "Finished sending to all clients" << std::endl;
 	return EXIT_SUCCESS;

@@ -23,7 +23,7 @@
 
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 
-#define BUFLEN 512  //Max length of buffer
+#define BUFLEN 2048  //Max length of buffer
 #define PORT 8888   //The port on which to listen for incoming data
 #define MAX_CLIENTS 100 //max number of clients we can have attached
 
@@ -80,11 +80,11 @@ struct ObjData
 	}
 };
 
-struct DataUpdate
-{
-	int numObj;
-	ObjData data;
-};
+//struct DataUpdate
+//{
+//	int numObj;
+//	ObjData data;
+//};
 
 struct PlayerData
 {

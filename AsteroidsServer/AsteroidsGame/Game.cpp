@@ -468,21 +468,6 @@ void Game::FireBullet(float x, float y, float xVel, float yVel){
 
 }
 
-int Game::GetNumAliveShips()
-{
-	return 2;
-}
-
-Vec2* Game::GetAliveShipPos()
-{
-	return 0;
-}
-
-float* Game::GetAliveShipRot()
-{
-	return 0;
-}
-
 Vec2* Game::GetAsteroidPos()
 {
 	return asteroidPositions;
