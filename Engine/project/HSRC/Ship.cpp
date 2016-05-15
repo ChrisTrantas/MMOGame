@@ -26,17 +26,17 @@ void Ship::update(float deltaTime, float totalTime)
 	if (Input::isControlDown("moveRight"))
 	{
 		NetworkManager::networkManager->updateData(RIGHT);
-		move(vec2(1, 0));
+		//move(vec2(1, 0));
 	}
 	if (Input::isControlDown("moveLeft"))
 	{
 		NetworkManager::networkManager->updateData(LEFT);
-		move(vec2(-1, 0));
+		//move(vec2(-1, 0));
 	}
 	if (Input::isControlDown("moveUp"))
 	{
 		NetworkManager::networkManager->updateData(UP);
-		move(vec2(0, 1));
+		//move(vec2(0, 1));
 	}
 	if (Input::isControlDown("fire"))
 	{
@@ -47,17 +47,17 @@ void Ship::update(float deltaTime, float totalTime)
 	if (Input::wasControlReleased("moveRight"))
 	{
 		NetworkManager::networkManager->updateData(RIGHT);
-		move(vec2(1, 0));
+		//move(vec2(1, 0));
 	}
 	if (Input::wasControlReleased("moveLeft"))
 	{
 		NetworkManager::networkManager->updateData(LEFT);
-		move(vec2(-1, 0));
+		//move(vec2(-1, 0));
 	}
 	if (Input::wasControlReleased("moveUp"))
 	{
 		NetworkManager::networkManager->updateData(UP);
-		move(vec2(0, 1));
+		//move(vec2(0, 1));
 	}
 
 	//You cant move down in asteroids
@@ -85,5 +85,5 @@ void Ship::draw()
 	// not storing is like an instance variable
 
 	//mr->material->setAttribute(VERTEX_BIT, "seed", &perlinSeed, sizeof(vec3), false);
-	printf("working\n");
+	//printf("working\n");
 }
