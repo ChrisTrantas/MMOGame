@@ -246,17 +246,17 @@ int NetworkManager::ReceiveData()
 		else if (*cmd == LEFT)
 		{
 			//TODO: THINK ABOUT SENDING THE DATA IN INSTEAD OF DOING IT IN THE METHOD
-			UpdateData(head->id, 0, 0, -5);
+			UpdateData(head->id, -1, 0, -5);
 		}
 		else if (*cmd == RIGHT)
 		{
 			//TODO: THINK ABOUT SENDING THE DATA IN INSTEAD OF DOING IT IN THE METHOD
-			UpdateData(head->id, 0, 0, 5);
+			UpdateData(head->id, 1, 0, 5);
 		}
 		else if (*cmd == UP)
 		{
 			//TODO: THINK ABOUT SENDING THE DATA IN INSTEAD OF DOING IT IN THE METHOD
-			UpdateData(head->id, 0, 0, 0);
+			UpdateData(head->id, 0, 1, 0);
 		}
 		else if (*cmd == INPUT_NONE)
 		{
@@ -388,13 +388,13 @@ int NetworkManager::UpdateAllClients()
 	head->cmd = SERVER_UPDATE;
 	//DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
 	//TODO: FILL THE BUFFER WITH THE ENTIRE OF EVERYTHING FOR ALL CLIENTS
-	memcpy(buf + sizeof(Header), game->GetShipPos(), sizeof(float) * 64);
-	memcpy(buf + sizeof(Header) + sizeof(float) * 64, game->GetShipPos()/*game->GetShipRot()*/, sizeof(float) * 64);
-	memcpy(buf + sizeof(Header) + sizeof(float) * 64 * 2, game->GetLightPos(), sizeof(float) * 64);
-	memcpy(buf + sizeof(Header) + sizeof(float) * 64 * 3, game->GetLightPos()/*game->GetLightRot()*/, sizeof(float) * 64);
-	memcpy(buf + sizeof(Header) + sizeof(float) * 64 * 4, game->GetAsteroidPos(), sizeof(float) * 64);
-	memcpy(buf + sizeof(Header) + sizeof(float) * 64 * 5, game->GetAsteroidRadius(), sizeof(float) * 64);
-	memcpy(buf + sizeof(Header) + sizeof(float) * 64 * 6, game->GetBulletPos(), sizeof(float) * 64);
+	memcpy(buf + sizeof(Header), game->GetShipPos(), sizeof(float) * MAX_SHIPS);
+	memcpy(buf + sizeof(Header) + sizeof(float) * MAX_SHIPS, game->GetShipPos()/*game->GetShipRot()*/, sizeof(float) * MAX_SHIPS);
+	memcpy(buf + sizeof(Header) + sizeof(float) * MAX_SHIPS * 2, game->GetLightPos(), sizeof(float) * MAX_LIGHTS);
+	memcpy(buf + sizeof(Header) + sizeof(float) * MAX_SHIPS * 2 + sizeof(float) * MAX_LIGHTS, game->GetLightPos()/*game->GetLightRot()*/, sizeof(float) * MAX_LIGHTS);
+	memcpy(buf + sizeof(Header) + sizeof(float) * MAX_SHIPS * 2 + sizeof(float) * MAX_LIGHTS * 2, game->GetAsteroidPos(), sizeof(float) * MAX_ASTEROIDS);
+	memcpy(buf + sizeof(Header) + sizeof(float) * MAX_SHIPS * 2 + sizeof(float) * MAX_LIGHTS * 2 + sizeof(float) * MAX_ASTEROIDS, game->GetAsteroidRadius(), sizeof(float) * MAX_ASTEROIDS);
+	memcpy(buf + sizeof(Header) + sizeof(float) * MAX_SHIPS * 2 + sizeof(float) * MAX_LIGHTS * 2 + sizeof(float) * MAX_ASTEROIDS * 2, game->GetBulletPos(), sizeof(float) * MAX_BULLETS);
 	SendToAllClients();
 
 	//bufMutex.unlock();
