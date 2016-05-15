@@ -8,7 +8,7 @@ public:
 	Ship();
 	~Ship();
 	void awake();
-	void update();
+	void update(float deltaTime, float totalTime);
 	void move(vec2 moveDir);
 	void draw();	
 private:

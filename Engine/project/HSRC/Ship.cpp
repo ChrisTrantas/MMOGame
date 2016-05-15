@@ -21,7 +21,7 @@ void Ship::awake()
 	Input::bindToControl("fire", 'E');
 }
 
-void Ship::update()
+void Ship::update(float deltaTime, float totalTime)
 {
 	if (Input::isControlDown("moveRight"))
 	{
