@@ -85,4 +85,5 @@ void Ship::draw()
 	// not storing is like an instance variable
 
 	//mr->material->setAttribute(VERTEX_BIT, "seed", &perlinSeed, sizeof(vec3), false);
+	printf("working\n");
 }

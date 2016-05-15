@@ -236,42 +236,40 @@ int NetworkManager::ReceiveData()
 		//	objs.push_back(data->data);
 		//}
 	}
-	else
+	std::cout << "There is an ID: " << head->id << "\n" << std::endl;
+	if (head->cmd == PLAYER_COMMAND)
 	{
-		std::cout << "There is an ID: " << head->id << "\n" << std::endl;
-		if (head->cmd == PLAYER_COMMAND)
-		{
-			PlayerInput* cmd = (PlayerInput*)(buf + sizeof(Header));
+		PlayerInput* cmd = (PlayerInput*)(buf + sizeof(Header));
 
-			if (*cmd == FIRE)
-			{
-				BulletData* bullet = (BulletData*)(buf + sizeof(Header) + sizeof(PlayerInput));
-				game->FireBullet(bullet->xPos, bullet->yPos, bullet->xVel, bullet->yVel);
-			}
-			else if (*cmd == LEFT)
-			{
-				//TODO: THINK ABOUT SENDING THE DATA IN INSTEAD OF DOING IT IN THE METHOD
-				UpdateData(head->id, 0, 0, -5);
-			}
-			else if (*cmd == RIGHT)
-			{
-				//TODO: THINK ABOUT SENDING THE DATA IN INSTEAD OF DOING IT IN THE METHOD
-				UpdateData(head->id, 0, 0, 5);
-			}
-			else if (*cmd == UP)
-			{
-				//TODO: THINK ABOUT SENDING THE DATA IN INSTEAD OF DOING IT IN THE METHOD
-				UpdateData(head->id, 0, 0, 0);
-			}
-			else if (*cmd == INPUT_NONE)
-			{
-				UpdateData(head->id, 0, 0, 0);
-			}
-			else
-			{
-				printf("Client sent an illegal command %d\n", *cmd);
-			}
+		if (*cmd == FIRE)
+		{
+			BulletData* bullet = (BulletData*)(buf + sizeof(Header) + sizeof(PlayerInput));
+			game->FireBullet(bullet->xPos, bullet->yPos, bullet->xVel, bullet->yVel);
 		}
+		else if (*cmd == LEFT)
+		{
+			//TODO: THINK ABOUT SENDING THE DATA IN INSTEAD OF DOING IT IN THE METHOD
+			UpdateData(head->id, 0, 0, -5);
+		}
+		else if (*cmd == RIGHT)
+		{
+			//TODO: THINK ABOUT SENDING THE DATA IN INSTEAD OF DOING IT IN THE METHOD
+			UpdateData(head->id, 0, 0, 5);
+		}
+		else if (*cmd == UP)
+		{
+			//TODO: THINK ABOUT SENDING THE DATA IN INSTEAD OF DOING IT IN THE METHOD
+			UpdateData(head->id, 0, 0, 0);
+		}
+		else if (*cmd == INPUT_NONE)
+		{
+			UpdateData(head->id, 0, 0, 0);
+		}
+		else
+		{
+			printf("Client sent an illegal command %d\n", *cmd);
+		}
+		SendToAllClients();
 	}
 
 	//if (head->cmd == PLAYER_COMMAND)
