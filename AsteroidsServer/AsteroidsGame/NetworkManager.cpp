@@ -439,6 +439,13 @@ void NetworkManager::FreeID(int id)
 {
 	ids &= ~(1 << id);
 	printf("ids after free %d\n", ids);
+	for (size_t i = 0; i < clients.size(); i++)
+	{
+		if (clients[i].sin_addr.S_un.S_addr == si_other.sin_addr.S_un.S_addr)
+		{
+			clients.erase(clients.begin() + i);
+		}
+	}
 }
 
 int NetworkManager::GetFreeThread()
