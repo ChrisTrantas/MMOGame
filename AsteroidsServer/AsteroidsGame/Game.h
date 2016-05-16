@@ -81,9 +81,11 @@ public:
 	// When the server gets new inputs, update them here.
 	float shipAccelerationXBuffer[MAX_SHIPS];
 	float shipAccelerationYBuffer[MAX_SHIPS];
+	float shipRotBuffer[MAX_SHIPS];
 
 	float lightAccelerationXBuffer[MAX_LIGHTS];
 	float lightAccelerationYBuffer[MAX_LIGHTS];
+	float lightRotBuffer[MAX_SHIPS];
 
 	float asteroidVelocitiesXBuffer[MAX_ASTEROIDS];
 	float asteroidVelocitiesYBuffer[MAX_ASTEROIDS];
