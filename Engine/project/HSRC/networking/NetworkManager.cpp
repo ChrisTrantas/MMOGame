@@ -28,7 +28,7 @@ void NetworkManager::Initialize(int nThread)
 		m_ptrThread[i]->CreateWorkerThread();
 		m_hThreadPool[i] = m_ptrThread[i]->GetThreadHandle();
 	}
-
+	speed = 15;
 	testShip->addComponent<Ship>(new Ship());
 }
 
@@ -192,6 +192,7 @@ int NetworkManager::receiveData()
 		PlayerData* data = (PlayerData*)(buf + sizeof(Header));
 		//memcpy(data, buf + sizeof(Header), sizeof(PlayerData));
 		printf("Got an update form the server\n");
+		testShip->getComponent<Transform>()->setPosition(vec3(data->shipPosX[0], data->shipPosY[0], 0));
 	}
 	else if (head->cmd == PLAYER_DIED)
 	{

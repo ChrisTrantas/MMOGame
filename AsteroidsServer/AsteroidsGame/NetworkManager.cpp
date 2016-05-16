@@ -266,7 +266,6 @@ int NetworkManager::ReceiveData()
 		{
 			printf("Client sent an illegal command %d\n", *cmd);
 		}
-		UpdateAllClients();
 	}
 
 	//if (head->cmd == PLAYER_COMMAND)

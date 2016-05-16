@@ -88,6 +88,8 @@ void Game::Update(float deltaTime){
 	// A few physics constants
 	__m128 dt = _mm_set1_ps(deltaTime);
 
+	//printf("Ship X Position: %f \n", shipPositions->x[0]);
+
 	//
 	// Asteroid Physics
 	//
@@ -250,7 +252,7 @@ void Game::Update(float deltaTime){
 		if (splitAsteroids[i]){
 			splitAsteroids[i] = false;
 			asteroidRadius->value[i] = asteroidRadius->value[i] / 2.0f;
-			if (asteroidRadius->value[i] < 1.0f){
+			if (asteroidRadius->value[i] < 0.37f){
 				asteroidRadius->value[i] = 0;
 				continue;
 			}

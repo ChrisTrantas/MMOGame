@@ -34,6 +34,7 @@ int main()
 		
 		myClock = second;
 		myGame.Update(dtA);
+		NetworkManager::networkManager->UpdateAllClients();
 	}
 
 	

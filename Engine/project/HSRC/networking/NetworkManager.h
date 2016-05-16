@@ -179,6 +179,8 @@ private:
 	GameObject* testShip = GameObject::getGameObject("clientShip");
 
 	std::mutex bufMutex;
+	Transform* ct;
+	float speed;
 
 	//Thread Management
 	Thread* m_ptrThread[5];
