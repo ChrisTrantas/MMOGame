@@ -17,10 +17,12 @@ Game::Game()
 	shipVelocities = new Vec2(MAX_SHIPS);
 	shipAccelerations = new Vec2(MAX_SHIPS);
 	shipCollisions = new Vec1(MAX_SHIPS);
+	shipRot = new Vec1(MAX_SHIPS);
 
-	lightPositions = new Vec2(MAX_SHIPS);
-	lightVelocities = new Vec2(MAX_SHIPS);
-	lightAccelerations = new Vec2(MAX_SHIPS);
+	lightPositions = new Vec2(MAX_LIGHTS);
+	lightVelocities = new Vec2(MAX_LIGHTS);
+	lightAccelerations = new Vec2(MAX_LIGHTS);
+	lightRot = new Vec1(MAX_LIGHTS);
 
 	bulletPositions = new Vec2(MAX_BULLETS);
 	bulletPrevPositions = new Vec2(MAX_BULLETS);
@@ -76,6 +78,8 @@ void Game::Update(float deltaTime){
 		memcpy(shipAccelerations->y, shipAccelerationYBuffer, sizeof(float) * MAX_SHIPS);
 		memcpy(lightAccelerations->x, lightAccelerationXBuffer, sizeof(float) * MAX_LIGHTS);
 		memcpy(lightAccelerations->y, lightAccelerationYBuffer, sizeof(float) * MAX_LIGHTS);
+		memcpy(shipRot->value, shipRotBuffer, sizeof(float) * MAX_SHIPS);
+		memcpy(lightRot->value, lightRotBuffer, sizeof(float) * MAX_LIGHTS);
 		bufferMutex.unlock();
 		dirtyBuffers = false;
 	}
@@ -87,6 +91,8 @@ void Game::Update(float deltaTime){
 	//
 	// Asteroid Physics
 	//
+
+	physicsMutex.lock();
 
 	// Update positions for all the asteroids
 	for (int i = 0; i < MAX_ASTEROIDS; i += 4){
@@ -442,10 +448,14 @@ void Game::Update(float deltaTime){
 		shipsAlive[i + 2] = !shipCollisions->value[i + 2];
 		shipsAlive[i + 3] = !shipCollisions->value[i + 3];
 	}
+
+	physicsMutex.unlock();
 }
 
 
 void Game::FireBullet(float x, float y, float xVel, float yVel){
+
+	physicsMutex.lock();
 
 	bulletPositions->x[bulletLowIndex] = x;
 	bulletPositions->y[bulletLowIndex] = y;
@@ -465,6 +475,8 @@ void Game::FireBullet(float x, float y, float xVel, float yVel){
 			break;
 		}
 	}
+
+	physicsMutex.unlock();
 
 }
 
