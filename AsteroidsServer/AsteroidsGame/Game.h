@@ -36,6 +36,9 @@ private:
 	const __m128 c_WIDTH_SHIFT = _mm_set1_ps(SCREEN_WIDTH);
 	const __m128 c_HEIGHT_SHIFT = _mm_set1_ps(SCREEN_HEIGHT);
 
+	const __m128 c_ROT_MAX = _mm_set1_ps(360);
+	const __m128 c_ROT_MIN = _mm_set1_ps(0);
+
 
 	// Arrays storing all of the game's data.
 	Vec2* asteroidPositions;//  sizeof(float)*64;  memcpy(buffer + sizeof(float)*64, asteroidPositions->y, sizeof(float)* 64);
@@ -46,12 +49,13 @@ private:
 	Vec2* shipVelocities;
 	Vec2* shipAccelerations;
 	Vec1* shipCollisions;
-	Vec1* shipRot;//
+	Vec2* shipRot;//
+
 	
 	Vec2* lightPositions;//
 	Vec2* lightVelocities;
 	Vec2* lightAccelerations;
-	Vec1* lightRot;//
+	Vec2* lightRot;//
 
 	Vec2* bulletPositions;//
 	Vec2* bulletPrevPositions;
@@ -105,10 +109,10 @@ public:
 	Vec1* GetAsteroidRadius();
 
 	Vec2* GetShipPos();
-	Vec1* GetShipRot();
+	Vec2* GetShipRot();
 
 	Vec2* GetLightPos();
-	Vec1* GetLightRot();
+	Vec2* GetLightRot();
 
 	Vec2* GetBulletPos();
 };

@@ -17,12 +17,12 @@ Game::Game()
 	shipVelocities = new Vec2(MAX_SHIPS);
 	shipAccelerations = new Vec2(MAX_SHIPS);
 	shipCollisions = new Vec1(MAX_SHIPS);
-	shipRot = new Vec1(MAX_SHIPS);
+	shipRot = new Vec2(MAX_SHIPS);
 
 	lightPositions = new Vec2(MAX_LIGHTS);
 	lightVelocities = new Vec2(MAX_LIGHTS);
 	lightAccelerations = new Vec2(MAX_LIGHTS);
-	lightRot = new Vec1(MAX_LIGHTS);
+	lightRot = new Vec2(MAX_LIGHTS);
 
 	bulletPositions = new Vec2(MAX_BULLETS);
 	bulletPrevPositions = new Vec2(MAX_BULLETS);
@@ -78,10 +78,11 @@ void Game::Update(float deltaTime){
 		memcpy(shipAccelerations->y, shipAccelerationYBuffer, sizeof(float) * MAX_SHIPS);
 		memcpy(lightAccelerations->x, lightAccelerationXBuffer, sizeof(float) * MAX_LIGHTS);
 		memcpy(lightAccelerations->y, lightAccelerationYBuffer, sizeof(float) * MAX_LIGHTS);
-		memcpy(shipRot->value, shipRotBuffer, sizeof(float) * MAX_SHIPS);
-		memcpy(lightRot->value, lightRotBuffer, sizeof(float) * MAX_LIGHTS);
-		bufferMutex.unlock();
+		memcpy(shipRot->y, shipRotBuffer, sizeof(float) * MAX_SHIPS);
+		memcpy(lightRot->y, lightRotBuffer, sizeof(float) * MAX_LIGHTS);
+
 		dirtyBuffers = false;
+		bufferMutex.unlock();
 	}
 	//printf("dt: %f \n", deltaTime);
 	// A few physics constants
@@ -306,6 +307,7 @@ void Game::Update(float deltaTime){
 	memset(shipCollisions->value, 0, sizeof(float) * MAX_SHIPS);
 
 	__m128 maxVel = _mm_set1_ps(MAX_SHIP_SPEED);
+	__m128 minVel = _mm_set1_ps(-MAX_SHIP_SPEED);
 	__m128 shipR = _mm_set1_ps(SHIP_RADIUS);
 
 	for (int i = 0; i < MAX_SHIPS; i += 4){
@@ -323,9 +325,11 @@ void Game::Update(float deltaTime){
 
 		velocitiesX = _mm_add_ps(accelerationsX, velocitiesX);
 		velocitiesX = _mm_min_ps(velocitiesX, maxVel);
+		velocitiesX = _mm_max_ps(velocitiesX, minVel);
 
 		velocitiesY = _mm_add_ps(accelerationsY, velocitiesY);
 		velocitiesY = _mm_min_ps(velocitiesY, maxVel);
+		velocitiesY = _mm_max_ps(velocitiesY, minVel);
 
 		// Store the velocity ahead so we can multiply it by dt instead of making another variable for that.
 		_mm_store_ps(shipVelocities->x + i, velocitiesX);
@@ -379,6 +383,21 @@ void Game::Update(float deltaTime){
 
 			_mm_store_ps(shipCollisions->value + i, result);
 		}
+
+		__m128 rotPos = _mm_load_ps(shipRot->x + i);
+		__m128 rotVel = _mm_mul_ps(_mm_load_ps(shipRot->y + i), dt);
+
+		rotPos = _mm_add_ps(rotPos, rotVel);		
+
+		mask = _mm_cmplt_ps(rotPos, c_ROT_MIN);
+		mask = _mm_and_ps(mask, c_ROT_MAX);
+		rotPos = _mm_add_ps(rotPos, mask);
+
+		mask = _mm_cmpgt_ps(rotPos, c_ROT_MAX);
+		mask = _mm_and_ps(mask, c_ROT_MAX);
+		rotPos = _mm_sub_ps(rotPos, mask);
+
+		_mm_store_ps(shipRot->x, rotPos);
 	}
 
 	//
@@ -402,9 +421,11 @@ void Game::Update(float deltaTime){
 
 		velocitiesX = _mm_add_ps(accelerationsX, velocitiesX);
 		velocitiesX = _mm_min_ps(velocitiesX, maxVel);
+		velocitiesX = _mm_max_ps(velocitiesX, minVel);
 
 		velocitiesY = _mm_add_ps(accelerationsY, velocitiesY);
 		velocitiesY = _mm_min_ps(velocitiesY, maxVel);
+		velocitiesY = _mm_max_ps(velocitiesY, minVel);
 
 		// Store the velocity ahead so we can multiply it by dt instead of making another variable for that.
 		_mm_store_ps(lightVelocities->x + i, velocitiesX);
@@ -436,6 +457,21 @@ void Game::Update(float deltaTime){
 
 		_mm_store_ps(lightPositions->x + i, positionsX);
 		_mm_store_ps(lightPositions->y + i, positionsY);
+
+		__m128 rotPos = _mm_load_ps(lightRot->x + i);
+		__m128 rotVel = _mm_mul_ps(_mm_load_ps(lightRot->y + i), dt);
+
+		rotPos = _mm_add_ps(rotPos, rotVel);
+
+		mask = _mm_cmplt_ps(rotPos, c_ROT_MIN);
+		mask = _mm_and_ps(mask, c_ROT_MAX);
+		rotPos = _mm_add_ps(rotPos, mask);
+
+		mask = _mm_cmpgt_ps(rotPos, c_ROT_MAX);
+		mask = _mm_and_ps(mask, c_ROT_MAX);
+		rotPos = _mm_sub_ps(rotPos, mask);
+
+		_mm_store_ps(lightRot->x, rotPos);
 	}
 
 	// Updating collision
@@ -494,7 +530,7 @@ Vec2* Game::GetShipPos()
 	return shipPositions;
 }
 
-Vec1* Game::GetShipRot()
+Vec2* Game::GetShipRot()
 {
 	return shipRot;
 }
@@ -504,7 +540,7 @@ Vec2* Game::GetLightPos()
 	return lightPositions;
 }
 
-Vec1* Game::GetLightRot()
+Vec2* Game::GetLightRot()
 {
 	return lightRot;
 }
