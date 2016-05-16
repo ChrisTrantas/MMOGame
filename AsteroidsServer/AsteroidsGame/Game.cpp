@@ -117,7 +117,7 @@ void Game::Update(float deltaTime){
 
 		mask = _mm_cmpgt_ps(positionsX, c_RIGHT);
 		mask = _mm_and_ps(mask, c_WIDTH_SHIFT);
-		positionsX = _mm_add_ps(positionsX, mask);
+		positionsX = _mm_sub_ps(positionsX, mask);
 
 		mask = _mm_cmplt_ps(positionsY, c_UP);
 		mask = _mm_and_ps(mask, c_HEIGHT_SHIFT);
@@ -125,7 +125,7 @@ void Game::Update(float deltaTime){
 
 		mask = _mm_cmpgt_ps(positionsY, c_DOWN);
 		mask = _mm_and_ps(mask, c_HEIGHT_SHIFT);
-		positionsY = _mm_add_ps(positionsY, mask);
+		positionsY = _mm_sub_ps(positionsY, mask);
 
 		// Store information
 		_mm_store_ps(asteroidPositions->x + i, positionsX);
@@ -281,7 +281,7 @@ void Game::Update(float deltaTime){
 
 		mask = _mm_cmpgt_ps(positionsX, c_RIGHT);
 		mask = _mm_and_ps(mask, c_WIDTH_SHIFT);
-		positionsX = _mm_add_ps(positionsX, mask);
+		positionsX = _mm_sub_ps(positionsX, mask);
 
 		mask = _mm_cmplt_ps(positionsY, c_UP);
 		mask = _mm_and_ps(mask, c_HEIGHT_SHIFT);
@@ -289,7 +289,7 @@ void Game::Update(float deltaTime){
 
 		mask = _mm_cmpgt_ps(positionsY, c_DOWN);
 		mask = _mm_and_ps(mask, c_HEIGHT_SHIFT);
-		positionsY = _mm_add_ps(positionsY, mask);
+		positionsY = _mm_sub_ps(positionsY, mask);
 
 		// Store information
 		_mm_store_ps(bulletPositions->x + i, positionsX);
@@ -424,7 +424,7 @@ void Game::Update(float deltaTime){
 
 		mask = _mm_cmpgt_ps(positionsX, c_RIGHT);
 		mask = _mm_mul_ps(mask, c_WIDTH_SHIFT);
-		positionsX = _mm_add_ps(positionsX, mask);
+		positionsX = _mm_sub_ps(positionsX, mask);
 
 		mask = _mm_cmplt_ps(positionsY, c_UP);
 		mask = _mm_mul_ps(mask, c_HEIGHT_SHIFT);
@@ -432,7 +432,7 @@ void Game::Update(float deltaTime){
 
 		mask = _mm_cmpgt_ps(positionsY, c_DOWN);
 		mask = _mm_mul_ps(mask, c_HEIGHT_SHIFT);
-		positionsY = _mm_add_ps(positionsY, mask);
+		positionsY = _mm_sub_ps(positionsY, mask);
 
 		_mm_store_ps(lightPositions->x + i, positionsX);
 		_mm_store_ps(lightPositions->y + i, positionsY);
