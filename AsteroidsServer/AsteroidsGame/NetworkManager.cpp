@@ -323,14 +323,18 @@ void NetworkManager::UpdateData(int id, float xVel, float yVel, float rot)
 	game->bufferMutex.lock();
 	if (id > 7)
 	{
-		memcpy(game->lightAccelerationXBuffer + ((id % 8)*sizeof(float)), &xVel, sizeof(float));
-		memcpy(game->lightAccelerationYBuffer + ((id % 8)*sizeof(float)), &yVel, sizeof(float));
+		game->lightAccelerationXBuffer[(id % 8)] = xVel;
+		game->lightAccelerationYBuffer[(id % 8)] = yVel;
+		//memcpy(game->lightAccelerationXBuffer + ((id % 8)*sizeof(float)), &xVel, sizeof(float));
+		//memcpy(game->lightAccelerationYBuffer + ((id % 8)*sizeof(float)), &yVel, sizeof(float));
 		//memcpy(game->lightRotationBuffer + ((id % 8)*sizeof(float)), &rot, sizeof(float));
 	}
 	else
 	{
-		memcpy(game->shipAccelerationXBuffer + (id*sizeof(float)), &xVel, sizeof(float));
-		memcpy(game->shipAccelerationYBuffer + (id*sizeof(float)), &yVel, sizeof(float));
+		game->shipAccelerationXBuffer[id] = xVel;
+		game->shipAccelerationYBuffer[id] = yVel;
+		//memcpy(game->shipAccelerationXBuffer + (id*sizeof(float)), &xVel, sizeof(float));
+		//memcpy(game->shipAccelerationYBuffer + (id*sizeof(float)), &yVel, sizeof(float));
 		//memcpy(game->lightRotationBuffer + (id*sizeof(float)), &rot, sizeof(float));
 	}
 
@@ -386,20 +390,61 @@ int NetworkManager::UpdateAllClients()
 
 	std::cout << "Pushing to all clients" << std::endl;
 	head->cmd = SERVER_UPDATE;
-	//DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
 	//TODO: FILL THE BUFFER WITH THE ENTIRE OF EVERYTHING FOR ALL CLIENTS
-	memcpy(buf + sizeof(Header), game->GetShipPos(), sizeof(float) * MAX_SHIPS);
-	memcpy(buf + sizeof(Header) + sizeof(float) * MAX_SHIPS, game->GetShipPos()/*game->GetShipRot()*/, sizeof(float) * MAX_SHIPS);
-	memcpy(buf + sizeof(Header) + sizeof(float) * MAX_SHIPS * 2, game->GetLightPos(), sizeof(float) * MAX_LIGHTS);
-	memcpy(buf + sizeof(Header) + sizeof(float) * MAX_SHIPS * 2 + sizeof(float) * MAX_LIGHTS, game->GetLightPos()/*game->GetLightRot()*/, sizeof(float) * MAX_LIGHTS);
-	memcpy(buf + sizeof(Header) + sizeof(float) * MAX_SHIPS * 2 + sizeof(float) * MAX_LIGHTS * 2, game->GetAsteroidPos(), sizeof(float) * MAX_ASTEROIDS);
-	memcpy(buf + sizeof(Header) + sizeof(float) * MAX_SHIPS * 2 + sizeof(float) * MAX_LIGHTS * 2 + sizeof(float) * MAX_ASTEROIDS, game->GetAsteroidRadius(), sizeof(float) * MAX_ASTEROIDS);
-	memcpy(buf + sizeof(Header) + sizeof(float) * MAX_SHIPS * 2 + sizeof(float) * MAX_LIGHTS * 2 + sizeof(float) * MAX_ASTEROIDS * 2, game->GetBulletPos(), sizeof(float) * MAX_BULLETS);
+	int bufferIndex = 0;
+
+	game->physicsMutex.lock();
+
+	float temp[MAX_SHIPS];
+	memcpy(temp, game->GetShipPos()->x, sizeof(float) * MAX_SHIPS);
+
+	//Ship Pos
+	memcpy(buf + sizeof(Header) + bufferIndex, game->GetShipPos()->x, sizeof(float) * MAX_SHIPS);
+	bufferIndex += sizeof(float) * MAX_SHIPS;
+	memcpy(buf + sizeof(Header) + bufferIndex, game->GetShipPos()->y, sizeof(float) * MAX_SHIPS);
+	bufferIndex += sizeof(float) * MAX_SHIPS;
+
+	//Ship Rot
+	memcpy(buf + sizeof(Header) + bufferIndex, game->GetShipPos()->x, sizeof(float) * MAX_SHIPS);
+	bufferIndex += sizeof(float) * MAX_SHIPS;
+	memcpy(buf + sizeof(Header) + bufferIndex, game->GetShipPos()->y, sizeof(float) * MAX_SHIPS);
+	bufferIndex += sizeof(float) * MAX_SHIPS;
+
+	//Light Pos
+	memcpy(buf + sizeof(Header) + bufferIndex, game->GetLightPos()->x, sizeof(float) * MAX_LIGHTS);
+	bufferIndex += sizeof(float) * MAX_LIGHTS;
+	memcpy(buf + sizeof(Header) + bufferIndex, game->GetLightPos()->y, sizeof(float) * MAX_LIGHTS);
+	bufferIndex += sizeof(float) * MAX_LIGHTS;
+
+	//Light Rot
+	memcpy(buf + sizeof(Header) + bufferIndex, game->GetLightPos()->x, sizeof(float) * MAX_LIGHTS);
+	bufferIndex += sizeof(float) * MAX_LIGHTS;
+	memcpy(buf + sizeof(Header) + bufferIndex, game->GetLightPos()->y, sizeof(float) * MAX_LIGHTS);
+	bufferIndex += sizeof(float) * MAX_LIGHTS;
+
+	//Asteroid Pos
+	memcpy(buf + sizeof(Header) + bufferIndex, game->GetAsteroidPos()->x, sizeof(float) * MAX_ASTEROIDS);
+	bufferIndex += sizeof(float) * MAX_ASTEROIDS;
+	memcpy(buf + sizeof(Header) + bufferIndex, game->GetAsteroidPos()->y, sizeof(float) * MAX_ASTEROIDS);
+	bufferIndex += sizeof(float) * MAX_ASTEROIDS;
+
+	//Asteroid Radius
+	memcpy(buf + sizeof(Header) + bufferIndex, game->GetAsteroidRadius()->value, sizeof(float) * MAX_ASTEROIDS);
+	bufferIndex += sizeof(float) * MAX_ASTEROIDS;
+
+	//Bullet Pos
+	memcpy(buf + sizeof(Header) + bufferIndex, game->GetBulletPos()->x, sizeof(float) * MAX_BULLETS);
+	bufferIndex += sizeof(float) * MAX_BULLETS;
+	memcpy(buf + sizeof(Header) + bufferIndex, game->GetBulletPos()->y, sizeof(float) * MAX_BULLETS);
+	bufferIndex += sizeof(float) * MAX_BULLETS;
+
 	SendToAllClients();
+
+	game->physicsMutex.unlock();
 
 	//bufMutex.unlock();
 
-	std::cout << "Finished sending to all clients" << std::endl;
+	std::cout << "Finished sending to all clients" << sizeof(Vec2) << std::endl;
 	return EXIT_SUCCESS;
 }
 

@@ -126,6 +126,8 @@ int NetworkManager::startClient()
 		fflush(stdout);
 
 		bufMutex.lock();
+		printf("This didn't work\n");
+
 		//clear the buffer by filling null, it might have previously received data
 		memset(buf, '\0', BUFLEN);
 		bufMutex.unlock();
@@ -187,29 +189,9 @@ int NetworkManager::receiveData()
 
 	if (head->cmd == SERVER_UPDATE)
 	{
-		DataUpdate* data = (DataUpdate*)(buf + sizeof(Header));
-		if (data->data.id == id)
-		{
-			ship = data->data;
-		}
-		else
-		{
-			bool inVector = false;
-			for (int i = 0; i < otherObjs.size(); i++)
-			{
-				if (otherObjs[i].id == data->data.id)
-				{
-					inVector = true;
-					otherObjs[i] = data->data;
-					break;
-				}
-			}
-
-			if (!inVector)
-			{
-				otherObjs.push_back(data->data);
-			}
-		}
+		PlayerData* data = (PlayerData*)(buf + sizeof(Header));
+		//memcpy(data, buf + sizeof(Header), sizeof(PlayerData));
+		printf("Got an update form the server\n");
 	}
 	else if (head->cmd == PLAYER_DIED)
 	{
@@ -226,9 +208,7 @@ int NetworkManager::receiveData()
 	printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
 	printf("Data: %s\n", buf);
 	
-	//testShip->getComponent<Transform>()->position
-	
-	
+	testShip->getComponent<Transform>()->position;
 }
 
 void NetworkManager::updateData(PlayerInput dir)
@@ -239,7 +219,7 @@ void NetworkManager::updateData(PlayerInput dir)
 	head->cmd = PLAYER_COMMAND;
 	sendData();
 	bufMutex.unlock();
-	printf("updating Data");
+	printf("updating Data\n");
 }
 
 void NetworkManager::serverUpdate()
@@ -247,7 +227,7 @@ void NetworkManager::serverUpdate()
 	bufMutex.lock();
 	sendData();
 	bufMutex.unlock();
-	printf("updating Data");
+	printf("updating Data\n");
 }
 
 void NetworkManager::clientDisconnect()

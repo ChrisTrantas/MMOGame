@@ -13,7 +13,7 @@
 
 #define STARTING_ASTEROID_RADIUS 8
 #define SHIP_RADIUS 1.0f
-#define MAX_SHIP_SPEED 8.0f
+#define MAX_SHIP_SPEED 4.0f
 
 #define BOUNDS_LEFT -10.0f
 #define BOUNDS_RIGHT 10.0f

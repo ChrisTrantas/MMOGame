@@ -14,8 +14,12 @@
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 
 //#define SERVER "127.0.0.1"  //ip address of udp server
-#define BUFLEN 2048  //Max length of buffer
+#define BUFLEN 4096  //Max length of buffer
 #define PORT 8888   //The port on which to listen for incoming data
+#define MAX_ASTEROIDS 4 * (64/4)
+#define MAX_SHIPS 4 * (8/4)
+#define MAX_LIGHTS 4 * (8/4)
+#define MAX_BULLETS 4 * (128/4)
 
 enum ObjType
 {
@@ -89,7 +93,25 @@ struct DataUpdate
 
 struct PlayerData
 {
+	float shipPosX[MAX_SHIPS];
+	float shipPosY[MAX_SHIPS];
 
+	float shipRotX[MAX_SHIPS];
+	float shipRotY[MAX_SHIPS];
+
+	float lightPosX[MAX_LIGHTS];
+	float lightPosY[MAX_LIGHTS];
+
+	float lightRotX[MAX_LIGHTS];
+	float lightRotY[MAX_LIGHTS];
+
+	float astPosX[MAX_ASTEROIDS];
+	float astPosY[MAX_ASTEROIDS];
+
+	float astRadius[MAX_ASTEROIDS];
+
+	float bulletPosX[MAX_BULLETS];
+	float bulletPosY[MAX_BULLETS];
 };
 
 struct BulletData

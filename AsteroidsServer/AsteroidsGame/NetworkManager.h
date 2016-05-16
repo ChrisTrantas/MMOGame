@@ -23,7 +23,7 @@
 
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 
-#define BUFLEN 2048  //Max length of buffer
+#define BUFLEN 4096  //Max length of buffer
 #define PORT 8888   //The port on which to listen for incoming data
 #define MAX_CLIENTS 100 //max number of clients we can have attached
 
@@ -88,7 +88,25 @@ struct ObjData
 
 struct PlayerData
 {
+	float shipPosX[MAX_SHIPS];
+	float shipPosY[MAX_SHIPS];
 
+	float shipRotX[MAX_SHIPS];
+	float shipRotY[MAX_SHIPS];
+
+	float lightPosX[MAX_LIGHTS];
+	float lightPosY[MAX_LIGHTS];
+
+	float lightRotX[MAX_LIGHTS];
+	float lightRotY[MAX_LIGHTS];
+
+	float astPosX[MAX_ASTEROIDS];
+	float astPosY[MAX_ASTEROIDS];
+
+	float astRadius[MAX_ASTEROIDS];
+
+	float bulletPosX[MAX_BULLETS];
+	float bulletPosY[MAX_BULLETS];
 };
 
 struct BulletData
@@ -142,7 +160,7 @@ private:
 	std::vector<sockaddr_in> clients;
 	std::mutex bufMutex;
 	Header* head;
-	std::vector<ObjData> objs;
+	//std::vector<ObjData> objs;
 	//std::vector<glm::vec2> shipPos;
 	//std::vector<float> shipRot;
 

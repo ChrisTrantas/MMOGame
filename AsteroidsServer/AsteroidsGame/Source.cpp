@@ -23,16 +23,22 @@ int main()
 	NetworkManager::networkManager->AssignTask([](){ NetworkManager::networkManager->StartServer(); });
 
 	clock_t myClock;
+	clock_t second;
+	float dtA;
 	myClock = clock();
 
-	for (int i = 0; i < 20000; ++i)
+	while (true)
 	{
-		myGame.Update(0.1f);
+		second = clock();
+		dtA = (second - myClock) / (float)CLOCKS_PER_SEC;
+		
+		myClock = second;
+		myGame.Update(dtA);
 	}
 
-	clock_t second;
-	second = clock();
-	float dtA = second - myClock;
+	
+	
+	
 
 	std::cout << "Average Update Time: " << (((float)dtA) / CLOCKS_PER_SEC) * 1000 / 20000.0f << "ms" << std::endl;
 

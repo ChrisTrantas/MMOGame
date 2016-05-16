@@ -46,17 +46,17 @@ void Ship::update(float deltaTime, float totalTime)
 
 	if (Input::wasControlReleased("moveRight"))
 	{
-		NetworkManager::networkManager->updateData(RIGHT);
+		NetworkManager::networkManager->updateData(INPUT_NONE);
 		//move(vec2(1, 0));
 	}
 	if (Input::wasControlReleased("moveLeft"))
 	{
-		NetworkManager::networkManager->updateData(LEFT);
+		NetworkManager::networkManager->updateData(INPUT_NONE);
 		//move(vec2(-1, 0));
 	}
 	if (Input::wasControlReleased("moveUp"))
 	{
-		NetworkManager::networkManager->updateData(UP);
+		NetworkManager::networkManager->updateData(INPUT_NONE);
 		//move(vec2(0, 1));
 	}
 

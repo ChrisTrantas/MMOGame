@@ -68,7 +68,7 @@ Game::~Game()
 }
 
 void Game::Update(float deltaTime){
-
+	
 	// Update the buffer if necessary.
 	if (dirtyBuffers){
 		bufferMutex.lock();
@@ -79,10 +79,9 @@ void Game::Update(float deltaTime){
 		bufferMutex.unlock();
 		dirtyBuffers = false;
 	}
-
+	//printf("dt: %f \n", deltaTime);
 	// A few physics constants
 	__m128 dt = _mm_set1_ps(deltaTime);
-	
 
 	//
 	// Asteroid Physics
@@ -324,7 +323,7 @@ void Game::Update(float deltaTime){
 
 		// Store the velocity ahead so we can multiply it by dt instead of making another variable for that.
 		_mm_store_ps(shipVelocities->x + i, velocitiesX);
-		_mm_store_ps(shipVelocities->x + i, velocitiesY);
+		_mm_store_ps(shipVelocities->y + i, velocitiesY);
 
 		velocitiesX = _mm_mul_ps(dt, velocitiesX);
 		velocitiesY = _mm_mul_ps(dt, velocitiesY);
@@ -341,7 +340,7 @@ void Game::Update(float deltaTime){
 
 		mask = _mm_cmpgt_ps(positionsX, c_RIGHT);
 		mask = _mm_and_ps(mask, c_WIDTH_SHIFT);
-		positionsX = _mm_add_ps(positionsX, mask);
+		positionsX = _mm_sub_ps(positionsX, mask);
 
 		mask = _mm_cmplt_ps(positionsY, c_UP);
 		mask = _mm_and_ps(mask, c_HEIGHT_SHIFT);
@@ -349,7 +348,7 @@ void Game::Update(float deltaTime){
 
 		mask = _mm_cmpgt_ps(positionsY, c_DOWN);
 		mask = _mm_and_ps(mask, c_HEIGHT_SHIFT);
-		positionsY = _mm_add_ps(positionsY, mask);
+		positionsY = _mm_sub_ps(positionsY, mask);
 
 		_mm_store_ps(shipPositions->x + i, positionsX);
 		_mm_store_ps(shipPositions->y + i, positionsY);
