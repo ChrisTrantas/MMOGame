@@ -51,7 +51,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 	shadowAmount *= viewCheck <= spotLight.fov * 0.5f;
 	
 	float lightNormalDot = dot(input.normal, normalize(spotLight.position - input.worldPos));
-	float lightAmount = (1 - (viewCheck / (spotLight.fov * .5f))) * saturate(lightNormalDot) / (lightDistance * .2f);
+	float lightAmount = (1 - (viewCheck / (spotLight.fov * .5f))) * saturate(lightNormalDot) / (lightDistance * .05f);
 	
 	return diffuseColor * shadowAmount * lightAmount;
 }
