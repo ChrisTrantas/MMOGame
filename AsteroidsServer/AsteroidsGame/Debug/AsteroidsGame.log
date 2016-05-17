@@ -1,21 +1,30 @@
-﻿Build started 5/16/2016 10:08:45 PM.
-     1>Project "\\banner.main.ad.rit.edu\students\rmh8980\IGMProfile\Documents\GitHub\MMOGame\AsteroidsServer\AsteroidsGame\AsteroidsGame.vcxproj" on node 2 (Build target(s)).
+﻿Build started 5/16/2016 10:33:54 PM.
+     1>Project "E:\Doom\AsteroidsServer\AsteroidsGame\AsteroidsGame.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt NetworkManager.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Game.cpp NetworkManager.cpp Source.cpp Thread.cpp
+         Thread.cpp
+         Source.cpp
          NetworkManager.cpp
-     1>\\banner.main.ad.rit.edu\students\rmh8980\igmprofile\documents\github\mmogame\asteroidsserver\asteroidsgame\networkmanager.cpp(19): warning C4018: '>' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\rmh8980\igmprofile\documents\github\mmogame\asteroidsserver\asteroidsgame\networkmanager.cpp(188): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\rmh8980\igmprofile\documents\github\mmogame\asteroidsserver\asteroidsgame\networkmanager.cpp(474): warning C4334: '<<' : result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+     1>e:\doom\asteroidsserver\asteroidsgame\networkmanager.cpp(19): warning C4018: '>' : signed/unsigned mismatch
+     1>e:\doom\asteroidsserver\asteroidsgame\networkmanager.cpp(188): warning C4018: '<' : signed/unsigned mismatch
+     1>e:\doom\asteroidsserver\asteroidsgame\networkmanager.cpp(474): warning C4334: '<<' : result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+         Game.cpp
+     1>e:\doom\asteroidsserver\asteroidsgame\game.cpp(33): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>e:\doom\asteroidsserver\asteroidsgame\game.cpp(50): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>e:\doom\asteroidsserver\asteroidsgame\game.cpp(54): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>e:\doom\asteroidsserver\asteroidsgame\game.cpp(58): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>e:\doom\asteroidsserver\asteroidsgame\game.cpp(62): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+         Generating Code...
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"\\banner.main.ad.rit.edu\students\rmh8980\IGMProfile\Documents\GitHub\MMOGame\AsteroidsServer\Debug\AsteroidsGame.exe" /INCREMENTAL /NOLOGO User32.lib gdi32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"\\banner.main.ad.rit.edu\students\rmh8980\IGMProfile\Documents\GitHub\MMOGame\AsteroidsServer\Debug\AsteroidsGame.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"\\banner.main.ad.rit.edu\students\rmh8980\IGMProfile\Documents\GitHub\MMOGame\AsteroidsServer\Debug\AsteroidsGame.lib" /MACHINE:X86 /PROFILE Debug\Game.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\Doom\AsteroidsServer\Debug\AsteroidsGame.exe" /INCREMENTAL /NOLOGO User32.lib gdi32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\Doom\AsteroidsServer\Debug\AsteroidsGame.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\Doom\AsteroidsServer\Debug\AsteroidsGame.lib" /MACHINE:X86 /PROFILE Debug\Game.obj
          Debug\NetworkManager.obj
          Debug\Source.obj
          Debug\Thread.obj
      1>LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/PROFILE' specification
      1>Game.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:LBR' specification
-         AsteroidsGame.vcxproj -> \\banner.main.ad.rit.edu\students\rmh8980\IGMProfile\Documents\GitHub\MMOGame\AsteroidsServer\Debug\AsteroidsGame.exe
-     1>Done Building Project "\\banner.main.ad.rit.edu\students\rmh8980\IGMProfile\Documents\GitHub\MMOGame\AsteroidsServer\AsteroidsGame\AsteroidsGame.vcxproj" (Build target(s)).
+         AsteroidsGame.vcxproj -> E:\Doom\AsteroidsServer\Debug\AsteroidsGame.exe
+     1>Done Building Project "E:\Doom\AsteroidsServer\AsteroidsGame\AsteroidsGame.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:03.68
+Time Elapsed 00:00:03.49
