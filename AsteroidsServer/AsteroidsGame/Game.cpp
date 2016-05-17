@@ -404,7 +404,9 @@ void Game::Update(float deltaTime){
 			__m128 result = _mm_add_ps(dx, dy);
 			result = _mm_cmplt_ps(result, asteroidR);
 
-			_mm_store_ps(shipCollisions->value + i, result);
+			__m128 collisions = _mm_load_ps(shipCollisions->value + i);
+
+			_mm_store_ps(shipCollisions->value + i, _mm_and_ps(result, collisions));
 		}
 
 		__m128 rotPos = _mm_load_ps(shipRot->x + i);
@@ -500,11 +502,10 @@ void Game::Update(float deltaTime){
 	// Updating collision
 
 	// For now we just kill for collisions.
-	for (int i = 0; i < MAX_SHIPS; i+=4){
-		shipsAlive[i] = !shipCollisions->value[i];  // I can unroll the loop thanks to it being four based
-		shipsAlive[i + 1] = !shipCollisions->value[i + 1];
-		shipsAlive[i + 2] = !shipCollisions->value[i + 2];
-		shipsAlive[i + 3] = !shipCollisions->value[i + 3];
+	for (int i = 0; i < MAX_SHIPS; ++i){
+		if (shipsAlive[i] && shipCollisions->value[i]){
+			shipsAlive[i] = false;
+		}
 	}
 
 	physicsMutex.unlock();
@@ -571,4 +572,21 @@ Vec2* Game::GetLightRot()
 Vec2* Game::GetBulletPos()
 {
 	return bulletPositions;
+}
+
+void Game::SetShipAlive(int id){
+	shipsAlive[id] = true;
+}
+
+bool Game::IsShipAlive(int id){
+	return shipsAlive[id];
+}
+
+bool Game::AnyShipsAlive(){
+	for (int i = 0; i < MAX_SHIPS; ++i){
+		if (shipsAlive[i]){
+			return true;
+		}
+	}
+	return false;
 }
