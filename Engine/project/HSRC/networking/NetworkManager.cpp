@@ -28,8 +28,17 @@ void NetworkManager::Initialize(int nThread)
 		m_ptrThread[i]->CreateWorkerThread();
 		m_hThreadPool[i] = m_ptrThread[i]->GetThreadHandle();
 	}
-	speed = 15;
 	testShip->addComponent<Ship>(new Ship());
+	for (int i = 0; i < MAX_ASTEROIDS; i++)
+	{
+		asteroids[i] = GameObject::getGameObject();
+		asteroids[i]->addComponent<Asteroid>(new Asteroid());
+	}
+	for (int i = 0; i < MAX_SHIPS; i++)
+	{
+		ships[i] = GameObject::getGameObject();
+		ships[i]->addComponent<Ship>(new Ship());
+	}
 }
 
 NetworkManager::NetworkManager()
@@ -192,7 +201,15 @@ int NetworkManager::receiveData()
 		PlayerData* data = (PlayerData*)(buf + sizeof(Header));
 		//memcpy(data, buf + sizeof(Header), sizeof(PlayerData));
 		printf("Got an update form the server\n");
-		testShip->getComponent<Transform>()->setPosition(vec3(data->shipPosX[0], data->shipPosY[0], 0));
+		//testShip->getComponent<Transform>()->setPosition(vec3(data->shipPosX[0], data->shipPosY[0], 0));
+		for (int i = 0; i < MAX_SHIPS; i++)
+		{
+			ships[i]->getComponent<Transform>()->setPosition(vec3(data->shipPosX[i], data->shipPosY[i], 0));
+		}
+		for (int i = 0; i < MAX_ASTEROIDS; i++)
+		{
+			asteroids[i]->getComponent<Transform>()->setPosition(vec3(data->astPosX[i], data->astPosY[i], 0));
+		}
 	}
 	else if (head->cmd == PLAYER_DIED)
 	{

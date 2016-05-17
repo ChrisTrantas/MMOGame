@@ -6,7 +6,7 @@
 
 // Please make multiples of 4.
 // The formula is 4 * numberofthings/4
-#define MAX_ASTEROIDS 4 * (64/4)
+#define MAX_ASTEROIDS 4 * (16/4)
 #define MAX_SHIPS 4 * (8/4)
 #define MAX_LIGHTS 4 * (8/4)
 #define MAX_BULLETS 4 * (128/4)

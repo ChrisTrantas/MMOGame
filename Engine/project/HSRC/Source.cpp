@@ -32,21 +32,21 @@ void buildGame()
 	Material::getMaterial("asteroid")->pixelShader = aps;
 #pragma endregion The shader setup and material binding phase
 
-	for (size_t i = 0; i < 8; ++i)
-	{
-		GameObject* go = GameObject::getGameObject();
-		float ang = (float)M_PI * 2 * (i / 8.0f);
-		go->getComponent<Transform>()->translate(vec3(cosf(ang) * 4, sinf(ang) * 4, 0));
-		go->addComponent<Asteroid>(new Asteroid());
-	}
-
-	for (size_t i = 0; i < 20; ++i)
-	{
-		GameObject* go = GameObject::getGameObject();
-		float ang = (float)M_PI * 2 * (i / 20.0f);
-		go->getComponent<Transform>()->translate(vec3(cosf(ang) * 8, sinf(ang) * 8, 0));
-		go->addComponent<Asteroid>(new Asteroid());
-	}
+	//for (size_t i = 0; i < 8; ++i)
+	//{
+	//	GameObject* go = GameObject::getGameObject();
+	//	float ang = (float)M_PI * 2 * (i / 8.0f);
+	//	go->getComponent<Transform>()->translate(vec3(cosf(ang) * 4, sinf(ang) * 4, 0));
+	//	go->addComponent<Asteroid>(new Asteroid());
+	//}
+	//
+	//for (size_t i = 0; i < 20; ++i)
+	//{
+	//	GameObject* go = GameObject::getGameObject();
+	//	float ang = (float)M_PI * 2 * (i / 20.0f);
+	//	go->getComponent<Transform>()->translate(vec3(cosf(ang) * 8, sinf(ang) * 8, 0));
+	//	go->addComponent<Asteroid>(new Asteroid());
+	//}
 
 	// make the ships here
 

@@ -10,13 +10,14 @@
 #include "..\threading\Thread.h"
 #include "..\engine\Game.h"
 #include "..\Ship.h"
+#include "..\Asteroid.h"
 
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 
 //#define SERVER "127.0.0.1"  //ip address of udp server
 #define BUFLEN 4096  //Max length of buffer
 #define PORT 8888   //The port on which to listen for incoming data
-#define MAX_ASTEROIDS 4 * (64/4)
+#define MAX_ASTEROIDS 4 * (16/4)
 #define MAX_SHIPS 4 * (8/4)
 #define MAX_LIGHTS 4 * (8/4)
 #define MAX_BULLETS 4 * (128/4)
@@ -179,8 +180,10 @@ private:
 	GameObject* testShip = GameObject::getGameObject("clientShip");
 
 	std::mutex bufMutex;
-	Transform* ct;
-	float speed;
+
+	GameObject* asteroids[MAX_ASTEROIDS];
+	GameObject* ships[MAX_SHIPS];
+
 
 	//Thread Management
 	Thread* m_ptrThread[5];
