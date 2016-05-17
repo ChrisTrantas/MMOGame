@@ -193,7 +193,7 @@ int NetworkManager::receiveData()
 
 	if (head && head->id != -1)
 	{
-		id = head->id;
+		//id = head->id;
 	}
 
 	if (head->cmd == SERVER_UPDATE)
