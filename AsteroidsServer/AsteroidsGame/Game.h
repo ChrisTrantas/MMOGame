@@ -105,9 +105,10 @@ public:
 	/// </summary>
 	void FireBullet(float x, float y, float xVel, float yVel);
 
-	void SetShipAlive(int id);
+	void SetShipAlive(int id, bool isAlive);
 	bool IsShipAlive(int id);
 	bool AnyShipsAlive();
+	bool* GetShipsAlive();
 
 	Vec2* GetAsteroidPos();
 	Vec1* GetAsteroidRadius();

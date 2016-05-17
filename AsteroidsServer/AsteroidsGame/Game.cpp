@@ -574,8 +574,8 @@ Vec2* Game::GetBulletPos()
 	return bulletPositions;
 }
 
-void Game::SetShipAlive(int id){
-	shipsAlive[id] = true;
+void Game::SetShipAlive(int id, bool isAlive){
+	shipsAlive[id] = isAlive;
 }
 
 bool Game::IsShipAlive(int id){
@@ -589,4 +589,8 @@ bool Game::AnyShipsAlive(){
 		}
 	}
 	return false;
+}
+
+bool* Game::GetShipsAlive(){
+	return shipsAlive;
 }

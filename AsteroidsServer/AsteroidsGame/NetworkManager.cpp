@@ -211,10 +211,12 @@ int NetworkManager::ReceiveData()
 	if (head && head->cmd == PLAYER_DISCONNECT)
 	{
 		FreeID(head->id);
+		game->SetShipAlive(head->id, false);
 	}
 	else if (head && head->cmd == PLAYER_CONNECT)
 	{
 		head->id = GenerateID(*((ObjType*)(buf+sizeof(Header))));
+		game->SetShipAlive(head->id, true);
 		std::cout << "Generated ID: " << (int)buf[0] << std::endl;
 		if (head->id != -1)
 		{
@@ -408,6 +410,10 @@ int NetworkManager::UpdateAllClients()
 	bufferIndex += sizeof(float) * MAX_SHIPS;
 	memcpy(buf + sizeof(Header) + bufferIndex, game->GetShipPos()->y, sizeof(float) * MAX_SHIPS);
 	bufferIndex += sizeof(float) * MAX_SHIPS;
+
+	//Ships Alive
+	memcpy(buf + sizeof(Header) + bufferIndex, game->GetShipsAlive(), sizeof(bool) * MAX_SHIPS);
+	bufferIndex += sizeof(bool) * MAX_SHIPS;
 
 	//Light Pos
 	memcpy(buf + sizeof(Header) + bufferIndex, game->GetLightPos()->x, sizeof(float) * MAX_LIGHTS);

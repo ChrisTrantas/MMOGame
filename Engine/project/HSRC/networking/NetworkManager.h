@@ -100,6 +100,8 @@ struct PlayerData
 	float shipRotX[MAX_SHIPS];
 	float shipRotY[MAX_SHIPS];
 
+	bool shipsAlive[MAX_SHIPS];
+
 	float lightPosX[MAX_LIGHTS];
 	float lightPosY[MAX_LIGHTS];
 

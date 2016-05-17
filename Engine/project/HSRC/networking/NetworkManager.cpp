@@ -204,6 +204,14 @@ int NetworkManager::receiveData()
 		//testShip->getComponent<Transform>()->setPosition(vec3(data->shipPosX[0], data->shipPosY[0], 0));
 		for (int i = 0; i < MAX_SHIPS; i++)
 		{
+			if (!data->shipsAlive[i])
+			{
+				ships[i]->getComponent<MeshRenderer>()->visible = false;
+			}
+			else if (data->shipsAlive[i])
+			{
+				ships[i]->getComponent<MeshRenderer>()->visible = true;
+			}
 			ships[i]->getComponent<Transform>()->setPosition(vec3(data->shipPosX[i], data->shipPosY[i], 0));
 		}
 		for (int i = 0; i < MAX_ASTEROIDS; i++)
