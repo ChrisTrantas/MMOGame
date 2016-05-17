@@ -17,19 +17,15 @@ void FPController::awake()
 	runSpeed = 50;
 	walkSpeed = 15;
 
-	Input::bindToControl("forward", 'W');
-	Input::bindToControl("back", 'S');
-	Input::bindToControl("left", 'A');
-	Input::bindToControl("right", 'D');
-	Input::bindToControl("run", VK_SHIFT);
-	Input::bindToControl("up", VK_SPACE);
-	Input::bindToControl("down", VK_CONTROL);
-	Input::bindToControl("look", VK_LBUTTON);
+	//Input::bindToControl("forward", 'W');
+	//Input::bindToControl("back", 'S');
+	//Input::bindToControl("left", 'A');
+	//Input::bindToControl("right", 'D');
+	//Input::bindToControl("run", VK_SHIFT);
+	//Input::bindToControl("up", VK_SPACE);
+	//Input::bindToControl("down", VK_CONTROL);
+	//Input::bindToControl("look", VK_LBUTTON);
 	Input::bindToControl("toggleColor", 'T');
-	Input::bindToControl("quity", 'Q');
-	Input::bindToControl("fire", 'F');
-	Input::bindToControl("die", 'B');
-
 }
 
 void FPController::update(float deltaTime, float totalTime)

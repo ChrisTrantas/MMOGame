@@ -14,11 +14,10 @@ void Ship::awake()
 {
 	t = gameObject->getComponent<Transform>();
 
-	Input::bindToControl("moveRight", 'L');
-	Input::bindToControl("moveUp", 'I');
-	Input::bindToControl("moveLeft", 'J');
-	Input::bindToControl("moveDown", 'K');
-	Input::bindToControl("fire", 'E');
+	Input::bindToControl("moveRight", 'D');
+	Input::bindToControl("moveUp", 'W');
+	Input::bindToControl("moveLeft", 'A');
+	Input::bindToControl("fire", VK_SPACE);
 }
 
 void Ship::update(float deltaTime, float totalTime)
@@ -26,52 +25,36 @@ void Ship::update(float deltaTime, float totalTime)
 	if (Input::isControlDown("moveRight"))
 	{
 		NetworkManager::networkManager->updateData(RIGHT);
-		//move(vec2(1, 0));
 	}
 	if (Input::isControlDown("moveLeft"))
 	{
 		NetworkManager::networkManager->updateData(LEFT);
-		//move(vec2(-1, 0));
 	}
 	if (Input::isControlDown("moveUp"))
 	{
 		NetworkManager::networkManager->updateData(UP);
-		//move(vec2(0, 1));
 	}
 	if (Input::isControlDown("fire"))
 	{
 		NetworkManager::networkManager->updateData(FIRE);
-		//move(vec2(0, 1));
 	}
 
 	if (Input::wasControlReleased("moveRight"))
 	{
 		NetworkManager::networkManager->updateData(INPUT_NONE);
-		//move(vec2(1, 0));
 	}
 	if (Input::wasControlReleased("moveLeft"))
 	{
 		NetworkManager::networkManager->updateData(INPUT_NONE);
-		//move(vec2(-1, 0));
 	}
 	if (Input::wasControlReleased("moveUp"))
 	{
 		NetworkManager::networkManager->updateData(INPUT_NONE);
-		//move(vec2(0, 1));
 	}
-
-	//You cant move down in asteroids
-	/*if (Input::isControlDown("moveDown"))
-	{
-		NetworkManager::networkManager->updateData(DOWN);
-		move(vec2(0, -1));
-	}*/
-	//printf("Ship Pos: %f,%f,%f", t->position.x, t->position.y, t->position.z);
 }
 
 void Ship::move(vec2 moveDir)
 {
-	//t->position = t->position + vec3(moveDir,0);
 	t->translate(vec3(moveDir, 0));
 }
 
