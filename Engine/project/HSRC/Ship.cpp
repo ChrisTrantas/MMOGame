@@ -66,7 +66,7 @@ void Ship::update(float deltaTime, float totalTime)
 		NetworkManager::networkManager->updateData(DOWN);
 		move(vec2(0, -1));
 	}*/
-	printf("Ship Pos: %f,%f,%f", t->position.x, t->position.y, t->position.z);
+	//printf("Ship Pos: %f,%f,%f", t->position.x, t->position.y, t->position.z);
 }
 
 void Ship::move(vec2 moveDir)

@@ -385,9 +385,9 @@ void NetworkManager::PlayerDied(int id)
 //TODO: THERE IS A TODO IN HERE!!!
 int NetworkManager::UpdateAllClients()
 {
-	//bufMutex.lock();
+	bufMutex.lock();
 
-	std::cout << "Pushing to all clients" << std::endl;
+	//std::cout << "Pushing to all clients" << std::endl;
 	head->cmd = SERVER_UPDATE;
 	//TODO: FILL THE BUFFER WITH THE ENTIRE OF EVERYTHING FOR ALL CLIENTS
 	int bufferIndex = 0;
@@ -441,9 +441,9 @@ int NetworkManager::UpdateAllClients()
 
 	game->physicsMutex.unlock();
 
-	//bufMutex.unlock();
+	bufMutex.unlock();
 
-	std::cout << "Finished sending to all clients" << sizeof(Vec2) << std::endl;
+	//std::cout << "Finished sending to all clients" << sizeof(Vec2) << std::endl;
 	return EXIT_SUCCESS;
 }
 

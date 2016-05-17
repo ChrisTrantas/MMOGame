@@ -43,6 +43,27 @@ Game::Game()
 		bulletsActive[i] = true;
 	}
 
+	for (int i = 0; i < MAX_ASTEROIDS; i++)
+	{
+		while (asteroidPositions->x[i] > -5 && asteroidPositions->x[i] < 5)
+		{
+			asteroidPositions->x[i] = rand() % 36 - 18;
+		}
+		while (asteroidPositions->y[i] > -5 && asteroidPositions->y[i] < 5)
+		{
+			asteroidPositions->y[i] = rand() % 20 - 10;
+		}
+		while (asteroidVelocities->x[i] == 0)
+		{
+			asteroidVelocities->x[i] = rand() % 10 - 5;
+		}
+		while (asteroidVelocities->y[i] == 0)
+		{
+			asteroidVelocities->y[i] = rand() % 10 - 5;
+		}
+
+	}
+
 	dirtyBuffers = false;
 }
 
@@ -88,7 +109,7 @@ void Game::Update(float deltaTime){
 	// A few physics constants
 	__m128 dt = _mm_set1_ps(deltaTime);
 
-	//printf("Ship X Position: %f \n", shipPositions->x[0]);
+	//printf("Asteroid X Position: %f \n", asteroidPositions->x[0]);
 
 	//
 	// Asteroid Physics
